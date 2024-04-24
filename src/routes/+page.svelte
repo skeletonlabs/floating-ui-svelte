@@ -1,3 +1,30 @@
-<h1>Welcome to your library project</h1>
-<p>Create your package using @sveltejs/package and preview/showcase your work with SvelteKit</p>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+	import { flip, offset } from '@floating-ui/dom';
+	import { useFloating } from '$lib/hooks/use-floating.svelte.js';
+
+	const floating = useFloating({
+		placement: 'left',
+		middleware: [flip(), offset(2)]
+	});
+</script>
+
+<button
+	class="fixed left-4 top-4 rounded-md bg-green-300 p-2"
+	onclick={() => (floating.refs?.floating as HTMLElement | undefined)?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center'})}
+>
+	Bring floating into view
+</button>
+
+<div class="flex h-[300vh] w-[300vw] items-center justify-center">
+	<div>
+		<button class="rounded-md bg-cyan-300 p-2" bind:this={floating.refs.reference}>Reference</button
+		>
+		<div
+			class="absolute left-0 top-0 w-max rounded-md bg-red-300 p-4"
+			bind:this={floating.refs.floating}
+			style={floating.styles}
+		>
+			Floating
+		</div>
+	</div>
+</div>
