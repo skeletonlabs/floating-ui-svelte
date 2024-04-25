@@ -14,8 +14,7 @@ export function useFloating<T extends ReferenceElement = ReferenceElement>(
 	options: UseFloatingOptions<T> = {}
 ): UseFloatingReturn {
 	const openOption = box.derived(() => options.open ?? true);
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const onOpenChangeOption = options.onOpenChange;
+	const onOpenChangeOption = options.onOpenChange ?? (() => {});
 	const placementOption = box.derived(() => options.placement ?? 'bottom');
 	const strategyOption = box.derived(() => options.strategy ?? 'absolute');
 	const middlewareOption = box.derived(() => options.middleware);
@@ -126,6 +125,22 @@ export function useFloating<T extends ReferenceElement = ReferenceElement>(
 		middlewareData: box.readonly(middlewareData),
 		isPositioned: box.readonly(isPositioned),
 		floatingStyles,
-		update
+		update,
+		context: {
+			x,
+			y,
+			strategy,
+			placement,
+			middlewareData,
+			isPositioned,
+			floatingStyles,
+			update,
+			open: openOption,
+			onOpenChange: onOpenChangeOption,
+			elements: {
+				reference: box.readonly(referenceElement),
+				floating: box.readonly(floatingElement)
+			}
+		}
 	};
 }

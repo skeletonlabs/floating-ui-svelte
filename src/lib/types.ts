@@ -1,4 +1,4 @@
-import type { ReadableBox } from '$lib/box.svelte.js';
+import type { ReadableBox, WritableBox } from '$lib/box.svelte.js';
 import type {
 	FloatingElement,
 	Middleware,
@@ -50,10 +50,16 @@ export type UseFloatingOptions<T extends ReferenceElement = ReferenceElement> = 
 	transform?: boolean;
 
 	/**
-	 * TODO: Document this.
+	 * The reference and floating elements.
 	 */
 	elements?: {
+		/**
+		 * The reference element.
+		 */
 		reference?: T | null;
+		/**
+		 * The floating element which is anchored to the reference element.
+		 */
 		floating?: FloatingElement | null;
 	};
 
@@ -119,4 +125,34 @@ export type UseFloatingReturn = {
 	 * The function to update floating position manually.
 	 */
 	update: () => void;
+
+	/**
+	 * Context object containing internal logic to alter the behavior of the floating element.
+	 * Commonly used to inject into others hooks.
+	 */
+	context: FloatingContext;
 };
+
+export interface FloatingContext extends Omit<UseFloatingReturn, 'context'> {
+	/**
+	 * The reference and floating elements.
+	 */
+	elements: {
+		/**
+		 * The reference element.
+		 */
+		reference: ReadableBox<ReferenceElement | null | undefined>;
+		/**
+		 * The floating element which is anchored to the reference element.
+		 */
+		floating: ReadableBox<ReferenceElement | null | undefined>;
+	};
+	/**
+	 * Represents the open/close state of the floating element.
+	 */
+	open: WritableBox<boolean>;
+	/**
+	 * Event handler that can be invoked whenever the open state changes.
+	 */
+	onOpenChange: (open: boolean, event?: Event, reason?: OpenChangeReason) => void;
+}
