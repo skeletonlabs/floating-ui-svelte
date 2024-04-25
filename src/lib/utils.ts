@@ -25,3 +25,9 @@ export function styleObjectToString(styleObject: Partial<ElementCSSInlineStyle['
 		.map(([key, value]) => `${key}: ${value};`)
 		.join(' ');
 }
+
+/**
+ * A function that does nothing.
+ * Useful as a default value for optional callbacks.
+ */
+export function noop() {}

@@ -1,6 +1,6 @@
 import { box } from '$lib/box.svelte.js';
 import type { UseFloatingOptions, UseFloatingReturn } from '$lib/types.js';
-import { getDPR, roundByDPR, styleObjectToString } from '$lib/utils.js';
+import { getDPR, noop, roundByDPR, styleObjectToString } from '$lib/utils.js';
 import type { MiddlewareData, ReferenceElement } from '@floating-ui/dom';
 import { computePosition } from '@floating-ui/dom';
 import { onDestroy } from 'svelte';
@@ -14,7 +14,7 @@ export function useFloating<T extends ReferenceElement = ReferenceElement>(
 	options: UseFloatingOptions<T> = {}
 ): UseFloatingReturn {
 	const openOption = box.derived(() => options.open ?? true);
-	const onOpenChangeOption = options.onOpenChange ?? (() => {});
+	const onOpenChangeOption = options.onOpenChange ?? noop;
 	const placementOption = box.derived(() => options.placement ?? 'bottom');
 	const strategyOption = box.derived(() => options.strategy ?? 'absolute');
 	const middlewareOption = box.derived(() => options.middleware);

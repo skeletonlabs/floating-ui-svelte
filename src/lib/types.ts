@@ -1,4 +1,4 @@
-import type { ReadableBox, WritableBox } from '$lib/box.svelte.js';
+import type { ReadableBox } from '$lib/box.svelte.js';
 import type {
 	FloatingElement,
 	Middleware,
@@ -89,7 +89,7 @@ export interface FloatingContext {
 	/**
 	 * Represents the open/close state of the floating element.
 	 */
-	open: WritableBox<boolean>;
+	open: ReadableBox<boolean>;
 	/**
 	 * Event handler that can be invoked whenever the open state changes.
 	 */
