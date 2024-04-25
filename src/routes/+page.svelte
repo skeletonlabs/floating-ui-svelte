@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { flip, offset } from '@floating-ui/dom';
+	import { autoUpdate, flip, offset } from '@floating-ui/dom';
 	import { useFloating } from '$lib/hooks/use-floating.svelte.js';
 	import type { Placement } from '@floating-ui/dom';
 
@@ -10,7 +10,8 @@
 			return placement;
 		},
 		middleware: [flip(), offset(2)],
-		elements
+		elements,
+		whileElementsMounted: autoUpdate
 	});
 </script>
 
