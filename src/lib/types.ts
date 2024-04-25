@@ -7,16 +7,18 @@ import type {
 	MiddlewareData
 } from '@floating-ui/dom';
 
+export type ValueOrGetter<T> = T | (() => T);
+
 export interface UseFloatingOptions {
-	placement?: Placement;
-	strategy?: Strategy;
-	transform?: boolean;
-	middleware?: Array<Middleware | undefined | null | false>;
+	placement?: ValueOrGetter<Placement>;
+	strategy?: ValueOrGetter<Strategy>;
+	transform?: ValueOrGetter<boolean>;
+	middleware?: ValueOrGetter<Array<Middleware | undefined | null | false>>;
 	elements?: {
-		reference?: ReferenceElement | null | undefined;
-		floating?: FloatingElement | null | undefined;
+		reference?: ValueOrGetter<ReferenceElement | null | undefined>;
+		floating?: ValueOrGetter<FloatingElement | null | undefined>;
 	};
-	open?: boolean;
+	open?: ValueOrGetter<boolean>;
 }
 
 export interface UseFloatingReturn {
