@@ -84,27 +84,15 @@ export function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn
 	});
 
 	return {
-		get x() {
-			return x.value;
-		},
-		get y() {
-			return y.value;
-		},
-		get strategy() {
-			return strategy.value;
-		},
-		get placement() {
-			return placement.value;
-		},
-		get middlewareData() {
-			return middlewareData.value;
-		},
-		get isPositioned() {
-			return isPositioned.value;
-		},
-		get floatingStyles() {
-			return floatingStyles.value;
-		},
+		...box.flatten({
+			x,
+			y,
+			strategy,
+			placement,
+			middlewareData,
+			isPositioned,
+			floatingStyles
+		}),
 		update,
 		refs: {
 			get reference() {
