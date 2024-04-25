@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { flip, offset } from '@floating-ui/dom';
-	import { useFloating } from '$lib/hooks/use-floating/index.js';
+	import { useFloating } from '$lib/hooks/use-floating.svelte.js';
 	import type { Placement } from '@floating-ui/dom';
 
 	const placement = $state<Placement>('left');

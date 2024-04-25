@@ -1,9 +1,9 @@
 import { box } from '$lib/box.svelte.js';
+import type { UseFloatingOptions, UseFloatingReturn } from '$lib/types.js';
 import { getDPR, roundByDPR, styleObjectToString } from '$lib/utils.js';
 import type { MiddlewareData, ReferenceElement } from '@floating-ui/dom';
 import { computePosition } from '@floating-ui/dom';
 import { onDestroy } from 'svelte';
-import type { UseFloatingOptions, UseFloatingReturn } from './types.js';
 
 /**
  * Hook for managing floating elements.
