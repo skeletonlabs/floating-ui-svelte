@@ -25,17 +25,3 @@ export function styleObjectToString(styleObject: Partial<ElementCSSInlineStyle['
 		.map(([key, value]) => `${key}: ${value};`)
 		.join(' ');
 }
-
-/**
- * Returns wether a value is a function.
- */
-export function isFunction(value: unknown): value is (...args: unknown[]) => unknown {
-	return typeof value === 'function';
-}
-
-/**
- * Returns wether a value is an object.
- */
-export function isObject(value: unknown): value is Record<string, unknown> {
-	return value !== null && typeof value === 'object';
-}
