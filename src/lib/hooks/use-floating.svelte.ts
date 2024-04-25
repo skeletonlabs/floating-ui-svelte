@@ -110,10 +110,9 @@ export function useFloating<T extends ReferenceElement = ReferenceElement>(
 		}
 	}
 
-	// TODO: check if these effects should be `$effect.pre` instead.
-	$effect(update);
-	$effect(attach);
-	$effect(reset);
+	$effect.pre(update);
+	$effect.pre(attach);
+	$effect.pre(reset);
 
 	onDestroy(cleanup);
 
