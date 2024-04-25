@@ -31,20 +31,16 @@
 			absolutely-positioned element that floats on top of the UI with layout ready for being
 			measured:
 		</p>
-		<pre class="pre">{`
-function App() {
-  const {refs, floatingStyles} = useFloating();
-  return (
-    <>
-      <div ref={refs.setReference} />
-      <div ref={refs.setFloating} style={floatingStyles} />
-    </>
-  );
-}
-        `.trim()}</pre>
 		<p>
 			The <code class="code">-start</code> and <code class="code">-end</code> alignments are
 			<a href="/" class="anchor">logical</a> and will adapt to the writing direction (e.g. RTL) as expected.
 		</p>
+		<div class="alert">
+			<h3 class="h3">Note</h3>
+			<p>
+				You aren’t limited to just these 12 placements though. <code class="code">offset</code> allows
+				you to create any placement.
+			</p>
+		</div>
 	</section>
 </div>

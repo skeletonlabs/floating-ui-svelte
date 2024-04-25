@@ -83,6 +83,9 @@ body {
 .h2 {
 	@apply text-black dark:text-white font-bold text-3xl;
 }
+.h3 {
+	@apply text-black dark:text-white font-bold text-xl;
+}
 
 /* Anchors */
 #page-container .anchor {
@@ -111,6 +114,11 @@ footer .anchor {
 
 /* Utility Classes */
 
+/* Pre */
+.pre {
+	@apply bg-surface-100 dark:bg-surface-700 p-4 rounded-lg shadow;
+}
+
 /* Cards */
 .card {
 	@apply p-8 lg:p-12 rounded-3xl;
@@ -121,9 +129,9 @@ footer .anchor {
 	@apply dark:from-purple-700/10 dark:to-cyan-700/10;
 }
 
-/* Pre */
-.pre {
-	@apply bg-surface-100 dark:bg-surface-700 p-4 rounded-lg shadow;
+/* Alerts */
+.alert {
+	@apply bg-blue-500 text-white p-8 rounded-lg space-y-4;
 }
 
 /* Scrollbars --- */

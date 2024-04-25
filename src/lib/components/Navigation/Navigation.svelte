@@ -1,13 +1,24 @@
 <script lang="ts">
-	const navList = [
-		{ href: '/', label: 'Home' },
-		{ href: '/', label: 'useFloating' },
-		{ href: '/', label: 'useInteractions' },
-		{ href: '/', label: 'useHover' },
-		{ href: '/', label: 'useFocus' },
-		{ href: '/', label: 'useClick' },
-		{ href: '/', label: 'useRole' },
-		{ href: '/', label: 'useDismiss' }
+	// Icons
+	import IconStart from 'lucide-svelte/icons/rocket';
+	import iconFloting from 'lucide-svelte/icons/cloud';
+	import IconInteractions from 'lucide-svelte/icons/pointer';
+	import IconHover from 'lucide-svelte/icons/square-mouse-pointer';
+	import IconFocus from 'lucide-svelte/icons/text-cursor-input';
+	import iconClick from 'lucide-svelte/icons/mouse-pointer';
+	import iconRole from 'lucide-svelte/icons/person-standing';
+	import iconDismiss from 'lucide-svelte/icons/circle-x';
+
+	// Navigation
+	const navCore = [{ icon: IconStart, href: '/', label: 'Getting Started' }];
+	const navHooks = [
+		{ icon: iconFloting, href: '/use-floating', label: 'useFloating' },
+		{ icon: IconInteractions, href: '/use-interactions', label: 'useInteractions' },
+		{ icon: IconHover, href: '/use-hover', label: 'useHover' },
+		{ icon: IconFocus, href: '/use-focus', label: 'useFocus' },
+		{ icon: iconClick, href: '/use-click', label: 'useClick' },
+		{ icon: iconRole, href: '/use-role', label: 'useRole' },
+		{ icon: iconDismiss, href: '/use-dismiss', label: 'useDismiss' }
 	];
 </script>
 
@@ -31,12 +42,22 @@
 		</svg>
 	</header>
 	<!-- Nav List -->
-	<nav class="p-6 pb-56">
+	<nav class="p-4 py-8 pb-32 space-y-8">
 		<ul>
-			{#each navList as link}
+			{#each navCore as link}
 				<li>
-					<a href={link.href} class="block hover:bg-surface-500/20 py-3 px-4 rounded-xl text-lg">
-						<span>(i)</span>
+					<a href={link.href} class="nav-link">
+						<svelte:component this={link.icon} size={24} />
+						<span>{link.label}</span>
+					</a>
+				</li>
+			{/each}
+		</ul>
+		<ul>
+			{#each navHooks as link}
+				<li>
+					<a href={link.href} class="nav-link">
+						<svelte:component this={link.icon} size={24} />
 						<span>{link.label}</span>
 					</a>
 				</li>
@@ -44,3 +65,9 @@
 		</ul>
 	</nav>
 </div>
+
+<style lang="postcss">
+	.nav-link {
+		@apply grid grid-cols-[24px_1fr] gap-4 items-center hover:bg-surface-500/20 py-3 px-4 rounded-xl;
+	}
+</style>
