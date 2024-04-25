@@ -2,7 +2,7 @@
 	const currentYear = new Date().getFullYear();
 </script>
 
-<footer class="text-center space-y-2">
+<footer class="text-center space-y-2 p-4 py-10">
 	<p class="text-xs">
 		&copy; {currentYear}. MIT License. Maintained by
 		<a href="https://github.com/Hugos68" target="_blank" class="anchor">Hugo Korte</a>,

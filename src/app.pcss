@@ -97,10 +97,20 @@ footer .anchor {
 	@apply text-blue-600 dark:text-blue-400 underline;
 }
 
+/* Highlight */
+.highlight {
+	@apply text-black dark:text-white;
+}
+
 /* Code */
 .code {
 	@apply bg-surface-50/50 dark:bg-surface-600 px-2 py-1 rounded;
-	@apply text-emerald-500 dark:text-emerald-300;
+	@apply text-sm text-emerald-500 dark:text-emerald-300;
+}
+
+/* Keyboard */
+.kbd {
+	@apply text-sm bg-surface-50/50 dark:bg-surface-600 px-2 py-1 rounded;
 }
 
 /* Button */
@@ -108,15 +118,11 @@ footer .anchor {
 	@apply bg-rose-500 hover:bg-rose-600 text-white text-sm py-1 px-4 rounded;
 }
 
-.highlight {
-	@apply text-black dark:text-white;
-}
-
 /* Utility Classes */
 
 /* Pre */
 .pre {
-	@apply bg-surface-100 dark:bg-surface-700 p-4 rounded-lg shadow;
+	@apply bg-surface-100 dark:bg-surface-700 p-4 rounded-lg shadow text-sm;
 }
 
 /* Cards */
