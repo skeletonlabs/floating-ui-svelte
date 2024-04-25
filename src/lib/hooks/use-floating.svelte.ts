@@ -5,7 +5,8 @@ import { type MiddlewareData, autoUpdate, computePosition } from '@floating-ui/d
 
 /**
  * Hook for managing floating elements.
- * Aims to keep as much parity with `@floating-ui/react
+ * Aims to keep as much parity with `@floating-ui/react` as possible.
+ * For now see: https://floating-ui.com/docs/useFloating for API documentation.
  */
 export function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 	const openOption = box.from(options.open ?? true);
@@ -114,6 +115,9 @@ export function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn
 			},
 			get floating() {
 				return floatingElement.value;
+			},
+			set floating(v) {
+				floatingElement.value = v;
 			}
 		}
 	};

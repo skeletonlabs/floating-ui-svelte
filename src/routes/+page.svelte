@@ -6,8 +6,6 @@
 		placement: 'left',
 		middleware: [flip(), offset(2)]
 	});
-
-	$inspect(floating);
 </script>
 
 <button
