@@ -127,14 +127,6 @@ export function useFloating<T extends ReferenceElement = ReferenceElement>(
 		floatingStyles,
 		update,
 		context: {
-			x,
-			y,
-			strategy,
-			placement,
-			middlewareData,
-			isPositioned,
-			floatingStyles,
-			update,
 			open: openOption,
 			onOpenChange: onOpenChangeOption,
 			elements: {

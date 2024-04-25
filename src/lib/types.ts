@@ -12,7 +12,7 @@ export type Getter<T> = () => T;
 
 export type Expand<T> = T extends infer U ? { [K in keyof U]: U[K] } : never;
 
-export type UseFloatingOptions<T extends ReferenceElement = ReferenceElement> = {
+export interface UseFloatingOptions<T extends ReferenceElement = ReferenceElement> {
 	/**
 	 * Represents the open/close state of the floating element.
 	 * @default true
@@ -72,7 +72,7 @@ export type UseFloatingOptions<T extends ReferenceElement = ReferenceElement> = 
 		floating: FloatingElement,
 		update: () => void
 	) => () => void;
-};
+}
 
 type OpenChangeReason =
 	| 'outside-press'
@@ -85,7 +85,31 @@ type OpenChangeReason =
 	| 'list-navigation'
 	| 'safe-polygon';
 
-export type UseFloatingReturn = {
+export interface FloatingContext {
+	/**
+	 * Represents the open/close state of the floating element.
+	 */
+	open: WritableBox<boolean>;
+	/**
+	 * Event handler that can be invoked whenever the open state changes.
+	 */
+	onOpenChange: (open: boolean, event?: Event, reason?: OpenChangeReason) => void;
+	/**
+	 * The reference and floating elements.
+	 */
+	elements: {
+		/**
+		 * The reference element.
+		 */
+		reference: ReadableBox<ReferenceElement | null | undefined>;
+		/**
+		 * The floating element which is anchored to the reference element.
+		 */
+		floating: ReadableBox<ReferenceElement | null | undefined>;
+	};
+}
+
+export interface UseFloatingReturn {
 	/**
 	 * The x-coord of the floating element.
 	 */
@@ -131,28 +155,4 @@ export type UseFloatingReturn = {
 	 * Commonly used to inject into others hooks.
 	 */
 	context: FloatingContext;
-};
-
-export interface FloatingContext extends Omit<UseFloatingReturn, 'context'> {
-	/**
-	 * The reference and floating elements.
-	 */
-	elements: {
-		/**
-		 * The reference element.
-		 */
-		reference: ReadableBox<ReferenceElement | null | undefined>;
-		/**
-		 * The floating element which is anchored to the reference element.
-		 */
-		floating: ReadableBox<ReferenceElement | null | undefined>;
-	};
-	/**
-	 * Represents the open/close state of the floating element.
-	 */
-	open: WritableBox<boolean>;
-	/**
-	 * Event handler that can be invoked whenever the open state changes.
-	 */
-	onOpenChange: (open: boolean, event?: Event, reason?: OpenChangeReason) => void;
 }
