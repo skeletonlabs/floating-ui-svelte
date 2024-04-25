@@ -1,5 +1,6 @@
+import { box } from '$lib/box.svelte.js';
 import { type UseFloatingOptions, type UseFloatingReturn } from '$lib/types.js';
-import { roundByDPR, styleObjectToString, unwrap } from '$lib/utils.js';
+import { roundByDPR, styleObjectToString } from '$lib/utils.js';
 import { type MiddlewareData, autoUpdate, computePosition } from '@floating-ui/dom';
 
 /**
@@ -7,137 +8,113 @@ import { type MiddlewareData, autoUpdate, computePosition } from '@floating-ui/d
  * Aims to keep as much parity with `@floating-ui/react
  */
 export function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
-	/** State */
-	let reference = $derived(unwrap(options.elements?.reference ?? null));
-	let floating = $derived(unwrap(options.elements?.floating ?? null));
-	let placement = $derived(unwrap(options.placement ?? 'bottom-start'));
-	let strategy = $derived(unwrap(options.strategy ?? 'absolute'));
-	let open = $derived(unwrap(options.open ?? false));
-	let x = $state(0);
-	let y = $state(0);
-	let middlewareData = $state<MiddlewareData>({});
-	let isPositioned = $state(false);
-	const transform = $derived(unwrap(options.transform ?? false));
-	const middleware = $derived(unwrap(options.middleware ?? []));
-	const floatingStyles = $derived.by<Partial<CSSStyleDeclaration>>(() => {
-		if (!floating) {
-			return {
-				position: strategy,
-				left: '0px',
-				top: '0px'
-			};
+	const openOption = box.from(options.open ?? true);
+	const middlewareOption = box.from(options.middleware ?? []);
+	const placementOption = box.from(options.placement ?? 'bottom');
+	const strategyOption = box.from(options.strategy ?? 'absolute');
+	const transformOption = box.from(options.transform ?? true);
+	const referenceElement = box(options.elements?.reference);
+	const floatingElement = box(options.elements?.floating);
+	const x = box(0);
+	const y = box(0);
+	const strategy = box(strategyOption.value);
+	const placement = box(placementOption.value);
+	const middlewareData = box<MiddlewareData>({});
+	const isPositioned = box(false);
+	const floatingStylesObject = box.from(() => {
+		const initialStyles = {
+			position: strategy.value,
+			left: '0',
+			top: '0'
+		};
+
+		if (!floatingElement.value) {
+			return initialStyles;
 		}
 
-		const left = roundByDPR(floating, x);
-		const top = roundByDPR(floating, y);
+		const roundedX = roundByDPR(floatingElement.value, x.value);
+		const roundedY = roundByDPR(floatingElement.value, y.value);
 
-		if (transform) {
+		if (transformOption.value) {
 			return {
-				position: strategy,
-				transform: `translate(${left}px, ${top}px)`
+				...initialStyles,
+				transform: `translate(${roundedX}px, ${roundedY}px)`
 			};
 		}
 
 		return {
-			position: strategy,
-			left: `${left}px`,
-			top: `${top}px`
+			position: strategy.value,
+			left: `${roundedX}px`,
+			top: `${roundedY}px`
 		};
 	});
+	const floatingStyles = box.from(() => styleObjectToString(floatingStylesObject.value));
 
 	/** Functions */
 	async function update() {
-		if (!reference || !floating) {
+		if (!referenceElement.value || !floatingElement.value) {
 			return;
 		}
-		const position = await computePosition(reference, floating, {
-			placement,
-			middleware,
-			strategy
+		const position = await computePosition(referenceElement.value, floatingElement.value, {
+			placement: placementOption.value,
+			middleware: middlewareOption.value,
+			strategy: strategyOption.value
 		});
-		x = position.x;
-		y = position.y;
-		strategy = position.strategy;
-		placement = position.placement;
-		middlewareData = position.middlewareData;
-		isPositioned = true;
+		x.value = position.x;
+		y.value = position.y;
+		strategy.value = position.strategy;
+		placement.value = position.placement;
+		middlewareData.value = position.middlewareData;
+		isPositioned.value = true;
 	}
 
 	/** Effects */
 	$effect(() => {
-		if (!reference || !floating) {
+		if (!referenceElement.value || !floatingElement.value) {
 			return;
 		}
-		return autoUpdate(reference, floating, update);
+		return autoUpdate(referenceElement.value, floatingElement.value, update);
 	});
-
 	$effect(() => {
-		if (open) {
+		if (openOption.value) {
 			return;
 		}
-		isPositioned = false;
+		isPositioned.value = false;
 	});
 
 	return {
-		get context() {
-			return {
-				get open() {
-					return open;
-				},
-				set open(v) {
-					open = v;
-				},
-				get refs() {
-					return {
-						get reference() {
-							return reference;
-						},
-						get floating() {
-							return floating;
-						}
-					};
-				}
-			};
-		},
-		get placement() {
-			return placement;
-		},
-		get strategy() {
-			return strategy;
-		},
 		get x() {
-			return x;
+			return x.value;
 		},
 		get y() {
-			return y;
+			return y.value;
+		},
+		get strategy() {
+			return strategy.value;
+		},
+		get placement() {
+			return placement.value;
 		},
 		get middlewareData() {
-			return middlewareData;
+			return middlewareData.value;
 		},
 		get isPositioned() {
-			return isPositioned;
-		},
-		get update() {
-			return update;
+			return isPositioned.value;
 		},
 		get floatingStyles() {
-			return styleObjectToString(floatingStyles);
+			return floatingStyles.value;
 		},
-		get refs() {
-			return {
-				get reference() {
-					return reference;
-				},
-				set reference(v) {
-					reference = v;
-				},
-				get floating() {
-					return floating;
-				},
-				set floating(v) {
-					floating = v;
-				}
-			};
+		update,
+		refs: {
+			get reference() {
+				return referenceElement.value;
+			},
+			set reference(v) {
+				referenceElement.value = v;
+			},
+			get floating() {
+				return floatingElement.value;
+			}
 		}
 	};
 }

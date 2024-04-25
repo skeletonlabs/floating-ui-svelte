@@ -27,15 +27,15 @@ export function styleObjectToString(styleObject: Partial<ElementCSSInlineStyle['
 }
 
 /**
- * Checks if a value is a function.
+ * Returns wether a value is a function.
  */
 export function isFunction(value: unknown): value is (...args: unknown[]) => unknown {
 	return typeof value === 'function';
 }
 
 /**
- * Unwraps a value if it's a function; otherwise, returns the value itself.
+ * Returns wether a value is an object.
  */
-export function unwrap<T>(value: T | (() => T)): T {
-	return isFunction(value) ? value() : value;
+export function isObject(value: unknown): value is Record<string, unknown> {
+	return value !== null && typeof value === 'object';
 }

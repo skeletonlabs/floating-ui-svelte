@@ -6,23 +6,26 @@ import type {
 	Middleware,
 	MiddlewareData
 } from '@floating-ui/dom';
+import type { ReadableBox } from './box.svelte.js';
 
-export type ValueOrGetter<T> = T | (() => T);
+export type Getter<T> = () => T;
+export type MaybeGetter<T> = T | (() => T);
+export type MaybeBoxOrGetter<T> = T | Getter<T> | ReadableBox<T>;
+export type Expand<T> = T extends infer U ? { [K in keyof U]: U[K] } : never;
 
 export interface UseFloatingOptions {
-	placement?: ValueOrGetter<Placement>;
-	strategy?: ValueOrGetter<Strategy>;
-	transform?: ValueOrGetter<boolean>;
-	middleware?: ValueOrGetter<Array<Middleware | undefined | null | false>>;
+	placement?: MaybeGetter<Placement>;
+	strategy?: MaybeGetter<Strategy>;
+	transform?: MaybeGetter<boolean>;
+	middleware?: MaybeGetter<Array<Middleware | undefined | null | false>>;
 	elements?: {
-		reference?: ValueOrGetter<ReferenceElement | null | undefined>;
-		floating?: ValueOrGetter<FloatingElement | null | undefined>;
+		reference?: ReferenceElement | null | undefined;
+		floating?: FloatingElement | null | undefined;
 	};
-	open?: ValueOrGetter<boolean>;
+	open?: MaybeGetter<boolean>;
 }
 
 export interface UseFloatingReturn {
-	context: FloatingContext;
 	placement: Placement;
 	strategy: Strategy;
 	x: number;
