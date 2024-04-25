@@ -1,22 +1,28 @@
-import type { UseFloatingOptions, UseFloatingReturn } from '$lib/types.js';
+import {
+	type FloatingContext,
+	type UseFloatingOptions,
+	type UseFloatingReturn
+} from '$lib/types.js';
 import { roundByDPR } from '$lib/util/dpr.js';
 import { styleObjectToString } from '$lib/util/style-object-to-string.js';
 import { autoUpdate, computePosition, type MiddlewareData } from '@floating-ui/dom';
+import { untrack } from 'svelte';
 
 export function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
-	/** State */
-	let strategy = $state(options.strategy ?? 'absolute');
 	let placement = $state(options.placement ?? 'bottom');
-	let middlewareData = $state<MiddlewareData>({});
+	let strategy = $state(options.strategy ?? 'absolute');
 	let x = $state(0);
 	let y = $state(0);
-	const middleware = $state(options.middleware ?? []);
+	let middlewareData = $state<MiddlewareData>({});
+	let isPositioned = $state(false);
+	let open = $state(options.open ?? false);
 	const transform = $state(options.transform ?? false);
+	const middleware = $state(options.middleware ?? []);
 	const refs = $state<UseFloatingReturn['refs']>({
 		reference: options.elements?.reference,
 		floating: options.elements?.floating
 	});
-	const styles = $derived.by<Partial<CSSStyleDeclaration>>(() => {
+	const floatingStyles = $derived.by<Partial<CSSStyleDeclaration>>(() => {
 		if (!refs.floating) {
 			return {
 				position: strategy,
@@ -41,10 +47,16 @@ export function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn
 			top: `${top}px`
 		};
 	});
-	// TODO: Fill context with actual context
-	const context = $state<UseFloatingReturn['context']>(null);
+	const context = $state<FloatingContext>({
+		get open() {
+			return open;
+		},
+		set open(value) {
+			open = value;
+		},
+		refs
+	});
 
-	/** Functions */
 	async function update() {
 		if (!refs.reference || !refs.floating) {
 			return;
@@ -59,9 +71,9 @@ export function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn
 		strategy = position.strategy;
 		placement = position.placement;
 		middlewareData = position.middlewareData;
+		isPositioned = true;
 	}
 
-	/** Effects */
 	$effect(() => {
 		if (!refs.reference || !refs.floating) {
 			return;
@@ -69,18 +81,43 @@ export function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn
 		return autoUpdate(refs.reference, refs.floating, update);
 	});
 
+	$effect(() => {
+		if (options.open) {
+			return;
+		}
+		untrack(() => (isPositioned = false));
+	});
+
 	return {
-		get refs() {
-			return refs;
-		},
-		get styles() {
-			return styleObjectToString(styles);
-		},
 		get context() {
 			return context;
 		},
+		get placement() {
+			return placement;
+		},
+		get strategy() {
+			return strategy;
+		},
+		get x() {
+			return x;
+		},
+		get y() {
+			return y;
+		},
 		get middlewareData() {
 			return middlewareData;
+		},
+		get isPositioned() {
+			return isPositioned;
+		},
+		get update() {
+			return update;
+		},
+		get floatingStyles() {
+			return styleObjectToString(floatingStyles);
+		},
+		get refs() {
+			return refs;
 		}
 	};
 }

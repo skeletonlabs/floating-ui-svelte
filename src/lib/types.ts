@@ -10,20 +10,32 @@ import type {
 export interface UseFloatingOptions {
 	placement?: Placement;
 	strategy?: Strategy;
-	middleware?: Array<Middleware | undefined | null | false>;
 	transform?: boolean;
+	middleware?: Array<Middleware | undefined | null | false>;
 	elements?: {
-		reference?: ReferenceElement | null;
-		floating?: FloatingElement | null;
+		reference?: ReferenceElement | null | undefined;
+		floating?: FloatingElement | null | undefined;
 	};
+	open?: boolean;
 }
 
 export interface UseFloatingReturn {
+	context: FloatingContext;
+	placement: Placement;
+	strategy: Strategy;
+	x: number;
+	y: number;
+	middlewareData: MiddlewareData;
+	isPositioned: boolean;
+	update: () => void;
+	floatingStyles: string;
 	refs: {
 		reference: ReferenceElement | null | undefined;
 		floating: FloatingElement | null | undefined;
 	};
-	context: null;
-	middlewareData: MiddlewareData;
-	styles: string;
+}
+
+export interface FloatingContext {
+	open: boolean;
+	refs: UseFloatingReturn['refs'];
 }

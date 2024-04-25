@@ -6,6 +6,8 @@
 		placement: 'left',
 		middleware: [flip(), offset(2)]
 	});
+
+	$inspect(floating);
 </script>
 
 <button
@@ -22,7 +24,7 @@
 		<div
 			class="absolute left-0 top-0 w-max rounded-md bg-red-300 p-4"
 			bind:this={floating.refs.floating}
-			style={floating.styles}
+			style={floating.floatingStyles}
 		>
 			Floating
 		</div>
