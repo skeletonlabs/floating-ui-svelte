@@ -14,6 +14,7 @@ export function useFloating<T extends ReferenceElement = ReferenceElement>(
 	options: UseFloatingOptions<T> = {}
 ): UseFloatingReturn {
 	const openOption = box.derived(() => options.open ?? true);
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const onOpenChangeOption = options.onOpenChange;
 	const placementOption = box.derived(() => options.placement ?? 'bottom');
 	const strategyOption = box.derived(() => options.strategy ?? 'absolute');
