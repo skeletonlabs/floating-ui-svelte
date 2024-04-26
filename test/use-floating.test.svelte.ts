@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect } from 'vitest';
 import { it_in_effect, sleep } from './util.svelte.js';
 import {
 	offset,
