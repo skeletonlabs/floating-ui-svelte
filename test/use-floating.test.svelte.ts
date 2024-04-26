@@ -1,29 +1,71 @@
-import { describe, it, expect } from 'vitest';
-import { render, waitFor } from '@testing-library/svelte';
-import { offset } from '../src/lib/index.js';
-import Test from './Test.svelte';
+import { describe, expect } from 'vitest';
+import { it_in_effect, sleep } from './util.svelte.js';
+import {
+	offset,
+	useFloating,
+	autoUpdate,
+	type Placement,
+	type Middleware,
+	type UseFloatingOptions
+} from '../src/lib/index.js';
 
 describe('useFloating', () => {
-	it('updates floating coords on placement change', async () => {
-		// @ts-expect-error - Svelte 5 has a different component type. It still works.
-		const { getByTestId, rerender } = render(Test, {
-			placement: 'bottom',
-			middleware: [offset(5)]
+	function test_config(): Partial<UseFloatingOptions> {
+		return {
+			elements: {
+				reference: document.createElement('div'),
+				floating: document.createElement('div')
+			},
+			whileElementsMounted: autoUpdate
+		};
+	}
+	it_in_effect('updates floating coords on middleware change', async () => {
+		const middleware: Middleware[] = $state([]);
+
+		const { x, y } = useFloating({
+			...test_config(),
+			get middleware() {
+				return middleware;
+			}
 		});
 
-		await waitFor(() => {
-			expect(getByTestId('x').textContent).toBe('0');
-			expect(getByTestId('y').textContent).toBe('5');
+		// Give time for FloatingUI to calculate the new position
+		await sleep(100);
+
+		expect(x.value).toBe(0);
+		expect(y.value).toBe(0);
+
+		middleware.push(offset(5));
+
+		// Give time for FloatingUI to calculate the new position
+		await sleep(100);
+
+		expect(x.value).toBe(0);
+		expect(y.value).toBe(5);
+	});
+	it_in_effect('updates floating coords on placement change', async () => {
+		let placement: Placement = $state('bottom');
+
+		const { x, y } = useFloating({
+			...test_config(),
+			middleware: [offset(5)],
+			get placement() {
+				return placement;
+			}
 		});
 
-		await rerender({
-			placement: 'left',
-			middleware: [offset(5)]
-		});
+		// Give time for FloatingUI to calculate the new position
+		await sleep(100);
 
-		await waitFor(() => {
-			expect(getByTestId('x').textContent).toBe('5');
-			expect(getByTestId('y').textContent).toBe('0');
-		});
+		expect(x.value).toBe(0);
+		expect(y.value).toBe(5);
+
+		placement = 'top';
+
+		// Give time for FloatingUI to calculate the new position
+		await sleep(100);
+
+		expect(x.value).toBe(0);
+		expect(y.value).toBe(-5);
 	});
 });

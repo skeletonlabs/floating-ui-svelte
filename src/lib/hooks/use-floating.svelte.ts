@@ -3,7 +3,6 @@ import type { UseFloatingOptions, UseFloatingReturn } from '$lib/types.js';
 import { getDPR, noop, roundByDPR, styleObjectToString } from '$lib/utils.js';
 import type { MiddlewareData, ReferenceElement } from '@floating-ui/dom';
 import { computePosition } from '@floating-ui/dom';
-import { onDestroy } from 'svelte';
 
 /**
  * Hook for managing floating elements.
@@ -118,8 +117,7 @@ export function useFloating<T extends ReferenceElement = ReferenceElement>(
 	$effect.pre(update);
 	$effect.pre(attach);
 	$effect.pre(reset);
-
-	onDestroy(cleanup);
+	$effect(() => cleanup);
 
 	return {
 		x: box.readonly(x),
