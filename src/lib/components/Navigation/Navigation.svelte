@@ -57,6 +57,7 @@
 						target="_blank"
 						class="nav-link"
 						class:nav-active={$page.route.id === link.href}
+						onclick={() => drawer.close()}
 					>
 						<svelte:component this={link.icon} size={24} />
 						<span>{link.label}</span>
@@ -71,7 +72,7 @@
 						href={link.href}
 						class="nav-link"
 						class:nav-active={$page.route.id === link.href}
-						onclick={() => drawer.toggle()}
+						onclick={() => drawer.close()}
 					>
 						<svelte:component this={link.icon} size={24} />
 						<span>{link.label}</span>
