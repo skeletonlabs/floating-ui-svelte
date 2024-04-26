@@ -2,7 +2,7 @@
 
 // Navigation Drawer ---
 
-export function createDrawer() {
+function createDrawer() {
 	let value = $state(false);
 	return {
 		get value() {
@@ -11,3 +11,5 @@ export function createDrawer() {
 		toggle: () => (value = !value)
 	};
 }
+
+export const drawer = createDrawer();

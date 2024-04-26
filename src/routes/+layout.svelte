@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
 	import '../app.pcss';
 	// State
-	import { createDrawer } from '$lib/stores.svelte';
+	import { drawer } from '$lib/stores.svelte';
 	// Components
 	import Navigation from '$lib/components/Navigation/Navigation.svelte';
 	import PageHeader from '$lib/components/PageHeader/PageHeader.svelte';
@@ -10,30 +10,32 @@
 	// Props
 	let { children } = $props();
 
-	// Local
-	const drawer = createDrawer();
-	$inspect(drawer);
+	function onBackdropClick(event: MouseEvent) {
+		const elemTarget = event.target as HTMLElement;
+		if (elemTarget.hasAttribute('data-dismiss')) drawer.toggle();
+	}
 </script>
 
 <!-- Overlay: Drawer -->
 {#if drawer.value === true}
-	<div class="fixed top-0 left-0 right-0 bottom-0 z-50 bg-black/50">
+	<button
+		class="fixed top-0 left-0 right-0 bottom-0 z-50 bg-black/50"
+		onclick={onBackdropClick}
+		data-dismiss
+	>
 		<Navigation />
-	</div>
+	</button>
 {/if}
 
 <div>
 	<!-- Navigation -->
-	<Navigation />
+	<Navigation classes="hidden lg:block " />
 	<!-- Main -->
 	<main class="ml-0 lg:ml-72">
 		<!-- Page Header -->
 		<PageHeader />
 		<!-- Page Content -->
 		<article id="page-container" class="container p-10 text-lg mx-auto lg:ml-auto lg:px-32">
-			<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-			<pre class="pre mb-10">{drawer.value}</pre>
-			<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 			{@render children()}
 		</article>
 		<!-- Page Footer -->
