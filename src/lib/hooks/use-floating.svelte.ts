@@ -61,7 +61,12 @@ export function useFloating<T extends ReferenceElement = ReferenceElement>(
 	let whileElementsMountedCleanup: (() => void) | undefined;
 
 	function update() {
-		if (referenceElement.value == null || floatingElement.value == null) {
+		if (
+			referenceElement.value === null ||
+			referenceElement.value === undefined ||
+			floatingElement.value === null ||
+			floatingElement.value === undefined
+		) {
 			return;
 		}
 
