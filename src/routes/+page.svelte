@@ -1,19 +1,26 @@
 <script lang="ts">
-	import { autoUpdate, offset } from '@floating-ui/dom';
-	import { useFloating } from '$lib/hooks/use-floating.svelte.js';
+	import { useFloating, type Placement, autoUpdate, offset } from '$lib';
 
 	const elements = $state<{ reference?: HTMLElement; floating?: HTMLElement }>({});
 
+	let placement = $state<Placement>('bottom');
+
 	const { floatingStyles, x, y } = useFloating({
-		placement: 'bottom',
+		get placement() {
+			return placement;
+		},
 		middleware: [offset(5)],
 		elements,
 		whileElementsMounted: autoUpdate
 	});
-
-	$inspect(x);
-	$inspect(y);
 </script>
+
+<select bind:value={placement}>
+	<option value="top">Top</option>
+	<option value="right">Right</option>
+	<option value="bottom">Bottom</option>
+	<option value="left">Left</option>
+</select>
 
 <p data-testid="x">{x.value}</p>
 <p data-testid="y">{y.value}</p>
