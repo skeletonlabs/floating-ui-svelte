@@ -1,14 +1,11 @@
 <script lang="ts">
-	import { useFloating, type Placement, autoUpdate, offset } from '$lib';
+	import { useFloating, type Placement, autoUpdate, offset } from '$lib/index.js';
 
 	const elements = $state<{ reference?: HTMLElement; floating?: HTMLElement }>({});
 
 	let placement = $state<Placement>('bottom');
 
 	const { floatingStyles, x, y } = useFloating({
-		get placement() {
-			return placement;
-		},
 		middleware: [offset(5)],
 		elements,
 		whileElementsMounted: autoUpdate

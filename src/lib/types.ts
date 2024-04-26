@@ -20,7 +20,7 @@ export interface UseFloatingOptions<T extends ReferenceElement = ReferenceElemen
 	open?: boolean;
 
 	/**
-	 * TODO: Document this.
+	 * Event handler that can be invoked whenever the open state changes.
 	 */
 	onOpenChange?: (open: boolean, event?: Event, reason?: OpenChangeReason) => void;
 
@@ -57,6 +57,7 @@ export interface UseFloatingOptions<T extends ReferenceElement = ReferenceElemen
 		 * The reference element.
 		 */
 		reference?: T | null;
+
 		/**
 		 * The floating element which is anchored to the reference element.
 		 */
@@ -90,10 +91,12 @@ export interface FloatingContext {
 	 * Represents the open/close state of the floating element.
 	 */
 	open: ReadableBox<boolean>;
+
 	/**
 	 * Event handler that can be invoked whenever the open state changes.
 	 */
 	onOpenChange: (open: boolean, event?: Event, reason?: OpenChangeReason) => void;
+
 	/**
 	 * The reference and floating elements.
 	 */
@@ -102,6 +105,7 @@ export interface FloatingContext {
 		 * The reference element.
 		 */
 		reference: ReadableBox<ReferenceElement | null | undefined>;
+
 		/**
 		 * The floating element which is anchored to the reference element.
 		 */
