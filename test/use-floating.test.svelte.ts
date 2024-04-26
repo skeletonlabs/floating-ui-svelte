@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, waitFor } from '@testing-library/svelte';
-import { offset } from '@floating-ui/dom';
+import { offset } from '../src/lib/index.js';
 import Test from './Test.svelte';
 
 describe('useFloating', () => {
