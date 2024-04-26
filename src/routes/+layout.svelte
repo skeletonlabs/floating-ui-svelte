@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { fly } from 'svelte/transition';
+	// Stylesheets
 	import '../app.pcss';
 	// State
 	import { drawer } from '$lib/stores.svelte';
@@ -14,19 +16,29 @@
 		const elemTarget = event.target as HTMLElement;
 		if (elemTarget.hasAttribute('data-dismiss')) drawer.toggle();
 	}
+
+	function onWindowResize() {
+		if (drawer.value === true) drawer.close();
+	}
 </script>
+
+<!-- Window -->
+<svelte:window on:resize={onWindowResize} />
 
 <!-- Overlay: Drawer -->
 {#if drawer.value === true}
+	<!-- transition:fade={{ duration: 200 }} -->
 	<button
-		class="fixed top-0 left-0 right-0 bottom-0 z-50 bg-black/50"
+		class="fixed top-0 left-0 right-0 bottom-0 z-50"
 		onclick={onBackdropClick}
 		data-dismiss
+		transition:fly={{ x: '-288px', duration: 200 }}
 	>
-		<Navigation />
+		<Navigation classes="shadow-xl" />
 	</button>
 {/if}
 
+<!-- Layout -->
 <div>
 	<!-- Navigation -->
 	<Navigation classes="hidden lg:block " />

@@ -8,7 +8,8 @@ function createDrawer() {
 		get value() {
 			return value;
 		},
-		toggle: () => (value = !value)
+		toggle: () => (value = !value),
+		close: () => (value = false)
 	};
 }
 
