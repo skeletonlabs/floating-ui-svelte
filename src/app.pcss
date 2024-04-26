@@ -108,6 +108,13 @@ footer .anchor {
 	@apply text-sm text-emerald-500 dark:text-emerald-300;
 }
 
+/* Shiki Highlighting */
+html.dark .shiki,
+html.dark .shiki span {
+	color: var(--shiki-dark) !important;
+	background-color: var(--shiki-dark-bg) !important;
+}
+
 /* Keyboard */
 .kbd {
 	@apply text-sm bg-surface-50/50 dark:bg-surface-600 px-2 py-1 rounded;
@@ -133,12 +140,6 @@ footer .anchor {
 .btn-rose-sm {
 	@apply flex items-center gap-2;
 	@apply bg-rose-500 hover:bg-rose-600 text-white text-sm font-medium py-1 px-4 rounded shadow-lg;
-}
-
-/* Pre */
-.pre {
-	@apply bg-surface-100 dark:bg-surface-700 p-4 rounded-lg shadow text-sm;
-	@apply overflow-x-auto;
 }
 
 /* Cards */

@@ -7,9 +7,8 @@
 	import IconPopovers from 'lucide-svelte/icons/square-mouse-pointer';
 	import IconModals from 'lucide-svelte/icons/layers-2';
 	import IconContextMenus from 'lucide-svelte/icons/square-menu';
-	import IconBox from 'lucide-svelte/icons/box';
 	// Components
-	import Logo from '$lib/components/Logo/Logo.svelte';
+	import Logo from '$docs/components/Logo/Logo.svelte';
 
 	// Props
 	let { classes = '' } = $props();
