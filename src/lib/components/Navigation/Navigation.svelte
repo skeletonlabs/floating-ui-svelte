@@ -28,7 +28,6 @@
 		{ icon: IconModals, href: '/modals', label: 'Modals' },
 		{ icon: IconContextMenus, href: '/context-menus', label: 'Context Menus' }
 	];
-	const navDevOnly = [{ icon: IconBox, href: '/sandbox', label: 'Sandbox' }];
 </script>
 
 <div
@@ -64,22 +63,6 @@
 		<!-- Hooks -->
 		<ul>
 			{#each navHooks as link}
-				<li>
-					<a
-						href={link.href}
-						class="nav-link"
-						class:nav-active={$page.route.id === link.href}
-						onclick={() => drawer.close()}
-					>
-						<svelte:component this={link.icon} size={24} />
-						<span>{link.label}</span>
-					</a>
-				</li>
-			{/each}
-		</ul>
-		<!-- Dev Only -->
-		<ul>
-			{#each navDevOnly as link}
 				<li>
 					<a
 						href={link.href}
