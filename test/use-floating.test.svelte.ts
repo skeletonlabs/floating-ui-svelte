@@ -188,19 +188,22 @@ describe('useFloating', () => {
 			expect(floatingStyles.value).toContain('position: absolute');
 		}
 	);
-	it_in_effect('calls `whileElementsMounted` when `reference` and `floating` are mounted', async () => {
-		const whileElementsMounted = vi.fn();
+	it_in_effect(
+		'calls `whileElementsMounted` when `reference` and `floating` are mounted',
+		async () => {
+			const whileElementsMounted = vi.fn();
 
-		useFloating({
-			elements: {
-				reference: document.createElement('div'),
-				floating: document.createElement('div')
-			},
-			whileElementsMounted
-		});
+			useFloating({
+				elements: {
+					reference: document.createElement('div'),
+					floating: document.createElement('div')
+				},
+				whileElementsMounted
+			});
 
-		expect(whileElementsMounted).toHaveBeenCalledTimes(1);
-	});
+			expect(whileElementsMounted).toHaveBeenCalledTimes(1);
+		}
+	);
 	it_in_effect(
 		'calls `whileElementsMounted` with `floating`, `reference` and `update` as args',
 		async () => {
@@ -239,5 +242,21 @@ describe('useFloating', () => {
 		cleanup();
 
 		expect(whileElementsMountedCleanup).toHaveBeenCalledTimes(1);
+	});
+	it_in_effect('correctly assigns `middlewareData`', async () => {
+		const { middlewareData } = useFloating({
+			...test_config(),
+			middleware: [
+				{
+					name: 'test',
+					fn: () => ({ data: { content: 'Content' } })
+				}
+			]
+		});
+
+		// Give time for FloatingUI to calculate the new position
+		await sleep(100);
+
+		expect(middlewareData.value).toEqual({ test: { content: 'Content' } });
 	});
 });
