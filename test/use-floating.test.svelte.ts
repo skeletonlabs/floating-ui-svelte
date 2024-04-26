@@ -188,7 +188,7 @@ describe('useFloating', () => {
 			expect(floatingStyles.value).toContain('position: absolute');
 		}
 	);
-	it_in_effect('calls `whileElementsMounted` when reference and floating are mounted', async () => {
+	it_in_effect('calls `whileElementsMounted` when `reference` and `floating` are mounted', async () => {
 		const whileElementsMounted = vi.fn();
 
 		useFloating({
