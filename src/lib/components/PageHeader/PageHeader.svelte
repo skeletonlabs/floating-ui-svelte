@@ -11,7 +11,7 @@
 			<button type="button" class="inline-block lg:hidden" onclick={() => drawer.toggle()}>
 				<IconMenu />
 			</button>
-			<strong>Floating UI Svelte</strong>
+			<a href="/" class="font-bold">Floating UI Svelte</a>
 		</div>
 		<div class="flex items-center gap-4">
 			<a
@@ -23,7 +23,7 @@
 			</a>
 			<a
 				href="https://github.com/skeletonlabs/floating-ui-svelte/releases"
-				class="btn"
+				class="btn-rose-sm"
 				target="_blank"
 			>
 				v1.0.0

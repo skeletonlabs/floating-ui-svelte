@@ -113,12 +113,27 @@ footer .anchor {
 	@apply text-sm bg-surface-50/50 dark:bg-surface-600 px-2 py-1 rounded;
 }
 
-/* Button */
-.btn {
-	@apply bg-rose-500 hover:bg-rose-600 text-white text-sm py-1 px-4 rounded;
-}
-
 /* Utility Classes */
+
+/* hover:saturate-110 flex items-center gap-2 whitespace-nowrap rounded  px-4 py-3 font-bold text-gray-900 shadow-lg transition hover:shadow-xl hover:brightness-110 sm:text-lg */
+
+/* Buttons */
+.btn-cta {
+	@apply flex items-center gap-2;
+	@apply py-3 px-6 rounded shadow-lg;
+	@apply bg-gradient-to-br from-red-300 via-violet-300 to-cyan-400;
+	@apply text-black font-bold;
+}
+.btn-neutral {
+	@apply flex items-center gap-2;
+	@apply py-3 px-6 rounded shadow-lg;
+	@apply bg-neutral-950 hover:bg-neutral-900 dark:bg-surface-50 hover:dark:bg-surface-100;
+	@apply text-white dark:text-black font-bold;
+}
+.btn-rose-sm {
+	@apply flex items-center gap-2;
+	@apply bg-rose-500 hover:bg-rose-600 text-white text-sm font-medium py-1 px-4 rounded shadow-lg;
+}
 
 /* Pre */
 .pre {
