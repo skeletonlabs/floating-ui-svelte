@@ -157,3 +157,24 @@ footer .anchor {
 	-ms-overflow-style: none;
 	scrollbar-width: none;
 }
+
+/* Animations --- */
+
+.anim-float {
+	animation-name: animFloat;
+	animation-duration: 5s;
+	animation-iteration-count: infinite;
+	animation-timing-function: ease-in-out;
+}
+
+@keyframes animFloat {
+	0% {
+		transform: translateY(0px);
+	}
+	50% {
+		transform: translateY(15px);
+	}
+	100% {
+		transform: translateY(0px);
+	}
+}

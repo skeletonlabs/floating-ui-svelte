@@ -14,9 +14,20 @@
 			<strong>Floating UI Svelte</strong>
 		</div>
 		<div class="flex items-center gap-4">
-			<a href="https://github.com/skeletonlabs/floating-ui-svelte" class="hover:underline">GitHub</a
+			<a
+				href="https://github.com/skeletonlabs/floating-ui-svelte"
+				class="hover:underline"
+				target="_blank"
 			>
-			<a href="https://github.com/skeletonlabs/floating-ui-svelte" class="btn">v1.0.0</a>
+				GitHub
+			</a>
+			<a
+				href="https://github.com/skeletonlabs/floating-ui-svelte/releases"
+				class="btn"
+				target="_blank"
+			>
+				v1.0.0
+			</a>
 		</div>
 	</div>
 </header>

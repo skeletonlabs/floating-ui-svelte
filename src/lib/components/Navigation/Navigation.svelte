@@ -16,7 +16,7 @@
 	const navExternal = [
 		{
 			icon: IconStart,
-			href: 'https://github.com/skeletonlabs/floating-ui-svelte',
+			href: 'https://github.com/skeletonlabs/floating-ui-svelte?tab=readme-ov-file#floating-ui-svelte',
 			label: 'Getting Started'
 		}
 	];
@@ -36,7 +36,7 @@
 		class="light-nav-gradient dark:dark-nav-gradient flex aspect-square items-center justify-center backdrop-blur"
 	>
 		<svg
-			class="w-32 fill-black dark:fill-white"
+			class="w-32 fill-black dark:fill-white anim-float"
 			role="img"
 			viewBox="0 0 24 24"
 			xmlns="http://www.w3.org/2000/svg"
