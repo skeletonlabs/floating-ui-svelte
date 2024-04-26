@@ -25,14 +25,14 @@
 </script>
 
 <div
-	class="bg-surface-50 dark:bg-surface-800 dark:border-r dark:border-surface-700 fixed top-0 left-0 bottom-0 z-0 w-72 overflow-y-auto no-scrollbar"
+	class="hidden lg:block fixed bottom-0 left-0 top-0 z-0 w-72 overflow-y-auto bg-surface-50 dark:border-r dark:border-surface-700 dark:bg-surface-800 no-scrollbar"
 >
 	<!-- Nav Header -->
 	<header
-		class="light-nav-gradient dark:dark-nav-gradient aspect-square backdrop-blur flex justify-center items-center"
+		class="light-nav-gradient dark:dark-nav-gradient flex aspect-square items-center justify-center backdrop-blur"
 	>
 		<svg
-			class="fill-black dark:fill-white w-32"
+			class="w-32 fill-black dark:fill-white"
 			role="img"
 			viewBox="0 0 24 24"
 			xmlns="http://www.w3.org/2000/svg"
@@ -44,7 +44,7 @@
 		</svg>
 	</header>
 	<!-- Nav List -->
-	<nav class="p-4 py-8 pb-32 space-y-8">
+	<nav class="space-y-8 p-4 py-8 pb-32">
 		<ul>
 			{#each navExternal as link}
 				<li>
@@ -75,7 +75,7 @@
 
 <style lang="postcss">
 	.nav-link {
-		@apply grid grid-cols-[24px_1fr] gap-4 items-center hover:bg-surface-500/20 py-3 px-4 rounded-xl;
+		@apply grid grid-cols-[24px_1fr] items-center gap-4 rounded-xl px-4 py-3 hover:bg-surface-500/20;
 	}
 	.nav-active {
 		@apply bg-pink-400/10 text-pink-400 hover:bg-pink-400/20;
