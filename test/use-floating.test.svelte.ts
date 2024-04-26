@@ -243,7 +243,7 @@ describe('useFloating', () => {
 
 		expect(whileElementsMountedCleanup).toHaveBeenCalledTimes(1);
 	});
-	it_in_effect('correctly assigns `middlewareData`', async () => {
+	it_in_effect('correctly assigns `middlewareData` from `middleware`', async () => {
 		const { middlewareData } = useFloating({
 			...test_config(),
 			middleware: [
