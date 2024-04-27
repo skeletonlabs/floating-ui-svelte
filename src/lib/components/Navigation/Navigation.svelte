@@ -7,7 +7,6 @@
 	import IconPopovers from 'lucide-svelte/icons/square-mouse-pointer';
 	import IconModals from 'lucide-svelte/icons/layers-2';
 	import IconContextMenus from 'lucide-svelte/icons/square-menu';
-	import IconBox from 'lucide-svelte/icons/box';
 	// Components
 	import Logo from '$lib/components/Logo/Logo.svelte';
 
@@ -28,6 +27,9 @@
 		{ icon: IconModals, href: '/modals', label: 'Modals' },
 		{ icon: IconContextMenus, href: '/context-menus', label: 'Context Menus' }
 	];
+
+	// eslint-disable-next-line svelte/valid-compile
+	const navActive = (href: string) => $page.route.id == href;
 </script>
 
 <div
@@ -51,7 +53,7 @@
 						href={link.href}
 						target="_blank"
 						class="nav-link"
-						class:nav-active={$page.route.id === link.href}
+						class:nav-active={navActive(link.href)}
 						onclick={() => drawer.close()}
 					>
 						<svelte:component this={link.icon} size={24} />
