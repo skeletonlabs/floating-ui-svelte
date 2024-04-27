@@ -7,7 +7,7 @@ export default defineConfig({
 		include: ['test/**/*.{test,test.svelte}.{js,ts}'],
 		environment: 'jsdom',
 		coverage: {
-			reporter: ['html'],
+			reporter: ['html', 'text'],
 			include: ['src/lib/**/*.{js,ts}']
 		}
 	}
