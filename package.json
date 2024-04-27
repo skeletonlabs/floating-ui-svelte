@@ -5,15 +5,14 @@
 		"dev": "vite dev",
 		"preview": "vite preview",
 		"build": "pnpm build:docs && pnpm build:package",
-		"build:docs": "vite build",
-		"build:package": "svelte-package && publint",
+		"build:docs": "svelte-kit sync && vite build",
+		"build:package": "svelte-kit sync && svelte-package && publint",
 		"publish": "pnpm build:package && changeset publish",
 		"test": "vitest run",
 		"test:watch": "vitest run --watch",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
-		"check": "svelte-check --tsconfig ./tsconfig.json",
-		"sync": "sveltekit sync"
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
 	},
 	"exports": {
 		".": {
@@ -65,4 +64,6 @@
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"type": "module"
+}
+
 }
