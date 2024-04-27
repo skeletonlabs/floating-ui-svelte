@@ -11,7 +11,10 @@
 			A tooltip is a floating element that displays information related to an anchor element when it
 			receives keyboard focus or the mouse hovers over it.
 		</p>
-		<CodeBlock code={`import { useFloating } from '@skeletonlabs/floatin-ui-svelte';`} lang="typescript" />
+		<CodeBlock
+			code={`import { useFloating } from '@skeletonlabs/floatin-ui-svelte';`}
+			lang="typescript"
+		/>
 	</header>
 	<!-- Essentials -->
 	<section class="space-y-8">

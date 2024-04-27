@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { drawer } from '$lib/stores.svelte';
+	import { drawer } from '$docs/stores.svelte';
 	// Icons
 	import IconStart from 'lucide-svelte/icons/rocket';
 	import IconTooltips from 'lucide-svelte/icons/message-square';
