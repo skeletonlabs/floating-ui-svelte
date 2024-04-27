@@ -8,7 +8,7 @@ import type {
 
 export type Expand<T> = T extends infer U ? { [K in keyof U]: U[K] } : never;
 
-export interface UseFloatingOptions<T extends ReferenceElement = ReferenceElement> {
+export interface UseFloatingOptions {
 	/**
 	 * Represents the open/close state of the floating element.
 	 * @default true
@@ -48,14 +48,14 @@ export interface UseFloatingOptions<T extends ReferenceElement = ReferenceElemen
 	/**
 	 * The reference and floating elements.
 	 */
-	readonly elements?: FloatingElements<T>;
+	readonly elements?: FloatingElements;
 
 	/**
 	 * Callback to handle mounting/unmounting of the elements.
 	 * @default undefined
 	 */
 	readonly whileElementsMounted?: (
-		reference: T,
+		reference: ReferenceElement,
 		floating: FloatingElement,
 		update: () => void
 	) => () => void;
@@ -72,11 +72,11 @@ export type OpenChangeReason =
 	| 'list-navigation'
 	| 'safe-polygon';
 
-export type FloatingElements<T extends ReferenceElement = ReferenceElement> = {
+export type FloatingElements = {
 	/**
 	 * The reference element.
 	 */
-	readonly reference?: T | null;
+	readonly reference?: ReferenceElement | null;
 
 	/**
 	 * The floating element which is anchored to the reference element.

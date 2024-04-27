@@ -5,10 +5,10 @@ import type { Placement } from '@floating-ui/dom';
 import type { MiddlewareData, ReferenceElement } from '@floating-ui/dom';
 import { computePosition } from '@floating-ui/dom';
 
-class FloatingState<T extends ReferenceElement = ReferenceElement> {
-	readonly #options: UseFloatingOptions<T>;
+class FloatingState {
+	readonly #options: UseFloatingOptions;
 
-	constructor(options: UseFloatingOptions<T>) {
+	constructor(options: UseFloatingOptions) {
 		this.#options = options;
 		this.placement = this.placementOption;
 		this.strategy = this.strategyOption;
