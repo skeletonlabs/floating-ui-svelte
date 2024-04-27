@@ -1,13 +1,10 @@
 import type {
 	FloatingElement,
 	Middleware,
-	MiddlewareData,
 	Placement,
 	ReferenceElement,
 	Strategy
 } from '@floating-ui/dom';
-
-export type Getter<T> = () => T;
 
 export type Expand<T> = T extends infer U ? { [K in keyof U]: U[K] } : never;
 
@@ -51,17 +48,7 @@ export interface UseFloatingOptions<T extends ReferenceElement = ReferenceElemen
 	/**
 	 * The reference and floating elements.
 	 */
-	readonly elements?: {
-		/**
-		 * The reference element.
-		 */
-		readonly reference?: T | null;
-
-		/**
-		 * The floating element which is anchored to the reference element.
-		 */
-		readonly floating?: FloatingElement | null;
-	};
+	readonly elements?: FloatingElements<T>;
 
 	/**
 	 * Callback to handle mounting/unmounting of the elements.
@@ -74,7 +61,7 @@ export interface UseFloatingOptions<T extends ReferenceElement = ReferenceElemen
 	) => () => void;
 }
 
-type OpenChangeReason =
+export type OpenChangeReason =
 	| 'outside-press'
 	| 'escape-key'
 	| 'ancestor-scroll'
@@ -85,77 +72,14 @@ type OpenChangeReason =
 	| 'list-navigation'
 	| 'safe-polygon';
 
-export interface FloatingContext<T extends ReferenceElement = ReferenceElement> {
+export type FloatingElements<T extends ReferenceElement = ReferenceElement> = {
 	/**
-	 * Represents the open/close state of the floating element.
+	 * The reference element.
 	 */
-	readonly open: boolean;
+	readonly reference?: T | null;
 
 	/**
-	 * Event handler that can be invoked whenever the open state changes.
+	 * The floating element which is anchored to the reference element.
 	 */
-	readonly onOpenChange: (open: boolean, event?: Event, reason?: OpenChangeReason) => void;
-
-	/**
-	 * The reference and floating elements.
-	 */
-	readonly elements: {
-		/**
-		 * The reference element.
-		 */
-		readonly reference?: T | null;
-
-		/**
-		 * The floating element which is anchored to the reference element.
-		 */
-		readonly floating?: FloatingElement | null;
-	};
-}
-
-export interface UseFloatingReturn<T extends ReferenceElement = ReferenceElement> {
-	/**
-	 * The x-coord of the floating element.
-	 */
-	readonly x: number;
-
-	/**
-	 * The y-coord of the floating element.
-	 */
-	readonly y: number;
-
-	/**
-	 * The stateful placement, which can be different from the initial `placement` passed as options.
-	 */
-	readonly placement: Placement;
-
-	/**
-	 * The type of CSS position property to use.
-	 */
-	readonly strategy: Strategy;
-
-	/**
-	 * Additional data from middleware.
-	 */
-	readonly middlewareData: MiddlewareData;
-
-	/**
-	 * The boolean that let you know if the floating element has been positioned.
-	 */
-	readonly isPositioned: boolean;
-
-	/**
-	 * CSS styles to apply to the floating element to position it.
-	 */
-	readonly floatingStyles: string;
-
-	/**
-	 * The function to update floating position manually.
-	 */
-	readonly update: () => void;
-
-	/**
-	 * Context object containing internal logic to alter the behavior of the floating element.
-	 * Commonly used to inject into others hooks.
-	 */
-	readonly context: FloatingContext<T>;
-}
+	readonly floating?: FloatingElement | null;
+};
