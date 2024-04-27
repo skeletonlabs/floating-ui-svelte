@@ -5,6 +5,10 @@ export default defineConfig({
 	plugins: [sveltekit()],
 	test: {
 		include: ['test/**/*.{test,test.svelte}.{js,ts}'],
-		environment: 'jsdom'
+		environment: 'jsdom',
+		coverage: {
+			reporter: ['html'],
+			include: ['src/lib/**/*.{js,ts}']
+		}
 	}
 });

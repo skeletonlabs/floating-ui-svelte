@@ -1,5 +1,5 @@
-import { describe, expect } from 'vitest';
-import { it_in_effect, sleep } from './util.svelte.js';
+import { describe, expect, vi, it } from 'vitest';
+import { it_in_effect } from './util.svelte.js';
 import {
 	offset,
 	useFloating,
@@ -9,9 +9,6 @@ import {
 	type UseFloatingOptions,
 	Strategy
 } from '../src/lib/index.js';
-import { tick } from 'svelte';
-import { vi } from 'vitest';
-import { it } from 'vitest';
 
 describe('useFloating', () => {
 	function test_config(): Partial<UseFloatingOptions> {
@@ -33,19 +30,17 @@ describe('useFloating', () => {
 			}
 		});
 
-		// Give time for FloatingUI to calculate the new position
-		await sleep(100);
-
-		expect(x.value).toBe(0);
-		expect(y.value).toBe(0);
+		await vi.waitFor(() => {
+			expect(x.value).toBe(0);
+			expect(y.value).toBe(0);
+		});
 
 		middleware.push(offset(5));
 
-		// Give time for FloatingUI to calculate the new position
-		await sleep(100);
-
-		expect(x.value).toBe(0);
-		expect(y.value).toBe(5);
+		await vi.waitFor(() => {
+			expect(x.value).toBe(0);
+			expect(y.value).toBe(5);
+		});
 	});
 	it_in_effect('updates floating coordinates on placement change', async () => {
 		let placement: Placement = $state('bottom');
@@ -58,19 +53,17 @@ describe('useFloating', () => {
 			}
 		});
 
-		// Give time for FloatingUI to calculate the new position
-		await sleep(100);
-
-		expect(x.value).toBe(0);
-		expect(y.value).toBe(5);
+		await vi.waitFor(() => {
+			expect(x.value).toBe(0);
+			expect(y.value).toBe(5);
+		});
 
 		placement = 'top';
 
-		// Give time for FloatingUI to calculate the new position
-		await sleep(100);
-
-		expect(x.value).toBe(0);
-		expect(y.value).toBe(-5);
+		await vi.waitFor(() => {
+			expect(x.value).toBe(0);
+			expect(y.value).toBe(-5);
+		});
 	});
 	it_in_effect('updates `floatingStyles` on strategy change', async () => {
 		let strategy: Strategy = $state('absolute');
@@ -82,17 +75,15 @@ describe('useFloating', () => {
 			}
 		});
 
-		// Give time for FloatingUI to calculate the new position
-		await sleep(100);
-
-		expect(floatingStyles.value).toContain('position: absolute');
+		await vi.waitFor(() => {
+			expect(floatingStyles.value).toContain('position: absolute');
+		});
 
 		strategy = 'fixed';
 
-		// Give time for FloatingUI to calculate the new position
-		await sleep(100);
-
-		expect(floatingStyles.value).toContain('position: fixed');
+		await vi.waitFor(() => {
+			expect(floatingStyles.value).toContain('position: fixed');
+		});
 	});
 	it_in_effect('updates `isPositioned` when position is computed', async () => {
 		const { x, y, isPositioned } = useFloating({
@@ -104,12 +95,11 @@ describe('useFloating', () => {
 		expect(y.value).toBe(0);
 		expect(isPositioned.value).toBe(false);
 
-		// Give time for FloatingUI to calculate the new position
-		await sleep(100);
-
-		expect(x.value).toBe(0);
-		expect(y.value).toBe(5);
-		expect(isPositioned.value).toBe(true);
+		await vi.waitFor(() => {
+			expect(x.value).toBe(0);
+			expect(y.value).toBe(5);
+			expect(isPositioned.value).toBe(true);
+		});
 	});
 	it_in_effect('updates `isPositioned` to `false` when `open` is set to `false`', async () => {
 		let open = $state(true);
@@ -123,17 +113,15 @@ describe('useFloating', () => {
 
 		expect(isPositioned.value).toBe(false);
 
-		// Give time for FloatingUI to calculate the new position
-		await sleep(100);
-
-		expect(isPositioned.value).toBe(true);
+		await vi.waitFor(() => {
+			expect(isPositioned.value).toBe(true);
+		});
 
 		open = false;
 
-		// Let Svelte flush all updates
-		await tick();
-
-		expect(isPositioned.value).toBe(false);
+		await vi.waitFor(() => {
+			expect(isPositioned.value).toBe(false);
+		});
 	});
 	it_in_effect(
 		'fallbacks to default (`bottom`) when `placement` is set to `undefined`',
@@ -148,19 +136,17 @@ describe('useFloating', () => {
 				}
 			});
 
-			// Give time for FloatingUI to calculate the new position
-			await sleep(100);
-
-			expect(x.value).toBe(0);
-			expect(y.value).toBe(-5);
+			await vi.waitFor(() => {
+				expect(x.value).toBe(0);
+				expect(y.value).toBe(-5);
+			});
 
 			placement = undefined;
 
-			// Give time for FloatingUI to calculate the new position
-			await sleep(100);
-
-			expect(x.value).toBe(0);
-			expect(y.value).toBe(5);
+			await vi.waitFor(() => {
+				expect(x.value).toBe(0);
+				expect(y.value).toBe(5);
+			});
 		}
 	);
 	it_in_effect(
@@ -175,17 +161,15 @@ describe('useFloating', () => {
 				}
 			});
 
-			// Give time for FloatingUI to calculate the new position
-			await sleep(100);
-
-			expect(floatingStyles.value).toContain('position: fixed');
+			await vi.waitFor(() => {
+				expect(floatingStyles.value).toContain('position: fixed');
+			});
 
 			strategy = undefined;
 
-			// Give time for FloatingUI to calculate the new position
-			await sleep(100);
-
-			expect(floatingStyles.value).toContain('position: absolute');
+			await vi.waitFor(() => {
+				expect(floatingStyles.value).toContain('position: absolute');
+			});
 		}
 	);
 	it_in_effect(
@@ -254,9 +238,8 @@ describe('useFloating', () => {
 			]
 		});
 
-		// Give time for FloatingUI to calculate the new position
-		await sleep(100);
-
-		expect(middlewareData.value).toEqual({ test: { content: 'Content' } });
+		await vi.waitFor(() => {
+			expect(middlewareData.value).toEqual({ test: { content: 'Content' } });
+		});
 	});
 });

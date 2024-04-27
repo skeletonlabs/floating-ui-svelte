@@ -8,8 +8,8 @@
 		"build:docs": "svelte-kit sync && vite build",
 		"build:package": "svelte-package && publint",
 		"publish": "pnpm build:package && changeset publish",
-		"test": "vitest run",
-		"test:watch": "vitest run --watch",
+		"test": "vitest run --coverage",
+		"test:watch": "vitest run --coverage --watch",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
@@ -32,7 +32,6 @@
 		"svelte": "^5.0.0-next.1"
 	},
 	"devDependencies": {
-		"lucide-svelte": "^0.373.0",
 		"@changesets/cli": "^2.27.1",
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/kit": "^2.0.0",
@@ -42,11 +41,13 @@
 		"@types/eslint": "^8.56.0",
 		"@typescript-eslint/eslint-plugin": "^7.0.0",
 		"@typescript-eslint/parser": "^7.0.0",
+		"@vitest/coverage-v8": "^1.5.2",
 		"autoprefixer": "^10.4.16",
 		"eslint": "^8.56.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.36.0-next.4",
 		"jsdom": "^24.0.0",
+		"lucide-svelte": "^0.373.0",
 		"postcss": "^8.4.32",
 		"postcss-load-config": "^5.0.2",
 		"prettier": "^3.1.1",
