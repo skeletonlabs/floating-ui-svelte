@@ -168,8 +168,6 @@ export class UseFloatingReturn<T extends ReferenceElement = ReferenceElement> {
 
 /**
  * Hook for managing floating elements.
- * Aims to keep as much parity with `@floating-ui/react` as possible.
- * For now see: https://floating-ui.com/docs/useFloating for API documentation.
  */
 export function useFloating<T extends ReferenceElement = ReferenceElement>(
 	options: UseFloatingOptions<T> = {}
