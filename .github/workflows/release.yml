@@ -9,7 +9,7 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 env:
   node_version: 20
-  pnpm_version: 9
+  pnpm_version: 8
 
 jobs:
   release:
