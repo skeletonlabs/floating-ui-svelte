@@ -51,7 +51,7 @@
 			code={`
 import { useFloating } from '@skeletonlabs/floating-ui-svelte';
 
-// TBD`.trim()}
+// TBD`}
 			lang="typescript"
 		/>
 

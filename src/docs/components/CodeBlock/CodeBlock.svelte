@@ -12,7 +12,8 @@
 	let { code, lang = 'text' }: Props = $props();
 
 	const html = $derived(
-		$page.data.highlighter.codeToHtml(code, {
+		// eslint-disable-next-line svelte/valid-compile
+		$page.data.highlighter.codeToHtml(code.trim(), {
 			lang,
 			themes: {
 				// @ts-expect-error - Shiki theme type is annoyingly strict
@@ -24,13 +25,11 @@
 	);
 </script>
 
-<div class="codeblock contents">
-	<!-- svelte-ignore svelte/no-at-html-tags-->
-	{@html html}
-</div>
+<!-- svelte-ignore svelte/no-at-html-tags-->
+{@html html}
 
 <style lang="postcss">
-	.codeblock :global(pre) {
-		@apply p-4 rounded-md text-sm;
+	:global(.shiki) {
+		@apply p-4 text-sm rounded-md whitespace-pre-wrap;
 	}
 </style>
