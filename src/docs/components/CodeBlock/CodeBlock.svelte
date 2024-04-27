@@ -25,11 +25,13 @@
 	);
 </script>
 
-<!-- svelte-ignore svelte/no-at-html-tags-->
+<!-- eslint-disable svelte/no-at-html-tags -->
 {@html html}
 
+<!-- eslint-enable svelte/no-at-html-tags -->
+
 <style lang="postcss">
-	:global(.shiki) {
+	:global(pre.shiki) {
 		@apply p-4 text-sm rounded-md whitespace-pre-wrap;
 	}
 </style>
