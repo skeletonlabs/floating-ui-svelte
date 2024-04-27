@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { version } from '$app/environment';
 	import { drawer } from '$docs/stores.svelte';
 
 	// Icons
@@ -26,7 +27,7 @@
 				class="btn-rose-sm"
 				target="_blank"
 			>
-				v1.0.0
+				v{version}
 			</a>
 		</div>
 	</div>
