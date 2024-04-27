@@ -1,4 +1,3 @@
-import type { ReadableBox } from '$lib/box.svelte.js';
 import type {
 	FloatingElement,
 	Middleware,
@@ -17,58 +16,58 @@ export interface UseFloatingOptions<T extends ReferenceElement = ReferenceElemen
 	 * Represents the open/close state of the floating element.
 	 * @default true
 	 */
-	open?: boolean;
+	readonly open?: boolean;
 
 	/**
 	 * Event handler that can be invoked whenever the open state changes.
 	 */
-	onOpenChange?: (open: boolean, event?: Event, reason?: OpenChangeReason) => void;
+	readonly onOpenChange?: (open: boolean, event?: Event, reason?: OpenChangeReason) => void;
 
 	/**
 	 * Where to place the floating element relative to its reference element.
 	 * @default 'bottom'
 	 */
-	placement?: Placement;
+	readonly placement?: Placement;
 
 	/**
 	 * The type of CSS position property to use.
 	 * @default 'absolute'
 	 */
-	strategy?: Strategy;
+	readonly strategy?: Strategy;
 
 	/**
 	 * These are plain objects that modify the positioning coordinates in some fashion, or provide useful data for the consumer to use.
 	 * @default undefined
 	 */
-	middleware?: Array<Middleware | undefined | null | false>;
+	readonly middleware?: Array<Middleware | undefined | null | false>;
 
 	/**
 	 * Whether to use `transform` instead of `top` and `left` styles to
 	 * position the floating element (`floatingStyles`).
 	 * @default true
 	 */
-	transform?: boolean;
+	readonly transform?: boolean;
 
 	/**
 	 * The reference and floating elements.
 	 */
-	elements?: {
+	readonly elements?: {
 		/**
 		 * The reference element.
 		 */
-		reference?: T | null;
+		readonly reference?: T | null;
 
 		/**
 		 * The floating element which is anchored to the reference element.
 		 */
-		floating?: FloatingElement | null;
+		readonly floating?: FloatingElement | null;
 	};
 
 	/**
 	 * Callback to handle mounting/unmounting of the elements.
 	 * @default undefined
 	 */
-	whileElementsMounted?: (
+	readonly whileElementsMounted?: (
 		reference: T,
 		floating: FloatingElement,
 		update: () => void
@@ -86,77 +85,77 @@ type OpenChangeReason =
 	| 'list-navigation'
 	| 'safe-polygon';
 
-export interface FloatingContext {
+export interface FloatingContext<T extends ReferenceElement = ReferenceElement> {
 	/**
 	 * Represents the open/close state of the floating element.
 	 */
-	open: ReadableBox<boolean>;
+	readonly open: boolean;
 
 	/**
 	 * Event handler that can be invoked whenever the open state changes.
 	 */
-	onOpenChange: (open: boolean, event?: Event, reason?: OpenChangeReason) => void;
+	readonly onOpenChange: (open: boolean, event?: Event, reason?: OpenChangeReason) => void;
 
 	/**
 	 * The reference and floating elements.
 	 */
-	elements: {
+	readonly elements: {
 		/**
 		 * The reference element.
 		 */
-		reference: ReadableBox<ReferenceElement | null | undefined>;
+		readonly reference?: T | null;
 
 		/**
 		 * The floating element which is anchored to the reference element.
 		 */
-		floating: ReadableBox<ReferenceElement | null | undefined>;
+		readonly floating?: FloatingElement | null;
 	};
 }
 
-export interface UseFloatingReturn {
+export interface UseFloatingReturn<T extends ReferenceElement = ReferenceElement> {
 	/**
 	 * The x-coord of the floating element.
 	 */
-	x: ReadableBox<number>;
+	readonly x: number;
 
 	/**
 	 * The y-coord of the floating element.
 	 */
-	y: ReadableBox<number>;
+	readonly y: number;
 
 	/**
 	 * The stateful placement, which can be different from the initial `placement` passed as options.
 	 */
-	placement: ReadableBox<Placement>;
+	readonly placement: Placement;
 
 	/**
 	 * The type of CSS position property to use.
 	 */
-	strategy: ReadableBox<Strategy>;
+	readonly strategy: Strategy;
 
 	/**
 	 * Additional data from middleware.
 	 */
-	middlewareData: ReadableBox<MiddlewareData>;
+	readonly middlewareData: MiddlewareData;
 
 	/**
 	 * The boolean that let you know if the floating element has been positioned.
 	 */
-	isPositioned: ReadableBox<boolean>;
+	readonly isPositioned: boolean;
 
 	/**
 	 * CSS styles to apply to the floating element to position it.
 	 */
-	floatingStyles: ReadableBox<string>;
+	readonly floatingStyles: string;
 
 	/**
 	 * The function to update floating position manually.
 	 */
-	update: () => void;
+	readonly update: () => void;
 
 	/**
 	 * Context object containing internal logic to alter the behavior of the floating element.
 	 * Commonly used to inject into others hooks.
 	 */
-	context: FloatingContext;
+	readonly context: FloatingContext<T>;
 }
