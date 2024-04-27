@@ -109,7 +109,7 @@ export interface FloatingContext {
 		/**
 		 * The floating element which is anchored to the reference element.
 		 */
-		floating: ReadableBox<ReferenceElement | null | undefined>;
+		floating: ReadableBox<FloatingElement | null | undefined>;
 	};
 }
 
