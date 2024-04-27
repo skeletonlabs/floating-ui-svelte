@@ -13,3 +13,5 @@ export async function load() {
 		highlighter
 	};
 }
+
+export const prerender = true;
