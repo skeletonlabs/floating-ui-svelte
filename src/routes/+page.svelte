@@ -1,6 +1,6 @@
 <script lang="ts">
 	import IconArrowRight from 'lucide-svelte/icons/arrow-right';
-	import Logo from '$lib/components/Logo/Logo.svelte';
+	import Logo from '$docs/components/Logo/Logo.svelte';
 </script>
 
 <div class="space-y-10">

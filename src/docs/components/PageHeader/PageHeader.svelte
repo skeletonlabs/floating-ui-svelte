@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { drawer } from '$lib/stores.svelte';
+	import { drawer } from '$docs/stores.svelte';
 
 	// Icons
 	import IconMenu from 'lucide-svelte/icons/menu';
