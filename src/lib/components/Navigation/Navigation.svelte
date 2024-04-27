@@ -28,6 +28,7 @@
 		{ icon: IconContextMenus, href: '/context-menus', label: 'Context Menus' }
 	];
 
+	// FIXME: Remove when Svelte 5 supports $page, see: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
 	// eslint-disable-next-line svelte/valid-compile
 	const navActive = (href: string) => $page.route.id == href;
 </script>
