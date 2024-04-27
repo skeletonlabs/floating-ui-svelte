@@ -5,7 +5,7 @@ on:
 
 env:
   node_version: 20
-  pnpm_version: 8
+  pnpm_version: 9
 
 jobs:
   format:
