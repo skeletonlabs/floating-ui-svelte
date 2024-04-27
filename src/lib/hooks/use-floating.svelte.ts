@@ -57,15 +57,8 @@ export function useFloating<T extends ReferenceElement = ReferenceElement>(
 		});
 	});
 
-	let whileElementsMountedCleanup: (() => void) | undefined;
-
 	function update() {
-		if (
-			referenceElement.value === null ||
-			referenceElement.value === undefined ||
-			floatingElement.value === null ||
-			floatingElement.value === undefined
-		) {
+		if (referenceElement.value == null || floatingElement.value == null) {
 			return;
 		}
 
@@ -84,20 +77,13 @@ export function useFloating<T extends ReferenceElement = ReferenceElement>(
 	}
 
 	function attach() {
-		cleanup();
-
 		if (whileElementsMountedOption === undefined) {
 			update();
 			return;
 		}
 
 		if (referenceElement.value != null && floatingElement.value != null) {
-			whileElementsMountedCleanup = whileElementsMountedOption(
-				referenceElement.value,
-				floatingElement.value,
-				update
-			);
-			return;
+			return whileElementsMountedOption(referenceElement.value, floatingElement.value, update);
 		}
 	}
 
@@ -107,17 +93,9 @@ export function useFloating<T extends ReferenceElement = ReferenceElement>(
 		}
 	}
 
-	function cleanup() {
-		if (typeof whileElementsMountedCleanup === 'function') {
-			whileElementsMountedCleanup();
-			whileElementsMountedCleanup = undefined;
-		}
-	}
-
 	$effect.pre(update);
 	$effect.pre(attach);
 	$effect.pre(reset);
-	$effect(() => cleanup);
 
 	return {
 		x: box.readonly(x),
