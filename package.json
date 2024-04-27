@@ -5,14 +5,15 @@
 		"dev": "vite dev",
 		"preview": "vite preview",
 		"build": "pnpm build:docs && pnpm build:package",
-		"build:docs": "svelte-kit sync && vite build",
+		"build:docs": "vite build",
 		"build:package": "svelte-package && publint",
 		"publish": "pnpm build:package && changeset publish",
 		"test": "vitest run",
 		"test:watch": "vitest run --watch",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+		"check": "svelte-check --tsconfig ./tsconfig.json",
+		"sync": "sveltekit sync"
 	},
 	"exports": {
 		".": {

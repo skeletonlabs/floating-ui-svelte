@@ -82,6 +82,8 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install
+      - name: Sync sveltekit
+        run: pnpm check
       - name: Build docs
         run: pnpm build:docs
   build-package:
@@ -98,5 +100,7 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install
+      - name: Sync sveltekit
+        run: pnpm check
       - name: Build package
         run: pnpm build:package
