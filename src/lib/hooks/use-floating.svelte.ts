@@ -60,10 +60,10 @@ class FloatingState {
 	});
 }
 
-export class FloatingContext<T extends ReferenceElement = ReferenceElement> {
-	readonly #state: FloatingState<T>;
+export class FloatingContext {
+	readonly #state: FloatingState;
 
-	constructor(state: FloatingState<T>) {
+	constructor(state: FloatingState) {
 		this.#state = state;
 	}
 
@@ -85,17 +85,17 @@ export class FloatingContext<T extends ReferenceElement = ReferenceElement> {
 	/**
 	 * The reference and floating elements.
 	 */
-	get elements(): FloatingElements<T> {
+	get elements(): FloatingElements {
 		return this.#state.elements;
 	}
 }
 
-export class UseFloatingReturn<T extends ReferenceElement = ReferenceElement> {
-	readonly #state: FloatingState<T>;
-	readonly #context: FloatingContext<T>;
+export class UseFloatingReturn {
+	readonly #state: FloatingState;
+	readonly #context: FloatingContext;
 	readonly #update: () => void;
 
-	constructor(state: FloatingState<T>, update: () => void) {
+	constructor(state: FloatingState, update: () => void) {
 		this.#state = state;
 		this.#context = new FloatingContext(state);
 		this.#update = update;
@@ -161,7 +161,7 @@ export class UseFloatingReturn<T extends ReferenceElement = ReferenceElement> {
 	 * Context object containing internal logic to alter the behavior of the floating element.
 	 * Commonly used to inject into others hooks.
 	 */
-	get context(): FloatingContext<T> {
+	get context(): FloatingContext {
 		return this.#context;
 	}
 }
@@ -169,9 +169,7 @@ export class UseFloatingReturn<T extends ReferenceElement = ReferenceElement> {
 /**
  * Hook for managing floating elements.
  */
-export function useFloating<T extends ReferenceElement = ReferenceElement>(
-	options: UseFloatingOptions<T> = {}
-): UseFloatingReturn<T> {
+export function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 	const state = new FloatingState(options);
 
 	function update() {
