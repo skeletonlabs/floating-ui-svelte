@@ -34,7 +34,7 @@ describe('useFloating', () => {
 	it_in_effect('updates floating coordinates on middleware change', async () => {
 		const middleware: Middleware[] = $state([]);
 
-		const { x, y } = useFloating({
+		const floating = useFloating({
 			...test_config(),
 			get middleware() {
 				return middleware;
@@ -42,21 +42,21 @@ describe('useFloating', () => {
 		});
 
 		await vi.waitFor(() => {
-			expect(x.value).toBe(0);
-			expect(y.value).toBe(0);
+			expect(floating.x).toBe(0);
+			expect(floating.y).toBe(0);
 		});
 
 		middleware.push(offset(5));
 
 		await vi.waitFor(() => {
-			expect(x.value).toBe(0);
-			expect(y.value).toBe(5);
+			expect(floating.x).toBe(0);
+			expect(floating.y).toBe(5);
 		});
 	});
 	it_in_effect('updates floating coordinates on placement change', async () => {
 		let placement: Placement = $state('bottom');
 
-		const { x, y } = useFloating({
+		const floating = useFloating({
 			...test_config(),
 			middleware: [offset(5)],
 			get placement() {
@@ -65,21 +65,21 @@ describe('useFloating', () => {
 		});
 
 		await vi.waitFor(() => {
-			expect(x.value).toBe(0);
-			expect(y.value).toBe(5);
+			expect(floating.x).toBe(0);
+			expect(floating.y).toBe(5);
 		});
 
 		placement = 'top';
 
 		await vi.waitFor(() => {
-			expect(x.value).toBe(0);
-			expect(y.value).toBe(-5);
+			expect(floating.x).toBe(0);
+			expect(floating.y).toBe(-5);
 		});
 	});
 	it_in_effect('updates `floatingStyles` on strategy change', async () => {
 		let strategy: Strategy = $state('absolute');
 
-		const { floatingStyles } = useFloating({
+		const floating = useFloating({
 			...test_config(),
 			get strategy() {
 				return strategy;
@@ -87,51 +87,51 @@ describe('useFloating', () => {
 		});
 
 		await vi.waitFor(() => {
-			expect(floatingStyles.value).toContain('position: absolute');
+			expect(floating.floatingStyles).toContain('position: absolute');
 		});
 
 		strategy = 'fixed';
 
 		await vi.waitFor(() => {
-			expect(floatingStyles.value).toContain('position: fixed');
+			expect(floating.floatingStyles).toContain('position: fixed');
 		});
 	});
 	it_in_effect('updates `isPositioned` when position is computed', async () => {
-		const { x, y, isPositioned } = useFloating({
+		const floating = useFloating({
 			...test_config(),
 			middleware: [offset(5)]
 		});
 
-		expect(x.value).toBe(0);
-		expect(y.value).toBe(0);
-		expect(isPositioned.value).toBe(false);
+		expect(floating.x).toBe(0);
+		expect(floating.y).toBe(0);
+		expect(floating.isPositioned).toBe(false);
 
 		await vi.waitFor(() => {
-			expect(x.value).toBe(0);
-			expect(y.value).toBe(5);
-			expect(isPositioned.value).toBe(true);
+			expect(floating.x).toBe(0);
+			expect(floating.y).toBe(5);
+			expect(floating.isPositioned).toBe(true);
 		});
 	});
 	it_in_effect('updates `isPositioned` to `false` when `open` is set to `false`', async () => {
 		let open = $state(true);
 
-		const { isPositioned } = useFloating({
+		const floating = useFloating({
 			...test_config(),
 			get open() {
 				return open;
 			}
 		});
 
-		expect(isPositioned.value).toBe(false);
+		expect(floating.isPositioned).toBe(false);
 
 		await vi.waitFor(() => {
-			expect(isPositioned.value).toBe(true);
+			expect(floating.isPositioned).toBe(true);
 		});
 
 		open = false;
 
 		await vi.waitFor(() => {
-			expect(isPositioned.value).toBe(false);
+			expect(floating.isPositioned).toBe(false);
 		});
 	});
 	it_in_effect(
@@ -139,7 +139,7 @@ describe('useFloating', () => {
 		async () => {
 			let placement: Placement | undefined = $state('top');
 
-			const { x, y } = useFloating({
+			const floating = useFloating({
 				...test_config(),
 				middleware: [offset(5)],
 				get placement() {
@@ -148,15 +148,15 @@ describe('useFloating', () => {
 			});
 
 			await vi.waitFor(() => {
-				expect(x.value).toBe(0);
-				expect(y.value).toBe(-5);
+				expect(floating.x).toBe(0);
+				expect(floating.y).toBe(-5);
 			});
 
 			placement = undefined;
 
 			await vi.waitFor(() => {
-				expect(x.value).toBe(0);
-				expect(y.value).toBe(5);
+				expect(floating.x).toBe(0);
+				expect(floating.y).toBe(5);
 			});
 		}
 	);
@@ -165,7 +165,7 @@ describe('useFloating', () => {
 		async () => {
 			let strategy: Strategy | undefined = $state('fixed');
 
-			const { floatingStyles } = useFloating({
+			const floating = useFloating({
 				...test_config(),
 				get strategy() {
 					return strategy;
@@ -173,13 +173,13 @@ describe('useFloating', () => {
 			});
 
 			await vi.waitFor(() => {
-				expect(floatingStyles.value).toContain('position: fixed');
+				expect(floating.floatingStyles).toContain('position: fixed');
 			});
 
 			strategy = undefined;
 
 			await vi.waitFor(() => {
-				expect(floatingStyles.value).toContain('position: absolute');
+				expect(floating.floatingStyles).toContain('position: absolute');
 			});
 		}
 	);
@@ -239,7 +239,7 @@ describe('useFloating', () => {
 		expect(whileElementsMountedCleanup).toHaveBeenCalledTimes(1);
 	});
 	it_in_effect('correctly assigns `middlewareData` from `middleware`', async () => {
-		const { middlewareData } = useFloating({
+		const floating = useFloating({
 			...test_config(),
 			middleware: [
 				{
@@ -250,7 +250,7 @@ describe('useFloating', () => {
 		});
 
 		await vi.waitFor(() => {
-			expect(middlewareData.value).toEqual({ test: { content: 'Content' } });
+			expect(floating.middlewareData).toEqual({ test: { content: 'Content' } });
 		});
 	});
 });
