@@ -6,45 +6,69 @@ A Floating UI wrapper for Svelte.
 
 This project is maintained by [Hugo Korte](https://github.com/Hugos68), [Skeleton Labs](https://www.skeletonlabs.co/), and the [Svelte](https://svelte.dev/) community. Based on the amazing work by [Floating UI](https://github.com/floating-ui/floating-ui).
 
-## Contributing
+## Installation
 
-### Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Install the package using your preferred package manager.
 
 ```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+npm add @skeletonlabs/floating-ui-svelte
+# pnpm add @skeletonlabs/floating-ui-svelte
+# yarn add @skeletonlabs/floating-ui-svelte
+# bun add @skeletonlabs/floating-ui-svelte
 ```
 
-Everything inside `src/lib` is part of your library, everything inside `src/routes` can be used as a showcase or preview app.
+## Usage
 
-### Building
+Import the desired hook or component from floating-ui-svelte, for example:
 
-To build your library:
+```js
+import { useFloating, type UseFloatingOptions } from '@skeletonlabs/floating-ui-svelte';
 
-```bash
-npm run package
+const options: UseFloatingOptions = { ... };
+
+const floating = useFloating(options);
 ```
 
-To create a production version of your showcase app:
+## API
 
-```bash
-npm run build
+### `useFloating`
+
+The `useFloating` hook takes care of positioning your floating UI elements (tooltips, popovers, etc.) relative to another element.
+It automatically calculates the best placement and updates it as needed, giving you properties to access the position and styles.
+
+#### Import
+
+```js
+import { useFloating } from '@skeletonlabs/floating-ui-svelte';
 ```
 
-You can preview the production build with `npm run preview`.
+#### Options
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+| Property             | Description                                                                                                                      | Type                                                                                       | Default Value |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------- |
+| open                 | Represents the open/close state of the floating element.                                                                         | boolean                                                                                    | true          |
+| onOpenChange         | Event handler that can be invoked whenever the open state changes.                                                               | (open: boolean, event?: Event, reason?: OpenChangeReason) => void                          | -             |
+| placement            | Where to place the floating element relative to its reference element.                                                           | Placement                                                                                  | 'bottom'      |
+| strategy             | The type of CSS position property to use.                                                                                        | Strategy                                                                                   | 'absolute'    |
+| middleware           | These are plain objects that modify the positioning coordinates in some fashion, or provide useful data for the consumer to use. | Array<Middleware \| undefined \| null \| false>                                            | undefined     |
+| transform            | Whether to use `transform` instead of `top` and `left` styles to position the floating element (`floatingStyles`).               | boolean                                                                                    | true          |
+| elements             | The reference and floating elements.                                                                                             | FloatingElements                                                                           | -             |
+| whileElementsMounted | Callback to handle mounting/unmounting of the elements.                                                                          | (reference: ReferenceElement, floating: FloatingElement, update: () => void) => () => void | -             |
 
-### Publishing
+#### Return
 
-Go into the `package.json` and give your package the desired name through the `"name"` option. Also consider adding a `"license"` field and point it to a `LICENSE` file which you can create from a template (one popular option is the [MIT license](https://opensource.org/license/mit/)).
+| Property       | Description                                                                                    | Type            |
+| -------------- | ---------------------------------------------------------------------------------------------- | --------------- |
+| x              | The x-coord of the floating element.                                                           | number          |
+| y              | The y-coord of the floating element.                                                           | number          |
+| placement      | The stateful placement, which can be different from the initial `placement` passed as options. | Placement       |
+| strategy       | The stateful strategy, which can be different from the initial `strategy` passed as options.   | Strategy        |
+| middlewareData | Additional data from middleware.                                                               | MiddlewareData  |
+| isPositioned   | The boolean that let you know if the floating element has been positioned.                     | boolean         |
+| floatingStyles | CSS styles to apply to the floating element to position it.                                    | string          |
+| update         | The function to update floating position manually.                                             | () => void      |
+| context        | Context object containing internal logic to alter the behavior of the floating element.        | FloatingContext |
 
-To publish your library to [npm](https://www.npmjs.com):
+## License
 
-```bash
-npm publish
-```
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
