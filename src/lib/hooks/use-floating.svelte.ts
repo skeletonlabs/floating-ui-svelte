@@ -2,7 +2,7 @@ import type { FloatingElements, OpenChangeReason, UseFloatingOptions } from '$li
 import { getDPR, noop, roundByDPR, styleObjectToString } from '$lib/utils.js';
 import type { Strategy } from '@floating-ui/dom';
 import type { Placement } from '@floating-ui/dom';
-import type { MiddlewareData, ReferenceElement } from '@floating-ui/dom';
+import type { MiddlewareData } from '@floating-ui/dom';
 import { computePosition } from '@floating-ui/dom';
 
 class FloatingState {
