@@ -116,7 +116,7 @@ describe('useFloating', () => {
 			expect(floating.floatingStyles).toContain('transform: translate(0px, 0px)');
 		});
 	});
-	it_in_effect('updates `floatingStyles` accordingly when DPR >= 1.5', async () => {
+	it_in_effect('updates `floatingStyles` on DPR change.', async () => {
 		window.devicePixelRatio = 1;
 
 		const floating = useFloating({
