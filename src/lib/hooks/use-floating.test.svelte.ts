@@ -31,7 +31,7 @@ describe('useFloating', () => {
 			whileElementsMounted: autoUpdate
 		};
 	}
-	it_in_effect('updates floating coordinates on middleware change', async () => {
+	it_in_effect('updates floating coordinates on `middleware` change', async () => {
 		const middleware: Middleware[] = $state([]);
 
 		const floating = useFloating({
@@ -53,7 +53,7 @@ describe('useFloating', () => {
 			expect(floating.y).toBe(5);
 		});
 	});
-	it_in_effect('updates floating coordinates on placement change', async () => {
+	it_in_effect('updates floating coordinates on `placement` change', async () => {
 		let placement: Placement = $state('bottom');
 
 		const floating = useFloating({
@@ -76,7 +76,7 @@ describe('useFloating', () => {
 			expect(floating.y).toBe(-5);
 		});
 	});
-	it_in_effect('updates `floatingStyles` on strategy change', async () => {
+	it_in_effect('updates `floatingStyles` on `strategy` change', async () => {
 		let strategy: Strategy = $state('absolute');
 
 		const floating = useFloating({
@@ -94,6 +94,26 @@ describe('useFloating', () => {
 
 		await vi.waitFor(() => {
 			expect(floating.floatingStyles).toContain('position: fixed');
+		});
+	});
+	it_in_effect('updates `floatingStyles` on `transform` change', async () => {
+		let transform = $state(false);
+
+		const floating = useFloating({
+			...test_config(),
+			get transform() {
+				return transform;
+			}
+		});
+
+		await vi.waitFor(() => {
+			expect(floating.floatingStyles).not.toContain('transform: translate(0px, 0px)');
+		});
+
+		transform = true;
+
+		await vi.waitFor(() => {
+			expect(floating.floatingStyles).toContain('transform: translate(0px, 0px)');
 		});
 	});
 	it_in_effect('updates `isPositioned` when position is computed', async () => {
@@ -183,6 +203,26 @@ describe('useFloating', () => {
 			});
 		}
 	);
+	it_in_effect('fallbacks to default (`true`) when `transform` is set to `undefined`', async () => {
+		let transform: boolean | undefined = $state(false);
+
+		const floating = useFloating({
+			...test_config(),
+			get transform() {
+				return transform;
+			}
+		});
+
+		await vi.waitFor(() => {
+			expect(floating.floatingStyles).not.toContain('transform: translate(0px, 0px)');
+		});
+
+		transform = undefined;
+
+		await vi.waitFor(() => {
+			expect(floating.floatingStyles).toContain('transform: translate(0px, 0px)');
+		});
+	});
 	it_in_effect(
 		'calls `whileElementsMounted` when `reference` and `floating` are mounted',
 		async () => {
