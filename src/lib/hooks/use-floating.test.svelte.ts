@@ -116,6 +116,24 @@ describe('useFloating', () => {
 			expect(floating.floatingStyles).toContain('transform: translate(0px, 0px)');
 		});
 	});
+	it_in_effect('updates `floatingStyles` accordingly when DPR >= 1.5', async () => {
+		window.devicePixelRatio = 1;
+
+		const floating = useFloating({
+			...test_config(),
+			transform: true
+		});
+
+		await vi.waitFor(() => {
+			expect(floating.floatingStyles).not.toContain('willChange: transform');
+		});
+
+		window.devicePixelRatio = 2;
+
+		await vi.waitFor(() => {
+			expect(floating.floatingStyles).toContain('willChange: transform');
+		});
+	});
 	it_in_effect('updates `isPositioned` when position is computed', async () => {
 		const floating = useFloating({
 			...test_config(),
