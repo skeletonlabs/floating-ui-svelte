@@ -1,9 +1,11 @@
 import type { FloatingElements, OpenChangeReason, UseFloatingOptions } from '$lib/types.js';
 import { getDPR, noop, roundByDPR, styleObjectToString } from '$lib/utils.js';
-import type { Strategy } from '@floating-ui/dom';
-import type { Placement } from '@floating-ui/dom';
-import type { MiddlewareData } from '@floating-ui/dom';
-import { computePosition } from '@floating-ui/dom';
+import {
+	computePosition,
+	type Strategy,
+	type Placement,
+	type MiddlewareData
+} from '@floating-ui/dom';
 
 class FloatingState {
 	readonly #options: UseFloatingOptions;
