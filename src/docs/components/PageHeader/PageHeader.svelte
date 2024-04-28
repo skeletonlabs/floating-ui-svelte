@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { drawer } from '$lib/stores.svelte';
+	import { version } from '$app/environment';
+	import { drawer } from '$docs/stores.svelte';
 
 	// Icons
 	import IconMenu from 'lucide-svelte/icons/menu';
@@ -26,7 +27,7 @@
 				class="btn-rose-sm"
 				target="_blank"
 			>
-				v1.0.0
+				v{version}
 			</a>
 		</div>
 	</div>

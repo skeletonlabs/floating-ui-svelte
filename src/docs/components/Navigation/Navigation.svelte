@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { drawer } from '$lib/stores.svelte';
+	import { drawer } from '$docs/stores.svelte';
 	// Icons
 	import IconStart from 'lucide-svelte/icons/rocket';
 	import IconTooltips from 'lucide-svelte/icons/message-square';
@@ -8,7 +8,7 @@
 	import IconModals from 'lucide-svelte/icons/layers-2';
 	import IconContextMenus from 'lucide-svelte/icons/square-menu';
 	// Components
-	import Logo from '$lib/components/Logo/Logo.svelte';
+	import Logo from '$docs/components/Logo/Logo.svelte';
 
 	// Props
 	let { classes = '' } = $props();

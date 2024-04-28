@@ -3,11 +3,11 @@
 	// Stylesheets
 	import '../app.pcss';
 	// State
-	import { drawer } from '$lib/stores.svelte';
+	import { drawer } from '$docs/stores.svelte';
 	// Components
-	import Navigation from '$lib/components/Navigation/Navigation.svelte';
-	import PageHeader from '$lib/components/PageHeader/PageHeader.svelte';
-	import Footer from '$lib/components/Footer/Footer.svelte';
+	import Navigation from '$docs/components/Navigation/Navigation.svelte';
+	import PageHeader from '$docs/components/PageHeader/PageHeader.svelte';
+	import Footer from '$docs/components/Footer/Footer.svelte';
 
 	// Props
 	let { children } = $props();

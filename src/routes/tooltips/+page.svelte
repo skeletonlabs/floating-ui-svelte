@@ -1,3 +1,7 @@
+<script>
+	import CodeBlock from '$docs/components/CodeBlock/CodeBlock.svelte';
+</script>
+
 <div class="space-y-10">
 	<header class="card card-gradient space-y-8">
 		<h1 class="h1">
@@ -7,7 +11,10 @@
 			A tooltip is a floating element that displays information related to an anchor element when it
 			receives keyboard focus or the mouse hovers over it.
 		</p>
-		<pre class="pre">{`import { useFloating } from '@skeletonlabs/floatin-ui-svelte';`}</pre>
+		<CodeBlock
+			code={`import { useFloating } from '@skeletonlabs/floatin-ui-svelte';`}
+			lang="typescript"
+		/>
 	</header>
 	<!-- Essentials -->
 	<section class="space-y-8">
@@ -40,11 +47,14 @@
 	</section>
 	<section class="space-y-8">
 		<h2 class="h2">Open state</h2>
-		<pre class="pre">{`
-import {useState} from 'react';\n
-function Tooltip() {
-	const [isOpen, setIsOpen] = useState(false);
-}`.trim()}</pre>
+		<CodeBlock
+			code={`
+import { useFloating } from '@skeletonlabs/floating-ui-svelte';
+
+// TBD`}
+			lang="typescript"
+		/>
+
 		<p>
 			<code class="code">isOpen</code> determines whether or not the tooltip is currently open on the
 			screen. It is used for conditional rendering.
