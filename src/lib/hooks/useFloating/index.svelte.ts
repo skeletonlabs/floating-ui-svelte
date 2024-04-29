@@ -77,12 +77,11 @@ interface UseFloatingOptions {
 
 class UseFloating {
 	readonly #options: UseFloatingOptions;
-
-	#placementOption = $derived.by(() => this.#options.placement ?? 'bottom');
-	#strategyOption = $derived.by(() => this.#options.strategy ?? 'absolute');
-	#middleware = $derived.by(() => this.#options.middleware);
-	#transform = $derived.by(() => this.#options.transform ?? true);
-	#whileElementsMounted = $derived.by(() => this.#options.whileElementsMounted);
+	readonly #placementOption = $derived.by(() => this.#options.placement ?? 'bottom');
+	readonly #strategyOption = $derived.by(() => this.#options.strategy ?? 'absolute');
+	readonly #middleware = $derived.by(() => this.#options.middleware);
+	readonly #transform = $derived.by(() => this.#options.transform ?? true);
+	readonly #whileElementsMounted = $derived.by(() => this.#options.whileElementsMounted);
 
 	#x = $state(0);
 	#y = $state(0);
@@ -120,7 +119,7 @@ class UseFloating {
 		});
 	});
 
-	#attach() {
+	#attach = () => {
 		if (this.#whileElementsMounted === undefined) {
 			this.update();
 			return;
@@ -131,28 +130,28 @@ class UseFloating {
 		if (reference != null && floating != null) {
 			return this.#whileElementsMounted(reference, floating, this.update);
 		}
-	}
+	};
 
-	#reset() {
+	#reset = () => {
 		if (!this.open) {
 			this.#isPositioned = false;
 		}
-	}
+	};
 
 	constructor(options: UseFloatingOptions) {
 		this.#options = options;
 		this.#placement = this.#placementOption;
 		this.#strategy = this.#strategyOption;
 
-		$effect.pre(() => this.update());
-		$effect.pre(() => this.#attach());
-		$effect.pre(() => this.#reset());
+		$effect.pre(this.update);
+		$effect.pre(this.#attach);
+		$effect.pre(this.#reset);
 	}
 
 	/**
 	 * The function to update floating position manually.
 	 */
-	update() {
+	update = () => {
 		const { reference, floating } = this.elements;
 		if (reference == null || floating == null) {
 			return;
@@ -170,7 +169,7 @@ class UseFloating {
 			this.#middlewareData = position.middlewareData;
 			this.#isPositioned = true;
 		});
-	}
+	};
 
 	/**
 	 * Represents the open/close state of the floating element.
