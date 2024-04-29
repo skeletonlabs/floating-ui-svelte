@@ -1,27 +1,31 @@
 <script lang="ts">
-	import { useFloating, type Placement, autoUpdate, offset } from '$lib/index.js';
+	import { useHover } from '$lib/hooks/useHover/index.svelte.js';
+	import { useFloating, autoUpdate } from '$lib/index.js';
 
+	let open = $state(false);
 	const elements = $state<{ reference?: HTMLElement; floating?: HTMLElement }>({});
-	let placement = $state<Placement>('bottom');
 	const floating = useFloating({
-		get placement() {
-			return placement;
-		},
-		middleware: [offset(5)],
 		elements,
-		whileElementsMounted: autoUpdate
+		whileElementsMounted: autoUpdate,
+		get open() {
+			return open
+		},
+		onOpenChange(v) {
+			open = v;
+		},
+	});
+
+	const hover = useHover(floating, {
+		delay: {
+			show: 250,
+			hide: 0
+		}
 	});
 </script>
 
-<select bind:value={placement}>
-	<option value="top">Top</option>
-	<option value="right">Right</option>
-	<option value="bottom">Bottom</option>
-	<option value="left">Left</option>
-</select>
 
-<p data-testid="x">{floating.x}</p>
-<p data-testid="y">{floating.y}</p>
+<button bind:this={elements.reference} {...hover.referenceProps}>Reference</button>
 
-<button bind:this={elements.reference}>Reference</button>
-<div bind:this={elements.floating} style={floating.floatingStyles}>Floating</div>
+{#if open}
+	<div bind:this={elements.floating} style={floating.floatingStyles}>Floating</div>
+{/if}
