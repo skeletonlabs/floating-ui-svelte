@@ -227,6 +227,27 @@ class UseFloating {
 	get update(): () => void {
 		return this.#update;
 	}
+
+	/**
+	 * The open state of the floating element.
+	 */
+	get open(): boolean {
+		return this.#open;
+	}
+
+	/**
+	 * The event handler is invoked whenever the open state changes.
+	 */
+	get onOpenChange(): (open: boolean, event?: Event, reason?: OpenChangeReason) => void {
+		return this.#onOpenChange;
+	}
+
+	/**
+	 * The reference and floating elements.
+	 */
+	get elements(): FloatingElements {
+		return this.#elements;
+	}
 }
 
 /**
