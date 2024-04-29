@@ -22,7 +22,7 @@ type FloatingElements = {
 	readonly floating?: FloatingElement | null;
 };
 
-interface UseFloatingOptions {
+interface FloatingOptions {
 	/**
 	 * Represents the open/close state of the floating element.
 	 * @default true
@@ -75,8 +75,8 @@ interface UseFloatingOptions {
 	) => () => void;
 }
 
-class UseFloatingReturn {
-	readonly #options: UseFloatingOptions;
+class Floating {
+	readonly #options: FloatingOptions;
 	readonly #placementOption = $derived.by(() => this.#options.placement ?? 'bottom');
 	readonly #strategyOption = $derived.by(() => this.#options.strategy ?? 'absolute');
 	readonly #middleware = $derived.by(() => this.#options.middleware);
@@ -138,7 +138,7 @@ class UseFloatingReturn {
 		}
 	};
 
-	constructor(options: UseFloatingOptions) {
+	constructor(options: FloatingOptions) {
 		this.#options = options;
 		this.#placement = this.#placementOption;
 		this.#strategy = this.#strategyOption;
@@ -239,9 +239,9 @@ class UseFloatingReturn {
 /**
  * Hook for managing floating elements.
  */
-function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
-	return new UseFloatingReturn(options);
+function useFloating(options: FloatingOptions = {}): Floating {
+	return new Floating(options);
 }
 ``;
 
-export { useFloating, type UseFloatingOptions, type UseFloatingReturn };
+export { useFloating, type FloatingOptions as UseFloatingOptions, type Floating };
