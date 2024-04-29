@@ -82,6 +82,9 @@ class Floating {
 	readonly #middleware = $derived.by(() => this.#options.middleware);
 	readonly #transform = $derived.by(() => this.#options.transform ?? true);
 	readonly #whileElementsMounted = $derived.by(() => this.#options.whileElementsMounted);
+	readonly #open = $derived.by(() => this.#options.open ?? true);
+	readonly #onOpenChange = $derived.by(() => this.#options.onOpenChange ?? noop);
+	readonly #elements = $derived.by(() => this.#options.elements ?? {});
 
 	#x = $state(0);
 	#y = $state(0);
@@ -126,33 +129,20 @@ class Floating {
 			1;
 		}
 
-		const { floating, reference } = this.elements;
+		const { floating, reference } = this.#elements;
 		if (reference != null && floating != null) {
 			return this.#whileElementsMounted(reference, floating, this.update);
 		}
 	};
 
 	#reset = () => {
-		if (!this.open) {
+		if (!this.#open) {
 			this.#isPositioned = false;
 		}
 	};
 
-	constructor(options: FloatingOptions) {
-		this.#options = options;
-		this.#placement = this.#placementOption;
-		this.#strategy = this.#strategyOption;
-
-		$effect.pre(this.update);
-		$effect.pre(this.#attach);
-		$effect.pre(this.#reset);
-	}
-
-	/**
-	 * The function to update floating position manually.
-	 */
-	update = () => {
-		const { reference, floating } = this.elements;
+	#update = () => {
+		const { reference, floating } = this.#elements;
 		if (reference == null || floating == null) {
 			return;
 		}
@@ -171,20 +161,36 @@ class Floating {
 		});
 	};
 
+	constructor(options: FloatingOptions) {
+		this.#options = options;
+		this.#placement = this.#placementOption;
+		this.#strategy = this.#strategyOption;
+
+		$effect.pre(this.#update);
+		$effect.pre(this.#attach);
+		$effect.pre(this.#reset);
+	}
+
 	/**
 	 * Represents the open/close state of the floating element.
 	 */
-	readonly open = $derived.by(() => this.#options.open ?? true);
+	get open(): boolean {
+		return this.#open;
+	}
 
 	/**
 	 * Event handler that can be invoked whenever the open state changes.
 	 */
-	readonly onOpenChange = $derived.by(() => this.#options.onOpenChange ?? noop);
+	get onOpenChange(): (open: boolean, event?: Event, reason?: OpenChangeReason) => void {
+		return this.#onOpenChange;
+	}
 
 	/**
 	 * The reference and floating elements.
 	 */
-	readonly elements = $derived.by(() => this.#options.elements ?? {});
+	get elements(): FloatingElements {
+		return this.#elements;
+	}
 
 	/**
 	 * The x-coord of the floating element.
@@ -233,6 +239,13 @@ class Floating {
 	 */
 	get floatingStyles(): string {
 		return this.#floatingStyles;
+	}
+
+	/**
+	 * The function to update floating position manually.
+	 */
+	get update(): () => void {
+		return this.#update;
 	}
 }
 
