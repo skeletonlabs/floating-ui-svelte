@@ -120,7 +120,39 @@ class UseFloating {
 		});
 	});
 
-	#update = () => {
+	#attach() {
+		if (this.#whileElementsMounted === undefined) {
+			this.update();
+			return;
+			1;
+		}
+
+		const { floating, reference } = this.elements;
+		if (reference != null && floating != null) {
+			return this.#whileElementsMounted(reference, floating, this.update);
+		}
+	}
+
+	#reset() {
+		if (!this.open) {
+			this.#isPositioned = false;
+		}
+	}
+
+	constructor(options: UseFloatingOptions) {
+		this.#options = options;
+		this.#placement = this.#placementOption;
+		this.#strategy = this.#strategyOption;
+
+		$effect.pre(() => this.update());
+		$effect.pre(() => this.#attach());
+		$effect.pre(() => this.#reset());
+	}
+
+	/**
+	 * The function to update floating position manually.
+	 */
+	update() {
 		const { reference, floating } = this.elements;
 		if (reference == null || floating == null) {
 			return;
@@ -138,35 +170,6 @@ class UseFloating {
 			this.#middlewareData = position.middlewareData;
 			this.#isPositioned = true;
 		});
-	};
-
-	#attach = () => {
-		if (this.#whileElementsMounted === undefined) {
-			this.update();
-			return;
-			1;
-		}
-
-		const { floating, reference } = this.elements;
-		if (reference != null && floating != null) {
-			return this.#whileElementsMounted(reference, floating, this.update);
-		}
-	};
-
-	#reset = () => {
-		if (!this.open) {
-			this.#isPositioned = false;
-		}
-	};
-
-	constructor(options: UseFloatingOptions) {
-		this.#options = options;
-		this.#placement = this.#placementOption;
-		this.#strategy = this.#strategyOption;
-
-		$effect.pre(this.#update);
-		$effect.pre(this.#attach);
-		$effect.pre(this.#reset);
 	}
 
 	/**
@@ -231,13 +234,6 @@ class UseFloating {
 	 */
 	get floatingStyles(): string {
 		return this.#floatingStyles;
-	}
-
-	/**
-	 * The function to update floating position manually.
-	 */
-	get update(): () => void {
-		return this.#update;
 	}
 }
 
