@@ -11,10 +11,10 @@ This project is maintained by [Hugo Korte](https://github.com/Hugos68), [Skeleto
 Install the package using your preferred package manager.
 
 ```bash
-npm add @skeletonlabs/floating-ui-svelte
-# pnpm add @skeletonlabs/floating-ui-svelte
-# yarn add @skeletonlabs/floating-ui-svelte
-# bun add @skeletonlabs/floating-ui-svelte
+npm install @skeletonlabs/floating-ui-svelte
+# pnpm install @skeletonlabs/floating-ui-svelte
+# yarn install @skeletonlabs/floating-ui-svelte
+# bun install @skeletonlabs/floating-ui-svelte
 ```
 
 ## Usage
@@ -36,10 +36,19 @@ const floating = useFloating(options);
 The `useFloating` hook takes care of positioning your floating UI elements (tooltips, popovers, etc.) relative to another element.
 It automatically calculates the best placement and updates it as needed, giving you properties to access the position and styles.
 
-#### Import
+#### Usage
 
-```js
-import { useFloating } from '@skeletonlabs/floating-ui-svelte';
+```html
+<script>
+	import { useFloating } from '@skeletonlabs/floating-ui-svelte';
+
+	const elements = $state({ reference: null, floating: null });
+
+	const floating = useFloating({ elements });
+</script>
+
+<div bind:this="{elements.reference}">Reference</div>
+<div bind:this="{elements.floating}" styles="{floating.floatingStyles}">Floating</div>
 ```
 
 #### Options
