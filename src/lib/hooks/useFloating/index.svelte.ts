@@ -78,23 +78,10 @@ interface UseFloatingOptions {
 class UseFloating {
 	readonly #options: UseFloatingOptions;
 
-	constructor(options: UseFloatingOptions) {
-		this.#options = options;
-		this.#placement = this.#placementOption;
-		this.#strategy = this.#strategyOption;
-
-		$effect.pre(this.#update);
-		$effect.pre(this.#attach);
-		$effect.pre(this.#reset);
-	}
-
-	#open = $derived.by(() => this.#options.open ?? true);
-	#onOpenChange = $derived.by(() => this.#options.onOpenChange ?? noop);
 	#placementOption = $derived.by(() => this.#options.placement ?? 'bottom');
 	#strategyOption = $derived.by(() => this.#options.strategy ?? 'absolute');
 	#middleware = $derived.by(() => this.#options.middleware);
 	#transform = $derived.by(() => this.#options.transform ?? true);
-	#elements = $derived.by(() => this.#options.elements ?? {});
 	#whileElementsMounted = $derived.by(() => this.#options.whileElementsMounted);
 
 	#x = $state(0);
@@ -110,7 +97,7 @@ class UseFloating {
 			top: '0'
 		};
 
-		const { floating } = this.#elements;
+		const { floating } = this.elements;
 		if (floating == null) {
 			return styleObjectToString(initialStyles);
 		}
@@ -134,7 +121,7 @@ class UseFloating {
 	});
 
 	#update = () => {
-		const { reference, floating } = this.#elements;
+		const { reference, floating } = this.elements;
 		if (reference == null || floating == null) {
 			return;
 		}
@@ -160,17 +147,42 @@ class UseFloating {
 			1;
 		}
 
-		const { floating, reference } = this.#elements;
+		const { floating, reference } = this.elements;
 		if (reference != null && floating != null) {
 			return this.#whileElementsMounted(reference, floating, this.update);
 		}
 	};
 
 	#reset = () => {
-		if (!this.#open) {
+		if (!this.open) {
 			this.#isPositioned = false;
 		}
 	};
+
+	constructor(options: UseFloatingOptions) {
+		this.#options = options;
+		this.#placement = this.#placementOption;
+		this.#strategy = this.#strategyOption;
+
+		$effect.pre(this.#update);
+		$effect.pre(this.#attach);
+		$effect.pre(this.#reset);
+	}
+
+	/**
+	 * Represents the open/close state of the floating element.
+	 */
+	readonly open = $derived.by(() => this.#options.open ?? true);
+
+	/**
+	 * Event handler that can be invoked whenever the open state changes.
+	 */
+	readonly onOpenChange = $derived.by(() => this.#options.onOpenChange ?? noop);
+
+	/**
+	 * The reference and floating elements.
+	 */
+	readonly elements = $derived.by(() => this.#options.elements ?? {});
 
 	/**
 	 * The x-coord of the floating element.
@@ -226,27 +238,6 @@ class UseFloating {
 	 */
 	get update(): () => void {
 		return this.#update;
-	}
-
-	/**
-	 * The open state of the floating element.
-	 */
-	get open(): boolean {
-		return this.#open;
-	}
-
-	/**
-	 * The event handler is invoked whenever the open state changes.
-	 */
-	get onOpenChange(): (open: boolean, event?: Event, reason?: OpenChangeReason) => void {
-		return this.#onOpenChange;
-	}
-
-	/**
-	 * The reference and floating elements.
-	 */
-	get elements(): FloatingElements {
-		return this.#elements;
 	}
 }
 
