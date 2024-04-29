@@ -82,9 +82,6 @@ class Floating {
 	readonly #middleware = $derived.by(() => this.#options.middleware);
 	readonly #transform = $derived.by(() => this.#options.transform ?? true);
 	readonly #whileElementsMounted = $derived.by(() => this.#options.whileElementsMounted);
-	readonly #open = $derived.by(() => this.#options.open ?? true);
-	readonly #onOpenChange = $derived.by(() => this.#options.onOpenChange ?? noop);
-	readonly #elements = $derived.by(() => this.#options.elements ?? {});
 
 	#x = $state(0);
 	#y = $state(0);
@@ -92,7 +89,40 @@ class Floating {
 	#strategy: Strategy = $state('absolute');
 	#middlewareData: MiddlewareData = $state.frozen({});
 	#isPositioned = $state(false);
-	#floatingStyles = $derived.by(() => {
+
+	#attach = () => {
+		if (this.#whileElementsMounted === undefined) {
+			this.update();
+			return;
+			1;
+		}
+
+		const { floating, reference } = this.elements;
+		if (reference != null && floating != null) {
+			return this.#whileElementsMounted(reference, floating, this.update);
+		}
+	};
+
+	#reset = () => {
+		if (!this.open) {
+			this.#isPositioned = false;
+		}
+	};
+
+	constructor(options: FloatingOptions) {
+		this.#options = options;
+		this.#placement = this.#placementOption;
+		this.#strategy = this.#strategyOption;
+
+		$effect.pre(this.update);
+		$effect.pre(this.#attach);
+		$effect.pre(this.#reset);
+	}
+
+	/**
+	 * CSS styles to apply to the floating element to position it.
+	 */
+	readonly floatingStyles = $derived.by(() => {
 		const initialStyles = {
 			position: this.strategy,
 			left: '0',
@@ -122,27 +152,23 @@ class Floating {
 		});
 	});
 
-	#attach = () => {
-		if (this.#whileElementsMounted === undefined) {
-			this.update();
-			return;
-			1;
-		}
+	/**
+	 * Represents the open/close state of the floating element.
+	 */
+	readonly open = $derived.by(() => this.#options.open ?? true);
 
-		const { floating, reference } = this.#elements;
-		if (reference != null && floating != null) {
-			return this.#whileElementsMounted(reference, floating, this.update);
-		}
-	};
+	/**
+	 * Event handler that can be invoked whenever the open state changes.
+	 */
+	readonly onOpenChange = $derived.by(() => this.#options.onOpenChange ?? noop);
 
-	#reset = () => {
-		if (!this.#open) {
-			this.#isPositioned = false;
-		}
-	};
+	/**
+	 * The reference and floating elements.
+	 */
+	readonly elements = $derived.by(() => this.#options.elements ?? {});
 
-	#update = () => {
-		const { reference, floating } = this.#elements;
+	readonly update = () => {
+		const { reference, floating } = this.elements;
 		if (reference == null || floating == null) {
 			return;
 		}
@@ -160,37 +186,6 @@ class Floating {
 			this.#isPositioned = true;
 		});
 	};
-
-	constructor(options: FloatingOptions) {
-		this.#options = options;
-		this.#placement = this.#placementOption;
-		this.#strategy = this.#strategyOption;
-
-		$effect.pre(this.#update);
-		$effect.pre(this.#attach);
-		$effect.pre(this.#reset);
-	}
-
-	/**
-	 * Represents the open/close state of the floating element.
-	 */
-	get open(): boolean {
-		return this.#open;
-	}
-
-	/**
-	 * Event handler that can be invoked whenever the open state changes.
-	 */
-	get onOpenChange(): (open: boolean, event?: Event, reason?: OpenChangeReason) => void {
-		return this.#onOpenChange;
-	}
-
-	/**
-	 * The reference and floating elements.
-	 */
-	get elements(): FloatingElements {
-		return this.#elements;
-	}
 
 	/**
 	 * The x-coord of the floating element.
@@ -233,20 +228,6 @@ class Floating {
 	get isPositioned(): boolean {
 		return this.#isPositioned;
 	}
-
-	/**
-	 * CSS styles to apply to the floating element to position it.
-	 */
-	get floatingStyles(): string {
-		return this.#floatingStyles;
-	}
-
-	/**
-	 * The function to update floating position manually.
-	 */
-	get update(): () => void {
-		return this.#update;
-	}
 }
 
 /**
@@ -255,6 +236,5 @@ class Floating {
 function useFloating(options: FloatingOptions = {}): Floating {
 	return new Floating(options);
 }
-``;
 
 export { useFloating, type FloatingOptions as UseFloatingOptions, type Floating };
