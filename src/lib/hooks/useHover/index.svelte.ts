@@ -63,15 +63,26 @@ class Hover {
 
 	#openTimeout: ReturnType<typeof setTimeout> | null;
 	#closeTimeout: ReturnType<typeof setTimeout> | null;
+	#restTimeout: ReturnType<typeof setTimeout> | null;
 
-	#clearTimeouts() {
+	#clearOpenTimeout() {
 		if (this.#openTimeout !== null) {
 			clearTimeout(this.#openTimeout);
 			this.#openTimeout = null;
 		}
+	}
+
+	#clearCloseTimeout() {
 		if (this.#closeTimeout !== null) {
 			clearTimeout(this.#closeTimeout);
 			this.#closeTimeout = null;
+		}
+	}
+
+	#clearRestTimeout() {
+		if (this.#restTimeout !== null) {
+			clearTimeout(this.#restTimeout);
+			this.#restTimeout = null;
 		}
 	}
 
@@ -80,19 +91,29 @@ class Hover {
 		this.#options = options;
 		this.#openTimeout = null;
 		this.#closeTimeout = null;
-		$effect(() => this.#clearTimeouts());
+		this.#restTimeout = null;
+
+		$effect(() => {
+			return () => {
+				this.#clearOpenTimeout();
+				this.#clearCloseTimeout();
+				this.#clearRestTimeout();
+			};
+		});
 	}
 
 	get referenceProps() {
 		const onpointerenter = (event: PointerEvent) => {
 			if (!this.#enabled) {
-				return false;
+				return;
 			}
 			if (this.#mouseOnly && event.pointerType !== 'mouse') {
-				return false;
+				return;
 			}
+			this.#clearOpenTimeout();
+			this.#clearCloseTimeout();
+
 			if (this.#openDelay > 0) {
-				this.#clearTimeouts();
 				this.#openTimeout = setTimeout(() => {
 					this.#floating.onOpenChange(true, event, 'hover');
 				}, this.#openDelay);
@@ -103,18 +124,32 @@ class Hover {
 
 		const onpointerleave = (event: PointerEvent) => {
 			if (!this.#enabled) {
-				return false;
+				return;
 			}
 			if (this.#mouseOnly && event.pointerType !== 'mouse') {
-				return false;
+				return;
 			}
+			this.#clearOpenTimeout();
+			this.#clearCloseTimeout();
+
 			if (this.#closeDelay > 0) {
-				this.#clearTimeouts();
 				this.#closeTimeout = setTimeout(() => {
 					this.#floating.onOpenChange(false, event, 'hover');
 				}, this.#closeDelay);
 			} else {
 				this.#floating.onOpenChange(false, event, 'hover');
+			}
+		};
+
+		const onpointerover = (event: PointerEvent) => {
+			if (this.#restMs === 0) {
+				return;
+			}
+			if (!this.#enabled) {
+				return;
+			}
+			if (this.#mouseOnly && event.pointerType !== 'mouse') {
+				return;
 			}
 		};
 
