@@ -1,4 +1,4 @@
-import type { FloatingElements, OpenChangeReason } from '$lib/types.js';
+import type { OpenChangeReason } from '$lib/types.js';
 import { getDPR, noop, roundByDPR, styleObjectToString } from '$lib/utils.js';
 import {
 	computePosition,
@@ -9,6 +9,18 @@ import {
 	type FloatingElement,
 	type Middleware
 } from '@floating-ui/dom';
+
+type FloatingElements = {
+	/**
+	 * The reference element.
+	 */
+	readonly reference?: ReferenceElement | null;
+
+	/**
+	 * The floating element which is anchored to the reference element.
+	 */
+	readonly floating?: FloatingElement | null;
+};
 
 interface UseFloatingOptions {
 	/**
