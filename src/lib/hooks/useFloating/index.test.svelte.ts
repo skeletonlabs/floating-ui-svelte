@@ -7,7 +7,7 @@ import {
 	type Middleware,
 	type UseFloatingOptions,
 	type Strategy
-} from '../index.js';
+} from '../../index.js';
 
 function it_in_effect(name: string, fn: () => void) {
 	it(name, async () => {

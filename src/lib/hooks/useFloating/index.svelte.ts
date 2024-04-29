@@ -1,11 +1,79 @@
-import type { FloatingElements, OpenChangeReason, UseFloatingOptions } from '$lib/types.js';
+import type { OpenChangeReason } from '$lib/types.js';
 import { getDPR, noop, roundByDPR, styleObjectToString } from '$lib/utils.js';
 import {
 	computePosition,
 	type Strategy,
 	type Placement,
-	type MiddlewareData
+	type MiddlewareData,
+	type ReferenceElement,
+	type FloatingElement,
+	type Middleware
 } from '@floating-ui/dom';
+
+type FloatingElements = {
+	/**
+	 * The reference element.
+	 */
+	readonly reference?: ReferenceElement | null;
+
+	/**
+	 * The floating element which is anchored to the reference element.
+	 */
+	readonly floating?: FloatingElement | null;
+};
+
+interface UseFloatingOptions {
+	/**
+	 * Represents the open/close state of the floating element.
+	 * @default true
+	 */
+	readonly open?: boolean;
+
+	/**
+	 * Event handler that can be invoked whenever the open state changes.
+	 */
+	readonly onOpenChange?: (open: boolean, event?: Event, reason?: OpenChangeReason) => void;
+
+	/**
+	 * Where to place the floating element relative to its reference element.
+	 * @default 'bottom'
+	 */
+	readonly placement?: Placement;
+
+	/**
+	 * The type of CSS position property to use.
+	 * @default 'absolute'
+	 */
+	readonly strategy?: Strategy;
+
+	/**
+	 * These are plain objects that modify the positioning coordinates in some fashion, or provide useful data for the consumer to use.
+	 * @default undefined
+	 */
+	readonly middleware?: Array<Middleware | undefined | null | false>;
+
+	/**
+	 * Whether to use `transform` instead of `top` and `left` styles to
+	 * position the floating element (`floatingStyles`).
+	 * @default true
+	 */
+	readonly transform?: boolean;
+
+	/**
+	 * The reference and floating elements.
+	 */
+	readonly elements?: FloatingElements;
+
+	/**
+	 * Callback to handle mounting/unmounting of the elements.
+	 * @default undefined
+	 */
+	readonly whileElementsMounted?: (
+		reference: ReferenceElement,
+		floating: FloatingElement,
+		update: () => void
+	) => () => void;
+}
 
 class FloatingState {
 	readonly #options: UseFloatingOptions;
@@ -62,7 +130,7 @@ class FloatingState {
 	});
 }
 
-export class FloatingContext {
+class FloatingContext {
 	readonly #state: FloatingState;
 
 	constructor(state: FloatingState) {
@@ -92,7 +160,7 @@ export class FloatingContext {
 	}
 }
 
-export class UseFloatingReturn {
+class UseFloatingReturn {
 	readonly #state: FloatingState;
 	readonly #context: FloatingContext;
 	readonly #update: () => void;
@@ -171,7 +239,7 @@ export class UseFloatingReturn {
 /**
  * Hook for managing floating elements.
  */
-export function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
+function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 	const state = new FloatingState(options);
 
 	function update() {
@@ -218,3 +286,5 @@ export function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn
 
 	return new UseFloatingReturn(state, update);
 }
+
+export { useFloating, type UseFloatingOptions, type UseFloatingReturn };
