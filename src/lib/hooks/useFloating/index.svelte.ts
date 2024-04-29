@@ -75,7 +75,7 @@ interface UseFloatingOptions {
 	) => () => void;
 }
 
-class UseFloating {
+class UseFloatingReturn {
 	readonly #options: UseFloatingOptions;
 	readonly #placementOption = $derived.by(() => this.#options.placement ?? 'bottom');
 	readonly #strategyOption = $derived.by(() => this.#options.strategy ?? 'absolute');
@@ -239,9 +239,9 @@ class UseFloating {
 /**
  * Hook for managing floating elements.
  */
-function useFloating(options: UseFloatingOptions = {}): UseFloating {
-	return new UseFloating(options);
+function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
+	return new UseFloatingReturn(options);
 }
 ``;
 
-export { useFloating, type UseFloating, type UseFloatingOptions };
+export { useFloating, type UseFloatingOptions, type UseFloatingReturn };
