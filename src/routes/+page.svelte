@@ -8,11 +8,11 @@
 		elements,
 		whileElementsMounted: autoUpdate,
 		get open() {
-			return open
+			return open;
 		},
 		onOpenChange(v) {
 			open = v;
-		},
+		}
 	});
 
 	const hover = useHover(floating, {
@@ -22,7 +22,6 @@
 		}
 	});
 </script>
-
 
 <button bind:this={elements.reference} {...hover.referenceProps}>Reference</button>
 
