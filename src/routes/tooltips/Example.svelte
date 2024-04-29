@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { offset, useFloating, useHover } from '$lib/index.js';
+	import { fly } from 'svelte/transition';
 
 	let open = $state(false);
 
@@ -17,7 +18,8 @@
 		},
 		placement: 'top',
 		middleware: [offset(5)],
-		elements
+		elements,
+        transform: false
 	});
 
 	const hover = useHover(floating, {
@@ -34,6 +36,7 @@
 		class="absolute top-0 left-0 btn-rose-sm"
 		bind:this={elements.floating}
 		style={floating.floatingStyles}
+        transition:fly={{ y: 5, duration: 250 }}
 	>
 		Tooltip!
 	</div>
