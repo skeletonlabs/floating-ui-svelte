@@ -51,6 +51,8 @@ It automatically calculates the best placement and updates it as needed, giving 
 <div bind:this="{elements.floating}" styles="{floating.floatingStyles}">Floating</div>
 ```
 
+Note: You cannot destructure (`const { ... } = useFloating(...)`) because this will cause the destructured variables to *not* be reactive.
+
 #### Options
 
 | Property             | Description                                                                                                                      | Type                                                                                       | Default Value |
