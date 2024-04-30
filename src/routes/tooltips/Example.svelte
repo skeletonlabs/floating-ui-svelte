@@ -24,11 +24,10 @@
 	});
 
 	const hover = useHover(floating, {
-		move: false
+		mouseOnly: true,
+		restMs: 100
 	});
 </script>
-
-<svelte:window onkeydown={(e) => e.key === 'Escape' && (open = false)} />
 
 <button class="btn-cta" bind:this={elements.reference} {...hover.reference}>Hover Me</button>
 
