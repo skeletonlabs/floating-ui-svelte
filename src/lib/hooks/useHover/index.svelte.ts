@@ -109,7 +109,7 @@ class Hover {
 		$effect(() => this.#clearTimeouts());
 	}
 
-	get referenceProps() {
+	get reference() {
 		const onpointerenter = (event: PointerEvent) => {
 			if (!this.#enabled || (this.#mouseOnly && event.pointerType !== 'mouse')) {
 				return;
@@ -162,7 +162,7 @@ class Hover {
 		};
 	}
 
-	get floatingProps() {
+	get floating() {
 		return {};
 	}
 }

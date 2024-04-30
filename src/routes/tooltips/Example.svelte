@@ -30,7 +30,7 @@
 
 <svelte:window onkeydown={(e) => e.key === 'Escape' && (open = false)} />
 
-<button class="btn-cta" bind:this={elements.reference} {...hover.referenceProps}>Hover Me</button>
+<button class="btn-cta" bind:this={elements.reference} {...hover.reference}>Hover Me</button>
 
 {#if open}
 	<div
