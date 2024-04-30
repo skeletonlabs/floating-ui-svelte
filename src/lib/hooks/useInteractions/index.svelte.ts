@@ -5,4 +5,9 @@ interface Interaction {
 	floating: HTMLAttributes<HTMLElement>;
 }
 
-export { type Interaction };
+function useInteractions(interactions: Array<Interaction | null | false>) {
+	interactions = interactions.filter(Boolean) as Array<Interaction>;
+	interactions;
+}
+
+export { useInteractions, type Interaction };
