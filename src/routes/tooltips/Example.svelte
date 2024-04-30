@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { offset, flip, useFloating, useHover, autoUpdate } from '$lib/index.js';
+	import { offset, useFloating, useHover, autoUpdate } from '$lib/index.js';
 	import { fly } from 'svelte/transition';
 
 	let open = $state(false);
