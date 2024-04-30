@@ -45,10 +45,8 @@
 	<section class="space-y-8">
 		<h2 class="h2">Examples</h2>
 		<p>Both of these examples have sections explaining them in-depth below.</p>
-		<div class="alert">
-			<div>
-				<Example />
-			</div>
+		<div>
+			<Example />
 		</div>
 	</section>
 	<section class="space-y-8">

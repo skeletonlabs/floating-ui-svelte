@@ -86,6 +86,12 @@ class Hover {
 		}
 	}
 
+	#clearTimeouts() {
+		this.#clearOpenTimeout();
+		this.#clearCloseTimeout();
+		this.#clearRestTimeout();
+	}
+
 	constructor(floating: Floating, options: HoverOptions = {}) {
 		this.#floating = floating;
 		this.#options = options;
@@ -93,11 +99,7 @@ class Hover {
 		this.#closeTimeout = null;
 		this.#restTimeout = null;
 
-		$effect(() => () => {
-			this.#clearOpenTimeout();
-			this.#clearCloseTimeout();
-			this.#clearRestTimeout();
-		});
+		$effect(() => this.#clearTimeouts());
 	}
 
 	get referenceProps() {
@@ -105,12 +107,12 @@ class Hover {
 			if (!this.#enabled || (this.#mouseOnly && event.pointerType !== 'mouse')) {
 				return;
 			}
-			this.#clearOpenTimeout();
-			this.#clearCloseTimeout();
-			this.#clearRestTimeout();
+			this.#clearTimeouts();
+
 			if (this.#openDelay > 0) {
 				this.#openTimeout = setTimeout(() => {
 					this.#floating.onOpenChange(true, event, 'hover');
+					this.#clearOpenTimeout();
 				}, this.#openDelay);
 			} else if (this.#restMs === 0) {
 				this.#floating.onOpenChange(true, event, 'hover');
@@ -126,8 +128,10 @@ class Hover {
 				return;
 			}
 			this.#clearRestTimeout();
+
 			this.#restTimeout = setTimeout(() => {
 				this.#floating.onOpenChange(true, event, 'hover');
+				this.#clearRestTimeout();
 			}, this.#restMs);
 		};
 
@@ -135,14 +139,13 @@ class Hover {
 			if (!this.#enabled || (this.#mouseOnly && event.pointerType !== 'mouse')) {
 				return;
 			}
-			this.#clearOpenTimeout();
-			this.#clearCloseTimeout();
-			this.#clearRestTimeout();
+			this.#clearTimeouts();
 
 			if (this.#closeDelay > 0) {
 				this.#closeTimeout = setTimeout(() => {
 					this.#floating.onOpenChange(false, event, 'hover');
 				}, this.#closeDelay);
+				this.#clearCloseTimeout();
 			} else {
 				this.#floating.onOpenChange(false, event, 'hover');
 			}

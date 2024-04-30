@@ -24,7 +24,7 @@
 	});
 
 	const hover = useHover(floating, {
-		restMs: 300
+		restMs: 100
 	});
 </script>
 
@@ -35,7 +35,7 @@
 		class="absolute top-0 left-0 btn-rose-sm"
 		bind:this={elements.floating}
 		style={floating.floatingStyles}
-		transition:fly={{ y: 5, duration: 250 }}
+		transition:fly={{ y: 5, duration: 200 }}
 	>
 		Tooltip!
 	</div>
