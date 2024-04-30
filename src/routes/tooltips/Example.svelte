@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { offset, useFloating, useHover } from '$lib/index.js';
+	import { offset, flip, useFloating, useHover, autoUpdate } from '$lib/index.js';
 	import { fly } from 'svelte/transition';
 
 	let open = $state(false);
@@ -10,22 +10,21 @@
 	});
 
 	const floating = useFloating({
+		whileElementsMounted: autoUpdate,
+		middleware: [offset(5)],
+		placement: 'top',
+		transform: false,
 		get open() {
 			return open;
 		},
 		onOpenChange(v) {
 			open = v;
 		},
-		placement: 'top',
-		middleware: [offset(5)],
-		elements,
-        transform: false
+		elements
 	});
 
 	const hover = useHover(floating, {
-		delay: {
-			show: 300
-		}
+		restMs: 300
 	});
 </script>
 
@@ -36,7 +35,7 @@
 		class="absolute top-0 left-0 btn-rose-sm"
 		bind:this={elements.floating}
 		style={floating.floatingStyles}
-        transition:fly={{ y: 5, duration: 250 }}
+		transition:fly={{ y: 5, duration: 250 }}
 	>
 		Tooltip!
 	</div>

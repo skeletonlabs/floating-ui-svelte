@@ -63,15 +63,26 @@ class Hover {
 
 	#openTimeout: ReturnType<typeof setTimeout> | null;
 	#closeTimeout: ReturnType<typeof setTimeout> | null;
+	#restTimeout: ReturnType<typeof setTimeout> | null;
 
-	#clearTimeouts() {
+	#clearOpenTimeout() {
 		if (this.#openTimeout !== null) {
 			clearTimeout(this.#openTimeout);
 			this.#openTimeout = null;
 		}
+	}
+
+	#clearCloseTimeout() {
 		if (this.#closeTimeout !== null) {
 			clearTimeout(this.#closeTimeout);
 			this.#closeTimeout = null;
+		}
+	}
+
+	#clearRestTimeout() {
+		if (this.#restTimeout !== null) {
+			clearTimeout(this.#restTimeout);
+			this.#restTimeout = null;
 		}
 	}
 
@@ -80,36 +91,53 @@ class Hover {
 		this.#options = options;
 		this.#openTimeout = null;
 		this.#closeTimeout = null;
-		$effect(() => this.#clearTimeouts());
+		this.#restTimeout = null;
+
+		$effect(() => () => {
+			this.#clearOpenTimeout();
+			this.#clearCloseTimeout();
+			this.#clearRestTimeout();
+		});
 	}
 
 	get referenceProps() {
 		const onpointerenter = (event: PointerEvent) => {
-			if (!this.#enabled) {
+			if (!this.#enabled || (this.#mouseOnly && event.pointerType !== 'mouse')) {
 				return;
 			}
-			if (this.#mouseOnly && event.pointerType !== 'mouse') {
-				return;
-			}
-			this.#clearTimeouts();
-
+			this.#clearOpenTimeout();
+			this.#clearCloseTimeout();
+			this.#clearRestTimeout();
 			if (this.#openDelay > 0) {
 				this.#openTimeout = setTimeout(() => {
 					this.#floating.onOpenChange(true, event, 'hover');
 				}, this.#openDelay);
-			} else {
+			} else if (this.#restMs === 0) {
 				this.#floating.onOpenChange(true, event, 'hover');
 			}
 		};
 
+		const onpointermove = (event: PointerEvent) => {
+			if (
+				!this.#enabled ||
+				this.#restMs === 0 ||
+				(this.#mouseOnly && event.pointerType !== 'mouse')
+			) {
+				return;
+			}
+			this.#clearRestTimeout();
+			this.#restTimeout = setTimeout(() => {
+				this.#floating.onOpenChange(true, event, 'hover');
+			}, this.#restMs);
+		};
+
 		const onpointerleave = (event: PointerEvent) => {
-			if (!this.#enabled) {
+			if (!this.#enabled || (this.#mouseOnly && event.pointerType !== 'mouse')) {
 				return;
 			}
-			if (this.#mouseOnly && event.pointerType !== 'mouse') {
-				return;
-			}
-			this.#clearTimeouts();
+			this.#clearOpenTimeout();
+			this.#clearCloseTimeout();
+			this.#clearRestTimeout();
 
 			if (this.#closeDelay > 0) {
 				this.#closeTimeout = setTimeout(() => {
@@ -122,6 +150,7 @@ class Hover {
 
 		return {
 			onpointerenter,
+			onpointermove,
 			onpointerleave
 		};
 	}
