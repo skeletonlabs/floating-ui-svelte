@@ -68,9 +68,9 @@ class Hover {
 	readonly #restMs = $derived.by(() => this.#options.restMs ?? 0);
 	readonly #move = $derived.by(() => this.#options.move ?? true);
 
-	#openTimeout: ReturnType<typeof setTimeout> | null;
-	#closeTimeout: ReturnType<typeof setTimeout> | null;
-	#restTimeout: ReturnType<typeof setTimeout> | null;
+	#openTimeout: ReturnType<typeof setTimeout> | null = null;
+	#closeTimeout: ReturnType<typeof setTimeout> | null = null;
+	#restTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	#clearOpenTimeout() {
 		if (this.#openTimeout !== null) {
@@ -102,9 +102,6 @@ class Hover {
 	constructor(floating: Floating, options: HoverOptions = {}) {
 		this.#floating = floating;
 		this.#options = options;
-		this.#openTimeout = null;
-		this.#closeTimeout = null;
-		this.#restTimeout = null;
 
 		$effect(() => this.#clearTimeouts());
 	}
