@@ -34,10 +34,16 @@ interface HoverOptions {
 	delay?: number | DelayOptions;
 
 	/**
-	 * Time in ms that will delay the change of the open state when the pointer leaves the reference element.
+	 * Time in ms that the pointer must rest on the reference element before the open state is set to true.
 	 * @default 0
 	 */
 	restMs?: number;
+
+	/**
+	 * Whether moving the pointer over the floating element will open it, without a regular hover event required.
+	 * @default true
+	 */
+	move?: boolean;
 }
 
 class Hover {
@@ -60,6 +66,7 @@ class Hover {
 		return delay?.hide ?? 0;
 	});
 	readonly #restMs = $derived.by(() => this.#options.restMs ?? 0);
+	readonly #move = $derived.by(() => this.#options.move ?? true);
 
 	#openTimeout: ReturnType<typeof setTimeout> | null;
 	#closeTimeout: ReturnType<typeof setTimeout> | null;
@@ -120,13 +127,10 @@ class Hover {
 		};
 
 		const onpointermove = (event: PointerEvent) => {
-			if (
-				!this.#enabled ||
-				this.#restMs === 0 ||
-				(this.#mouseOnly && event.pointerType !== 'mouse')
-			) {
+			if (!this.#enabled || !this.#move || (this.#mouseOnly && event.pointerType !== 'mouse')) {
 				return;
 			}
+
 			this.#clearRestTimeout();
 
 			this.#restTimeout = setTimeout(() => {
