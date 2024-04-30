@@ -103,7 +103,11 @@ class Hover {
 		this.#floating = floating;
 		this.#options = options;
 
-		$effect(() => this.#clearTimeouts());
+		$effect(() => {
+			return () => {
+				this.#clearTimeouts();
+			};
+		});
 	}
 
 	get reference() {
