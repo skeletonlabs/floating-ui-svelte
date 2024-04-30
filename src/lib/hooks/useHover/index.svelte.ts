@@ -1,4 +1,5 @@
 import type { Floating } from '../useFloating/index.svelte.js';
+import type { Interaction } from '../useInteractions/index.svelte.js';
 
 interface DelayOptions {
 	/**
@@ -46,7 +47,7 @@ interface HoverOptions {
 	move?: boolean;
 }
 
-class Hover {
+class Hover implements Interaction {
 	readonly #floating: Floating;
 	readonly #options: HoverOptions;
 	readonly #enabled = $derived.by(() => this.#options.enabled ?? true);
