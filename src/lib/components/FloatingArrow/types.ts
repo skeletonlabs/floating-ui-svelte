@@ -5,6 +5,7 @@ export interface FloatingArrowProps {
 	/** The floating context. */
 	context: any; // Omit<FloatingContext, 'refs'> & { refs: any };
 
+	// Options ---
 	/**
 	 * Width of the arrow.
 	 * @default 14
@@ -29,7 +30,10 @@ export interface FloatingArrowProps {
 	/** Stroke (border) width of the arrow. */
 	strokeWidth?: number;
 
+	// Style Props ---
+	/** Set transform styles. */
 	transform?: string;
+	/** Set fill styles. */
 	fill?: string;
 	/** Provide arbitrary classes to the root SVG element. */
 	classes?: string;
