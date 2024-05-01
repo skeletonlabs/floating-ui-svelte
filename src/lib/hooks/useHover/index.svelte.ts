@@ -15,6 +15,13 @@ interface DelayOptions {
 	hide?: number;
 }
 
+interface HandleCloseFn {
+	(floating: Floating): (event: MouseEvent) => void;
+	__options: {
+		blockPointerEvents: boolean;
+	};
+}
+
 interface HoverOptions {
 	/**
 	 * Enables/disables the hook.
@@ -45,6 +52,8 @@ interface HoverOptions {
 	 * @default true
 	 */
 	move?: boolean;
+
+	handleClose?: HandleCloseFn | null;
 }
 
 class Hover implements Interaction {
@@ -68,10 +77,13 @@ class Hover implements Interaction {
 	});
 	readonly #restMs = $derived.by(() => this.#options.restMs ?? 0);
 	readonly #move = $derived.by(() => this.#options.move ?? true);
+	readonly #handleClose = $derived.by(() => this.#options.handleClose ?? null);
 
-	readonly isHoverOpen = $derived.by(() => {
-		const type = this.#floating.openEvent?.type;
-		return type?.includes('mouse') && type !== 'mousedown';
+	readonly #isHoverOpen = $derived.by(() => {
+		return () => {
+			const type = this.#floating.openEvent?.type;
+			return type?.includes('mouse') && type !== 'mousedown';
+		};
 	});
 
 	#timeout = -1;
@@ -102,6 +114,26 @@ class Hover implements Interaction {
 				this.#floating.events.off('openChange', onOpenChange);
 			};
 		});
+
+		$effect(() => {
+			if (!this.#enabled || !this.#handleClose || !this.#floating.open) {
+				return;
+			}
+
+			const onLeave = (event: MouseEvent) => {
+				if (this.#isHoverOpen()) {
+					this.#floating.onOpenChange(false, event, 'hover');
+				}
+			};
+
+			document.addEventListener('mouseleave', onLeave);
+
+			return () => {
+				document.removeEventListener('mouseleave', onLeave);
+			};
+		});
+
+		// TODO: Continue porting from here. See: https://github.com/floating-ui/floating-ui/blob/master/packages/react/src/hooks/useHover.ts#L177
 	}
 
 	get reference() {
