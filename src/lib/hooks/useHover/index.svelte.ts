@@ -186,7 +186,7 @@ class Hover implements Interaction {
 				return ['click', 'mousedown'].includes(this.#floating.openEvent.type);
 			};
 
-			const onMouseEnter = () => {
+			const onMouseEnter = (event: MouseEvent) => {
 				clearTimeout(this.#timeout);
 				this.#blockMouse = false;
 
@@ -208,7 +208,22 @@ class Hover implements Interaction {
 				}
 			};
 
-			// TODO: Continue from here - https://github.com/floating-ui/floating-ui/blob/master/packages/react/src/hooks/useHover.ts#L257
+			const onMouseLeave = (event: MouseEvent) => {
+				if (isClickLikeOpenEvent()) {
+					return;
+				}
+
+				this.#unbindMouseMove();
+
+				clearTimeout(this.#restTimeout);
+
+				if (this.#handleClose) {
+					if (!this.#floating.open) {
+						clearTimeout(this.#timeout);
+					}
+					// TODO: Continue from here - https://github.com/floating-ui/floating-ui/blob/master/packages/react/src/hooks/useHover.ts#L272
+				}
+			};
 		});
 	}
 
