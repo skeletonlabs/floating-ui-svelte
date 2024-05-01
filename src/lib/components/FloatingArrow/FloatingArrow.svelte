@@ -1,16 +1,11 @@
 <script lang="ts">
 	import type { Alignment, Side } from '@floating-ui/dom';
+	import { styleParser } from '$lib/utils.js';
 	import type { FloatingArrowProps } from './types.js';
 
 	// MOCKED ---------------
 	// prettier-ignore
 	const platform = { isRTL: (v: any) => false };
-
-	function cssStringify(obj: any) {
-		return Object.keys(obj)
-			.map((k) => `${k}: ${obj[k]}`)
-			.join(';');
-	}
 	// ----------------------
 
 	let {
@@ -82,7 +77,7 @@
 	viewBox={`0 0 ${width} ${height > width ? height : width}`}
 	aria-hidden
 	class={classes}
-	style={cssStringify({
+	style={styleParser({
 		position: 'absolute',
 		pointerEvents: 'none',
 		[xOffsetProp]: arrowX,

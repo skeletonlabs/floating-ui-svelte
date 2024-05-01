@@ -31,3 +31,12 @@ export function styleObjectToString(styleObject: Partial<ElementCSSInlineStyle['
  * Useful as a default value for optional callbacks.
  */
 export function noop() {}
+
+/**
+ * Converts an object of key/values to a style attribute string.
+ */
+export function styleParser(obj: any) {
+	return Object.keys(obj)
+		.map((k) => `${k}: ${obj[k]}`)
+		.join(';');
+}
