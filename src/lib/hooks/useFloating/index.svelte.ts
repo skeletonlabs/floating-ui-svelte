@@ -1,5 +1,5 @@
 import type { OpenChangeReason } from '$lib/types.js';
-import { getDPR, noop, roundByDPR, styleObjectToString } from '$lib/utils.js';
+import { createPubSub, getDPR, noop, roundByDPR, styleObjectToString } from '$lib/utils.js';
 import {
 	computePosition,
 	type Strategy,
@@ -167,6 +167,9 @@ class Floating {
 	 */
 	readonly elements = $derived.by(() => this.#options.elements ?? {});
 
+	/**
+	 * Function to update the floating element's position.
+	 */
 	readonly update = () => {
 		const { reference, floating } = this.elements;
 		if (reference == null || floating == null) {
@@ -186,6 +189,16 @@ class Floating {
 			this.#isPositioned = true;
 		});
 	};
+
+	/**
+	 * The latest event that caused the floating element to open.
+	 */
+	openEvent: Event | null = $state(null);
+
+	/**
+	 * Publish/subscribe system for floating element events.
+	 */
+	events = $state(createPubSub());
 
 	/**
 	 * The x-coord of the floating element.
