@@ -33,6 +33,32 @@ export function styleObjectToString(styleObject: Partial<ElementCSSInlineStyle['
 export function noop() {}
 
 /**
+ * A function that creates a simple publish/subscribe mechanism.
+ */
+export function createPubSub() {
+	const map = new Map<string, Array<(data: unknown) => void>>();
+
+	return {
+		emit(event: string, data: unknown) {
+			map.get(event)?.forEach((handler) => handler(data));
+		},
+		on(event: string, listener: (data: unknown) => void) {
+			map.set(event, [...(map.get(event) || []), listener]);
+		},
+		off(event: string, listener: (data: unknown) => void) {
+			map.set(event, map.get(event)?.filter((l) => l !== listener) || []);
+		}
+	};
+}
+
+/**
+ * Generates a unique identifier.
+ */
+export function generateId() {
+	return `floating-ui-${Math.random().toString(36).slice(2, 6)}`;
+}
+
+/**
  * Converts an object of key/values to a style attribute string.
  */
 export function styleParser(obj: any) {
