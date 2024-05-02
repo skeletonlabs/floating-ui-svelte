@@ -110,4 +110,4 @@ function useInteractions(propsList: Array<ElementProps | void> = []): UseInterac
 	};
 }
 
-export { useInteractions, type UseInteractionsReturn };
+export { useInteractions, type UseInteractionsReturn, type ElementProps };
