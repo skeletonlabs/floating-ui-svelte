@@ -31,6 +31,7 @@ export function styleObjectToString(styleObject: Partial<ElementCSSInlineStyle['
  * Useful as a default value for optional callbacks.
  */
 export function noop() {}
+<<<<<<< HEAD
 
 /**
  * A function that creates a simple publish/subscribe mechanism.
@@ -57,3 +58,5 @@ export function createPubSub() {
 export function generateId() {
 	return `floating-ui-${Math.random().toString(36).slice(2, 6)}`;
 }
+=======
+>>>>>>> main
