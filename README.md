@@ -31,15 +31,15 @@ The `useFloating` Svelte hook acts as a controller for all other Floating UI Sve
 #### Usage
 
 ```html
-<script>
+<script lang="ts">
 	import { useFloating } from '@skeletonlabs/floating-ui-svelte';
 
-	const elements = $state({ reference: null, floating: null });
+	const elements: { reference: HTMLElement | null; floating: HTMLElement | null } = $state({ reference: null, floating: null });
 	const floating = useFloating({ elements });
 </script>
 
 <div bind:this="{elements.reference}">Reference</div>
-<div bind:this="{elements.floating}" styles="{floating.floatingStyles}">Floating</div>
+<div bind:this="{elements.floating}" style="{floating.floatingStyles}">Floating</div>
 ```
 
 > [!WARNING]
@@ -71,6 +71,46 @@ The `useFloating` Svelte hook acts as a controller for all other Floating UI Sve
 | floatingStyles | CSS styles to apply to the floating element to position it. | string |
 | update | The function to update floating position manually. | () => void |
 | context | Context object containing internal logic to alter the behavior of the floating element. | FloatingContext |
+
+### useInteractions
+
+(tbd)
+
+### useHover
+
+(tbd)
+
+### useFocus
+
+(tbd)
+
+### useClick
+
+(tbd)
+
+### useRole
+
+(tbd)
+
+### useDismiss
+
+(tbd)
+
+### useTransition
+
+(tbd)
+
+### FloatingArrow
+
+(tbd)
+
+### FloatingOverlay
+
+(tbd)
+
+### FloatingFocusManager
+
+(tbd)
 
 ## Attribution
 
