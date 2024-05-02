@@ -50,6 +50,7 @@ export function createPubSub() {
 		}
 	};
 }
+
 /**
  * Generates a unique identifier.
  */
