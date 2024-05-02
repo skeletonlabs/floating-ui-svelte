@@ -1,25 +1,4 @@
-import type { OpenChangeReason } from '$lib/types.js';
-import { createAttribute, isMouseLikePointerType, noop } from '$lib/utils.js';
-import type { Floating } from '../useFloating/index.svelte.js';
-import type { Interaction } from '../useInteractions/index.svelte.js';
-
-const safePolygonIdentifier = createAttribute('safe-polygon');
-
-export function getDelay(
-	value: HoverOptions['delay'],
-	prop: 'open' | 'close',
-	pointerType?: PointerEvent['pointerType']
-) {
-	if (pointerType && !isMouseLikePointerType(pointerType)) {
-		return 0;
-	}
-
-	if (typeof value === 'number') {
-		return value;
-	}
-
-	return value?.[prop];
-}
+import type { FloatingContext } from '../useFloating/index.svelte.js';
 
 interface DelayOptions {
 	/**
@@ -36,13 +15,13 @@ interface DelayOptions {
 }
 
 interface HandleCloseFn {
-	(floating: Floating): (event: MouseEvent) => void;
+	(context: FloatingContext): (event: MouseEvent) => void;
 	__options: {
 		blockPointerEvents: boolean;
 	};
 }
 
-interface HoverOptions {
+interface UseHoverOptions {
 	/**
 	 * Enables/disables the hook.
 	 * @default true
@@ -75,169 +54,15 @@ interface HoverOptions {
 
 	/**
 	 * Callback to handle the closing of the floating element.
+	 * @default undefined
 	 */
 	handleClose?: HandleCloseFn | null;
 }
 
-class Hover implements Interaction {
-	readonly #floating: Floating;
-	readonly #options: HoverOptions;
-	readonly #enabled = $derived.by(() => this.#options.enabled ?? true);
-	readonly #delay = $derived.by(() => this.#options.delay ?? 0);
-	readonly #mouseOnly = $derived.by(() => this.#options.mouseOnly ?? false);
-	readonly #restMs = $derived.by(() => this.#options.restMs ?? 0);
-	readonly #move = $derived.by(() => this.#options.move ?? true);
-	readonly #handleClose = $derived.by(() => this.#options.handleClose ?? null);
-
-	readonly #isHoverOpen = $derived.by(() => {
-		return () => {
-			const type = this.#floating.openEvent?.type;
-			return type?.includes('mouse') && type !== 'mousedown';
-		};
-	});
-
-	#pointerType: string | undefined = undefined;
-	#handler: ((event: MouseEvent) => void) | undefined = undefined;
-	#timeout = 0;
-	#restTimeout = 1;
-	#blockMouse = true;
-	#performedPointerEventsMutation = false;
-	#unbindMouseMove = noop;
-
-	#clearPointerEvents() {
-		if (!this.#performedPointerEventsMutation) {
-			return;
-		}
-		document.body.style.pointerEvents = '';
-		document.body.removeAttribute(safePolygonIdentifier);
-		this.#performedPointerEventsMutation = false;
-	}
-
-	#closeWithDelay(event: Event, runElseBranch = true, reason: OpenChangeReason = 'hover') {
-		const closeDelay = getDelay(this.#delay, 'close', this.#pointerType);
-		if (closeDelay && !this.#handler) {
-			clearTimeout(this.#restTimeout);
-			this.#timeout = window.setTimeout(
-				() => this.#floating.onOpenChange(false, event, reason),
-				closeDelay
-			);
-		} else if (runElseBranch) {
-			clearTimeout(this.#timeout);
-			this.#floating.onOpenChange(false, event, reason);
-		}
-	}
-
-	#cleanupMouseMoveHandler() {
-		this.#unbindMouseMove();
-		this.#handler = undefined;
-	}
-
-	constructor(floating: Floating, options: HoverOptions = {}) {
-		this.#floating = floating;
-		this.#options = options;
-
-		$effect(() => {
-			if (!this.#enabled) {
-				return;
-			}
-			const onOpenChange = ({ open }: { open: boolean }) => {
-				if (!open) {
-					clearTimeout(this.#timeout);
-					clearTimeout(this.#restTimeout);
-					this.#blockMouse = true;
-				}
-			};
-
-			// @ts-expect-error - FIXME
-			this.#floating.events.on('openChange', onOpenChange);
-
-			return () => {
-				// @ts-expect-error - FIXME
-				this.#floating.events.off('openChange', onOpenChange);
-			};
-		});
-
-		$effect(() => {
-			if (!this.#enabled || !this.#handleClose || !this.#floating.open) {
-				return;
-			}
-
-			const onLeave = (event: MouseEvent) => {
-				if (this.#isHoverOpen()) {
-					this.#floating.onOpenChange(false, event, 'hover');
-				}
-			};
-
-			document.addEventListener('mouseleave', onLeave);
-
-			return () => {
-				document.removeEventListener('mouseleave', onLeave);
-			};
-		});
-
-		$effect(() => {
-			if (!this.#enabled) {
-				return;
-			}
-			const isClickLikeOpenEvent = () => {
-				if (!this.#floating.openEvent) {
-					return false;
-				}
-				return ['click', 'mousedown'].includes(this.#floating.openEvent.type);
-			};
-
-			const onMouseEnter = (event: MouseEvent) => {
-				clearTimeout(this.#timeout);
-				this.#blockMouse = false;
-
-				if (
-					(this.#mouseOnly && !isMouseLikePointerType(this.#pointerType)) ||
-					(this.#restMs > 0 && !getDelay(this.#delay, 'open'))
-				) {
-					return;
-				}
-
-				const openDelay = getDelay(this.#delay, 'open', this.#pointerType);
-
-				if (openDelay) {
-					this.#timeout = window.setTimeout(() => {
-						this.#floating.onOpenChange(true, event, 'hover');
-					}, openDelay);
-				} else {
-					this.#floating.onOpenChange(true, event, 'hover');
-				}
-			};
-
-			const onMouseLeave = (event: MouseEvent) => {
-				if (isClickLikeOpenEvent()) {
-					return;
-				}
-
-				this.#unbindMouseMove();
-
-				clearTimeout(this.#restTimeout);
-
-				if (this.#handleClose) {
-					if (!this.#floating.open) {
-						clearTimeout(this.#timeout);
-					}
-					// TODO: Continue from here - https://github.com/floating-ui/floating-ui/blob/master/packages/react/src/hooks/useHover.ts#L272
-				}
-			};
-		});
-	}
-
-	get reference() {
-		return {};
-	}
-
-	get floating() {
-		return {};
-	}
+function useHover(context: FloatingContext, options: UseHoverOptions = {}) {
+	context;
+	options;
+	return {};
 }
 
-function useHover(floating: Floating, options: HoverOptions = {}): Hover {
-	return new Hover(floating, options);
-}
-
-export { useHover, type HoverOptions, type Hover };
+export { useHover, type UseHoverOptions };
