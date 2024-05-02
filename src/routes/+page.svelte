@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { useFloating, type Placement, autoUpdate, offset, useInteractions } from '$lib/index.js';
+	import { useFloating, type Placement, autoUpdate, offset } from '$lib/index.js';
 
 	const elements = $state<{ reference?: HTMLElement; floating?: HTMLElement }>({});
 	let placement = $state<Placement>('bottom');
