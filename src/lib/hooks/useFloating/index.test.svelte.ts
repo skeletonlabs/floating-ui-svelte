@@ -119,10 +119,7 @@ describe('useFloating', () => {
 	it_in_effect('updates `floatingStyles` on DPR change.', async () => {
 		window.devicePixelRatio = 1;
 
-		const floating = useFloating({
-			...test_config(),
-			transform: true
-		});
+		const floating = useFloating(test_config());
 
 		await vi.waitFor(() => {
 			expect(floating.floatingStyles).not.toContain('willChange: transform');
