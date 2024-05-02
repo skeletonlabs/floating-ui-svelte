@@ -93,6 +93,7 @@ function useInteractions(propsList: Array<ElementProps | void> = []): UseInterac
 
 	const getItemProps = $derived(
 		(userProps?: Omit<HTMLAttributes<HTMLElement>, 'selected' | 'active'> & ExtendedUserProps) => {
+			// @ts-expect-error - FIXME
 			return mergeProps(userProps, propsList, 'item');
 		}
 	);
