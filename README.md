@@ -39,7 +39,7 @@ The `useFloating` Svelte hook acts as a controller for all other Floating UI Sve
 </script>
 
 <div bind:this="{elements.reference}">Reference</div>
-<div bind:this="{elements.floating}" styles="{floating.floatingStyles}">Floating</div>
+<div bind:this="{elements.floating}" style="{floating.floatingStyles}">Floating</div>
 ```
 
 > [!WARNING]
