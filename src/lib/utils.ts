@@ -33,7 +33,7 @@ export function styleObjectToString(styleObject: Partial<ElementCSSInlineStyle['
 export function noop() {}
 
 /**
- * Creates a simple publish/subscribe system.
+ * A function that creates a simple publish/subscribe mechanism.
  */
 export function createPubSub() {
 	const map = new Map<string, Array<(data: unknown) => void>>();
@@ -52,18 +52,8 @@ export function createPubSub() {
 }
 
 /**
- * Checks if the given pointer type is mouse-like.
+ * Generates a unique identifier.
  */
-export function isMouseLikePointerType(pointerType: string | undefined, strict?: boolean) {
-	// On some Linux machines with Chromium, mouse inputs return a `pointerType`
-	// of "pen": https://github.com/floating-ui/floating-ui/issues/2015
-	const values: Array<string | undefined> = ['mouse', 'pen'];
-	if (!strict) {
-		values.push('', undefined);
-	}
-	return values.includes(pointerType);
-}
-
-export function createAttribute(name: string) {
-	return `data-floating-ui-${name}`;
+export function generateId() {
+	return `floating-ui-${Math.random().toString(36).slice(2, 6)}`;
 }
