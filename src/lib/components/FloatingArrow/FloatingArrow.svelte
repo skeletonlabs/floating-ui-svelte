@@ -1,12 +1,7 @@
 <script lang="ts">
-	import type { Alignment, Side } from '@floating-ui/dom';
+	import { platform, type Alignment, type Side } from '@floating-ui/dom';
 	import { styleParser } from '$lib/utils.js';
 	import type { FloatingArrowProps } from './types.js';
-
-	// MOCKED ---------------
-	// prettier-ignore
-	const platform = { isRTL: (v: any) => false };
-	// ----------------------
 
 	let {
 		ref = $bindable(),
@@ -25,8 +20,6 @@
 		classes,
 		styles
 	}: FloatingArrowProps = $props();
-
-	console.log(context);
 
 	// TODO: migrate to useId();
 	const clipPathId = 'abc123';
