@@ -61,7 +61,7 @@ export function generateId() {
 /**
  * Converts an object of key/values to a style attribute string.
  */
-export function styleParser(obj: any) {
+export function styleParser(obj: Record<string, unknown>) {
 	return Object.keys(obj)
 		.map((k) => `${k}: ${obj[k]}`)
 		.join(';');
