@@ -31,10 +31,10 @@ The `useFloating` Svelte hook acts as a controller for all other Floating UI Sve
 #### Usage
 
 ```html
-<script>
+<script lang="ts">
 	import { useFloating } from '@skeletonlabs/floating-ui-svelte';
 
-	const elements = $state({ reference: null, floating: null });
+	const elements: { reference: HTMLElement | null; floating: HTMLElement | null } = $state({ reference: null, floating: null });
 	const floating = useFloating({ elements });
 </script>
 
