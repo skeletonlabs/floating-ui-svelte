@@ -83,7 +83,7 @@ interface UseInteractionsReturn {
 	) => Record<string, unknown>;
 }
 
-export function useInteractions(propsList: Array<ElementProps | void> = []): UseInteractionsReturn {
+function useInteractions(propsList: Array<ElementProps | void> = []): UseInteractionsReturn {
 	const getReferenceProps = $derived((userProps?: HTMLAttributes<Element>) =>
 		mergeProps(userProps, propsList, 'reference')
 	);
@@ -109,3 +109,5 @@ export function useInteractions(propsList: Array<ElementProps | void> = []): Use
 		}
 	};
 }
+
+export { useInteractions, type UseInteractionsReturn };
