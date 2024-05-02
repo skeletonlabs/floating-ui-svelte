@@ -151,6 +151,11 @@ interface UseFloatingReturn extends UseFloatingData {
 	readonly floatingStyles: string;
 
 	/**
+	 * Updates the floating element position.
+	 */
+	readonly update: () => Promise<void>;
+
+	/**
 	 * Additional context meant for other hooks to consume.
 	 */
 	readonly context: FloatingContext;
@@ -230,7 +235,7 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		}
 	});
 
-	const update = () => {
+	const update = async () => {
 		if (!floating || !reference) {
 			return;
 		}
@@ -241,14 +246,13 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 			middleware
 		};
 
-		computePosition(reference, floating, config).then((position) => {
-			state.x = position.x;
-			state.y = position.y;
-			state.placement = position.placement;
-			state.strategy = position.strategy;
-			state.middlewareData = position.middlewareData;
-			state.isPositioned = true;
-		});
+		const position = await computePosition(reference, floating, config);
+
+		state.y = position.y;
+		state.placement = position.placement;
+		state.strategy = position.strategy;
+		state.middlewareData = position.middlewareData;
+		state.isPositioned = true;
 	};
 
 	$effect.pre(() => {
@@ -297,9 +301,8 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		get floatingStyles() {
 			return floatingStyles;
 		},
-		get context() {
-			return context;
-		}
+		update,
+		context
 	};
 }
 
