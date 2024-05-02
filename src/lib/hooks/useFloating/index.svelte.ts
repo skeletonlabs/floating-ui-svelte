@@ -1,28 +1,24 @@
 import type { OpenChangeReason } from '$lib/types.js';
-import { getDPR, noop, roundByDPR, styleObjectToString } from '$lib/utils.js';
 import {
-	computePosition,
+	createPubSub,
+	generateId,
+	getDPR,
+	noop,
+	roundByDPR,
+	styleObjectToString
+} from '$lib/utils.js';
+import {
 	type Strategy,
 	type Placement,
 	type MiddlewareData,
 	type ReferenceElement,
 	type FloatingElement,
-	type Middleware
+	type Middleware,
+	type ComputePositionConfig,
+	computePosition
 } from '@floating-ui/dom';
 
-type FloatingElements = {
-	/**
-	 * The reference element.
-	 */
-	readonly reference?: ReferenceElement | null;
-
-	/**
-	 * The floating element which is anchored to the reference element.
-	 */
-	readonly floating?: FloatingElement | null;
-};
-
-interface FloatingOptions {
+interface UseFloatingOptions {
 	/**
 	 * Represents the open/close state of the floating element.
 	 * @default true
@@ -48,7 +44,7 @@ interface FloatingOptions {
 
 	/**
 	 * These are plain objects that modify the positioning coordinates in some fashion, or provide useful data for the consumer to use.
-	 * @default undefined
+	 * @default []
 	 */
 	readonly middleware?: Array<Middleware | undefined | null | false>;
 
@@ -61,8 +57,21 @@ interface FloatingOptions {
 
 	/**
 	 * The reference and floating elements.
+	 * @default undefined
 	 */
-	readonly elements?: FloatingElements;
+	readonly elements?: {
+		/**
+		 * The reference element.
+		 * @default undefined
+		 */
+		reference?: ReferenceElement;
+
+		/**
+		 * The floating element.
+		 * @default undefined
+		 */
+		floating?: FloatingElement;
+	};
 
 	/**
 	 * Callback to handle mounting/unmounting of the elements.
@@ -75,166 +84,223 @@ interface FloatingOptions {
 	) => () => void;
 }
 
-class Floating {
-	readonly #options: FloatingOptions;
-	readonly #placementOption = $derived.by(() => this.#options.placement ?? 'bottom');
-	readonly #strategyOption = $derived.by(() => this.#options.strategy ?? 'absolute');
-	readonly #middleware = $derived.by(() => this.#options.middleware);
-	readonly #transform = $derived.by(() => this.#options.transform ?? true);
-	readonly #whileElementsMounted = $derived.by(() => this.#options.whileElementsMounted);
-
-	#x = $state(0);
-	#y = $state(0);
-	#placement: Placement = $state('bottom');
-	#strategy: Strategy = $state('absolute');
-	#middlewareData: MiddlewareData = $state.frozen({});
-	#isPositioned = $state(false);
-
-	#attach = () => {
-		if (this.#whileElementsMounted === undefined) {
-			this.update();
-			return;
-			1;
-		}
-
-		const { floating, reference } = this.elements;
-		if (reference != null && floating != null) {
-			return this.#whileElementsMounted(reference, floating, this.update);
-		}
-	};
-
-	#reset = () => {
-		if (!this.open) {
-			this.#isPositioned = false;
-		}
-	};
-
-	constructor(options: FloatingOptions) {
-		this.#options = options;
-		this.#placement = this.#placementOption;
-		this.#strategy = this.#strategyOption;
-
-		$effect.pre(this.update);
-		$effect.pre(this.#attach);
-		$effect.pre(this.#reset);
-	}
+interface UseFloatingData {
+	/**
+	 * The x-coordinate of the floating element.
+	 */
+	x: number;
 
 	/**
-	 * CSS styles to apply to the floating element to position it.
+	 * The y-coordinate of the floating element.
 	 */
-	readonly floatingStyles = $derived.by(() => {
-		const initialStyles = {
-			position: this.strategy,
-			left: '0',
-			top: '0'
-		};
-
-		const { floating } = this.elements;
-		if (floating == null) {
-			return styleObjectToString(initialStyles);
-		}
-
-		const xVal = roundByDPR(floating, this.x);
-		const yVal = roundByDPR(floating, this.y);
-
-		if (this.#transform) {
-			return styleObjectToString({
-				...initialStyles,
-				transform: `translate(${xVal}px, ${yVal}px)`,
-				...(getDPR(floating) >= 1.5 && { willChange: 'transform' })
-			});
-		}
-
-		return styleObjectToString({
-			position: this.#strategyOption,
-			left: `${xVal}px`,
-			top: `${yVal}px`
-		});
-	});
-
-	/**
-	 * Represents the open/close state of the floating element.
-	 */
-	readonly open = $derived.by(() => this.#options.open ?? true);
-
-	/**
-	 * Event handler that can be invoked whenever the open state changes.
-	 */
-	readonly onOpenChange = $derived.by(() => this.#options.onOpenChange ?? noop);
-
-	/**
-	 * The reference and floating elements.
-	 */
-	readonly elements = $derived.by(() => this.#options.elements ?? {});
-
-	readonly update = () => {
-		const { reference, floating } = this.elements;
-		if (reference == null || floating == null) {
-			return;
-		}
-
-		computePosition(reference, floating, {
-			middleware: this.#middleware,
-			placement: this.#placementOption,
-			strategy: this.#strategyOption
-		}).then((position) => {
-			this.#x = position.x;
-			this.#y = position.y;
-			this.#strategy = position.strategy;
-			this.#placement = position.placement;
-			this.#middlewareData = position.middlewareData;
-			this.#isPositioned = true;
-		});
-	};
-
-	/**
-	 * The x-coord of the floating element.
-	 */
-	get x(): number {
-		return this.#x;
-	}
-
-	/**
-	 * The y-coord of the floating element.
-	 */
-	get y(): number {
-		return this.#y;
-	}
+	y: number;
 
 	/**
 	 * The stateful placement, which can be different from the initial `placement` passed as options.
 	 */
-	get placement(): Placement {
-		return this.#placement;
-	}
+	placement: Placement;
 
 	/**
-	 * The type of CSS position property to use.
+	 * The stateful strategy, which can be different from the initial `strategy` passed as options.
 	 */
-	get strategy(): Strategy {
-		return this.#strategy;
-	}
+	strategy: Strategy;
 
 	/**
 	 * Additional data from middleware.
 	 */
-	get middlewareData(): MiddlewareData {
-		return this.#middlewareData;
-	}
+	middlewareData: MiddlewareData;
 
 	/**
 	 * The boolean that let you know if the floating element has been positioned.
 	 */
-	get isPositioned(): boolean {
-		return this.#isPositioned;
-	}
+	isPositioned: boolean;
+}
+
+interface FloatingEvents {
+	emit<T extends string>(event: T, data?: unknown): void;
+	on(event: string, handler: (data: unknown) => void): void;
+	off(event: string, handler: (data: unknown) => void): void;
+}
+
+interface ContextData {
+	openEvent?: Event;
+}
+
+interface FloatingContext {
+	open: boolean;
+	onOpenChange(open: boolean, event?: Event, reason?: OpenChangeReason): void;
+	events: FloatingEvents;
+	data: ContextData;
+	nodeId: string | undefined;
+	floatingId: string;
+	elements: {
+		reference?: ReferenceElement;
+		floating?: FloatingElement;
+	};
+}
+
+interface UseFloatingReturn extends UseFloatingData {
+	/**
+	 * Represents the open/close state of the floating element.
+	 */
+	readonly open: boolean;
+
+	/**
+	 * CSS styles to apply to the floating element to position it.
+	 */
+	readonly floatingStyles: string;
+
+	/**
+	 * Additional context meant for other hooks to consume.
+	 */
+	readonly context: FloatingContext;
 }
 
 /**
  * Hook for managing floating elements.
  */
-function useFloating(options: FloatingOptions = {}): Floating {
-	return new Floating(options);
+function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
+	const floating = $derived(options.elements?.floating);
+	const reference = $derived(options.elements?.reference);
+	const placement = $derived(options.placement ?? 'bottom');
+	const strategy = $derived(options.strategy ?? 'absolute');
+	const middleware = $derived(options.middleware ?? []);
+	const transform = $derived(options.transform ?? true);
+	const open = $derived(options.open ?? true);
+	const onOpenChange = $derived(options.onOpenChange ?? noop);
+	const whileElementsMounted = $derived(options.whileElementsMounted);
+	const floatingStyles = $derived.by(() => {
+		const initialStyles = {
+			position: strategy,
+			left: '0px',
+			top: '0px'
+		};
+
+		if (!floating) {
+			return styleObjectToString(initialStyles);
+		}
+
+		const x = roundByDPR(floating, state.x);
+		const y = roundByDPR(floating, state.y);
+
+		if (transform) {
+			return styleObjectToString({
+				...initialStyles,
+				transform: `translate(${x}px, ${y}px)`,
+				...(getDPR(floating) >= 1.5 && { willChange: 'transform' })
+			});
+		}
+
+		return styleObjectToString({
+			position: strategy,
+			left: `${x}px`,
+			top: `${y}px`
+		});
+	});
+
+	const state: UseFloatingData = $state({
+		x: 0,
+		y: 0,
+		strategy,
+		placement,
+		middlewareData: {},
+		isPositioned: false
+	});
+
+	const context: FloatingContext = $state({
+		get open() {
+			return open;
+		},
+		get onOpenChange() {
+			return onOpenChange;
+		},
+		events: createPubSub(),
+		data: {},
+		// TODO: Ensure nodeId works the same way as in @floating-ui/react
+		nodeId: undefined,
+		// TODO: Ensure nodeId works the same way as in @floating-ui/react
+		floatingId: generateId(),
+		elements: {
+			get floating() {
+				return floating;
+			},
+			get reference() {
+				return reference;
+			}
+		}
+	});
+
+	const update = () => {
+		if (!floating || !reference) {
+			return;
+		}
+
+		const config: ComputePositionConfig = {
+			placement,
+			strategy,
+			middleware
+		};
+
+		computePosition(reference, floating, config).then((position) => {
+			state.x = position.x;
+			state.y = position.y;
+			state.placement = position.placement;
+			state.strategy = position.strategy;
+			state.middlewareData = position.middlewareData;
+			state.isPositioned = true;
+		});
+	};
+
+	$effect.pre(() => {
+		if (open || !state.isPositioned) {
+			return;
+		}
+
+		state.isPositioned = false;
+	});
+
+	$effect.pre(() => {
+		if (!floating || !reference) {
+			return;
+		}
+
+		if (!whileElementsMounted) {
+			update();
+			return;
+		}
+
+		return whileElementsMounted(reference, floating, update);
+	});
+
+	return {
+		get x() {
+			return state.x;
+		},
+		get y() {
+			return state.y;
+		},
+		get placement() {
+			return state.placement;
+		},
+		get strategy() {
+			return state.strategy;
+		},
+		get middlewareData() {
+			return state.middlewareData;
+		},
+		get isPositioned() {
+			return state.isPositioned;
+		},
+		get open() {
+			return open;
+		},
+		get floatingStyles() {
+			return floatingStyles;
+		},
+		get context() {
+			return context;
+		}
+	};
 }
 
-export { useFloating, type FloatingOptions as UseFloatingOptions, type Floating };
+export { useFloating, type UseFloatingOptions, type UseFloatingReturn };
