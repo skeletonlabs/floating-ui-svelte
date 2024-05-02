@@ -1,5 +1,5 @@
 <script lang="ts">
-	import FloatingArrow from '$lib/components/FloatingArrow/FloatingArrow.svelte';
+	import { FloatingArrow } from '$lib/index.js';
 
 	let elemRef: HTMLElement;
 
