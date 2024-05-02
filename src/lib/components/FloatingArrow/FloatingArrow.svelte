@@ -26,6 +26,8 @@
 		styles
 	}: FloatingArrowProps = $props();
 
+	console.log(context);
+
 	// TODO: migrate to useId();
 	const clipPathId = 'abc123';
 
