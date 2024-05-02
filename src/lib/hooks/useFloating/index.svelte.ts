@@ -18,6 +18,18 @@ import {
 	computePosition
 } from '@floating-ui/dom';
 
+interface FloatingElements {
+	/**
+	 * The reference element.
+	 */
+	reference?: ReferenceElement | null;
+
+	/**
+	 * The floating element.
+	 */
+	floating?: FloatingElement | null;
+}
+
 interface UseFloatingOptions {
 	/**
 	 * Represents the open/close state of the floating element.
@@ -59,19 +71,7 @@ interface UseFloatingOptions {
 	 * The reference and floating elements.
 	 * @default undefined
 	 */
-	readonly elements?: {
-		/**
-		 * The reference element.
-		 * @default undefined
-		 */
-		reference?: ReferenceElement;
-
-		/**
-		 * The floating element.
-		 * @default undefined
-		 */
-		floating?: FloatingElement;
-	};
+	readonly elements?: FloatingElements;
 
 	/**
 	 * Callback to handle mounting/unmounting of the elements.
@@ -133,10 +133,7 @@ interface FloatingContext {
 	data: ContextData;
 	nodeId: string | undefined;
 	floatingId: string;
-	elements: {
-		reference?: ReferenceElement;
-		floating?: FloatingElement;
-	};
+	elements: FloatingElements;
 }
 
 interface UseFloatingReturn extends UseFloatingData {

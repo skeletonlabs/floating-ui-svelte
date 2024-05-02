@@ -72,6 +72,46 @@ The `useFloating` Svelte hook acts as a controller for all other Floating UI Sve
 | update | The function to update floating position manually. | () => void |
 | context | Context object containing internal logic to alter the behavior of the floating element. | FloatingContext |
 
+### useInteractions
+
+(tbd)
+
+### useHover
+
+(tbd)
+
+### useFocus
+
+(tbd)
+
+### useClick
+
+(tbd)
+
+### useRole
+
+(tbd)
+
+### useDismiss
+
+(tbd)
+
+### useTransition
+
+(tbd)
+
+### FloatingArrow
+
+(tbd)
+
+### FloatingOverlay
+
+(tbd)
+
+### FloatingFocusManager
+
+(tbd)
+
 ## Attribution
 
 Based on [Floating UI](https://github.com/floating-ui/floating-ui) and [Floating UI React](https://floating-ui.com/docs/react). Maintained by [Hugo Korte](https://github.com/Hugos68), [Skeleton Labs](https://www.skeletonlabs.co/), and the [Svelte community](https://svelte.dev/).
