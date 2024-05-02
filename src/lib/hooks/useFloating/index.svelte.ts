@@ -126,7 +126,7 @@ interface ContextData {
 	openEvent?: Event;
 }
 
-interface FloatingContext {
+interface FloatingContext extends UseFloatingData {
 	open: boolean;
 	onOpenChange(open: boolean, event?: Event, reason?: OpenChangeReason): void;
 	events: FloatingEvents;
@@ -210,6 +210,24 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 	});
 
 	const context: FloatingContext = $state({
+		get x() {
+			return state.x;
+		},
+		get y() {
+			return state.y;
+		},
+		get placement() {
+			return state.placement;
+		},
+		get strategy() {
+			return state.strategy;
+		},
+		get middlewareData() {
+			return state.middlewareData;
+		},
+		get isPositioned() {
+			return state.isPositioned;
+		},
 		get open() {
 			return open;
 		},
