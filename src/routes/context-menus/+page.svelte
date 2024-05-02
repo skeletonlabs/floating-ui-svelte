@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { arrow, useFloating, FloatingArrow } from '$lib/index.js';
 
-	let elemRef: HTMLElement;
+	let ref: HTMLElement | null = $state(null);
 
 	const elements: { reference: HTMLElement | null; floating: HTMLElement | null } = $state({
 		reference: null,
@@ -11,7 +11,9 @@
 	const floating = useFloating({
 		placement: 'top',
 		elements,
-		middleware: [arrow({ element: elemRef })]
+		get middleware() {
+			return [ref && arrow({ element: ref })];
+		}
 	});
 </script>
 
@@ -20,7 +22,7 @@
 
 <div class="space-y-10">
 	<section class="space-y-4">
-		<FloatingArrow ref={elemRef} context={floating.context} />
+		<FloatingArrow bind:ref context={floating.context} />
 	</section>
 	<section class="space-y-4">
 		<p>Page: Context Menus</p>

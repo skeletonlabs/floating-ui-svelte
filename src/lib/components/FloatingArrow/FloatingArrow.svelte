@@ -3,8 +3,9 @@
 	import { styleParser } from '$lib/utils.js';
 	import type { FloatingArrowProps } from './types.js';
 
+
 	let {
-		ref = $bindable(),
+		ref = $bindable(null),
 		context,
 		// ---
 		width = 14,

@@ -1,9 +1,14 @@
+import type { FloatingContext } from '$lib/hooks/useFloating/index.svelte.js';
+
 export interface FloatingArrowProps {
-	/** The binded HTML element reference. */
-	ref: any;
+	/**
+	 * The binded HTML element reference.
+	 * @default null
+	 * */
+	ref: Element | null;
 	// Context Source: https://github.com/floating-ui/floating-ui/blob/master/packages/react/src/types.ts#L132
 	/** The floating context. */
-	context: any; // Omit<FloatingContext, 'refs'> & { refs: any };
+	context: FloatingContext;
 
 	// Options ---
 	/**
