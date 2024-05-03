@@ -1,16 +1,10 @@
 import type { FloatingContext } from '$lib/hooks/useFloating/index.svelte.js';
 
 export interface FloatingArrowProps {
-	/**
-	 * The binded HTML element reference.
-	 * @default null
-	 * */
+	/** The binded HTML element reference. */
 	ref: Element | null;
-	// Context Source: https://github.com/floating-ui/floating-ui/blob/master/packages/react/src/types.ts#L132
 	/** The floating context. */
 	context: FloatingContext;
-
-	// Options ---
 	/**
 	 * Width of the arrow.
 	 * @default 14
@@ -26,16 +20,29 @@ export interface FloatingArrowProps {
 	 * @default 0 (sharp)
 	 */
 	tipRadius?: number;
-	/** Forces a static offset over dynamic positioning under a certain condition. */
+	/**
+	 * Forces a static offset over dynamic positioning under a certain condition.
+	 * @default undefined (use dynamic position)
+	 */
 	staticOffset?: string | number | null;
-	/** Custom path string. */
+	/**
+	 * Custom path string.
+	 * @default undefined (use dynamic path)
+	 */
 	d?: string;
-	/** Stroke (border) color of the arrow. */
+	/**
+	 * Stroke (border) color of the arrow.
+	 * @default "none"
+	 */
 	stroke?: string;
-	/** Stroke (border) width of the arrow. */
+	/**
+	 * Stroke (border) width of the arrow.
+	 * @default 0
+	 */
 	strokeWidth?: number;
 
-	// Style Props ---
+	// Styling ---
+
 	/** Set transform styles. */
 	transform?: string;
 	/** Set fill styles. */

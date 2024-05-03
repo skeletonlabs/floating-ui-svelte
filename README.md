@@ -157,12 +157,12 @@ Renders a customizable `<svg>` pointing arrow triangle inside the floating eleme
 
 | Prop | Description | Default | Type |
 | -------- | ----------- | ---- | ---- |
-| ref* | Binded element reference. | - | HTMLElement | null |
+| ref* | Binded element reference. | - | HTMLElement, null |
 | context* | The context object returned from useFloating(). | - | FloatingContext |
 | width | The width of the arrow. | `14` | number |
 | height | The height of the arrow. | `7` | number |
 | tipRadius | The radius (rounding) of the arrow tip. | `0` (sharp) | number |
-| staticOffset | A static offset override of the arrow from the floating element edge. Often desirable if the floating element is smaller than the reference element along the relevant axis and has an edge alignment (`start`/`end`). | `undefined` (use dynamic path) | string | number | null |
+| staticOffset | A static offset override of the arrow from the floating element edge. Often desirable if the floating element is smaller than the reference element along the relevant axis and has an edge alignment (`start`/`end`). | `undefined` (use dynamic path) | string, number, null |
 | d | A custom path for the arrow. Useful if you want fancy rounding. The path should be inside a square SVG and placed at the `bottom` of it. The path is designed for the 'bottom' placement, which will be rotated for other placements. | `"black"` (browser default) | string |
 | fill | The color of the arrow. | xxx | string |
 | stroke | The stroke (border) color of the arrow. This must match (or be less than) the floating element’s border width. | `"none"` | string |
