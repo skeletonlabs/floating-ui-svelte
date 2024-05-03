@@ -122,7 +122,12 @@ html.dark .shiki span {
 
 /* Utility Classes */
 
-/* hover:saturate-110 flex items-center gap-2 whitespace-nowrap rounded  px-4 py-3 font-bold text-gray-900 shadow-lg transition hover:shadow-xl hover:brightness-110 sm:text-lg */
+/* Tooltip */
+.tooltip {
+	@apply bg-surface-500 text-white p-4 rounded;
+	/* Floating UI Requirements */
+	@apply w-max absolute top-0 left-0;
+}
 
 /* Buttons */
 .btn-cta {

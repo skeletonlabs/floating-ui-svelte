@@ -5,7 +5,7 @@ export interface FloatingArrowProps {
 	 * The binded HTML element reference.
 	 * @default null
 	 * */
-	ref: Element | null;
+	arrowRef: Element | null;
 	// Context Source: https://github.com/floating-ui/floating-ui/blob/master/packages/react/src/types.ts#L132
 	/** The floating context. */
 	context: FloatingContext;
