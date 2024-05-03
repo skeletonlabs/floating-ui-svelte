@@ -10,15 +10,15 @@ interface ExtendedUserProps {
 
 interface ElementProps {
 	reference?: HTMLAttributes<Element>;
-	floating?: HTMLAttributes<HTMLElement>;
-	item?: HTMLAttributes<HTMLElement> | ((props: ExtendedUserProps) => HTMLAttributes<HTMLElement>);
+	floating?: HTMLAttributes<Element>;
+	item?: HTMLAttributes<Element> | ((props: ExtendedUserProps) => HTMLAttributes<Element>);
 }
 
 interface UseInteractionsReturn {
 	getReferenceProps: (userProps?: HTMLAttributes<Element>) => Record<string, unknown>;
 	getFloatingProps: (userProps?: HTMLAttributes<Element>) => Record<string, unknown>;
 	getItemProps: (
-		userProps?: Omit<HTMLAttributes<HTMLElement>, 'selected' | 'active'> & ExtendedUserProps
+		userProps?: Omit<HTMLAttributes<Element>, 'selected' | 'active'> & ExtendedUserProps
 	) => Record<string, unknown>;
 }
 
@@ -92,8 +92,7 @@ function useInteractions(propsList: Array<ElementProps | void> = []): UseInterac
 	);
 
 	const getItemProps = $derived(
-		(userProps?: Omit<HTMLAttributes<HTMLElement>, 'selected' | 'active'> & ExtendedUserProps) => {
-			// @ts-expect-error - FIXME
+		(userProps?: Omit<HTMLAttributes<Element>, 'selected' | 'active'> & ExtendedUserProps) => {
 			return mergeProps(userProps, propsList, 'item');
 		}
 	);
