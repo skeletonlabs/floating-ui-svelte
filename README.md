@@ -13,6 +13,22 @@ npm install @skeletonlabs/floating-ui-svelte
 
 ## Usage
 
+### Making elements "float"
+
+We want it to float on top of the UI though, so it doesn’t disrupt the flow of the document. Add this class to all floating elements. Note that Floating UI does not have opinions about how your elements stack on the z-axis.
+
+```css
+.floating {
+	width: max-content;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+```
+
+### The Basics
+
 Import the desired hook or component from floating-ui-svelte. [View each example](https://floating-ui-svelte.vercel.app/) for additional guidance.
 
 ```js
@@ -38,8 +54,8 @@ The `useFloating` Svelte hook acts as a controller for all other Floating UI Sve
 	const floating = useFloating({ elements });
 </script>
 
-<div bind:this="{elements.reference}">Reference</div>
-<div bind:this="{elements.floating}" style="{floating.floatingStyles}">Floating</div>
+<button bind:this="{elements.reference}">Reference</button>
+<div bind:this="{elements.floating}" style="{floating.floatingStyles}" class="floating">Floating</div>
 ```
 
 > [!WARNING]
@@ -102,7 +118,41 @@ The `useFloating` Svelte hook acts as a controller for all other Floating UI Sve
 
 ### FloatingArrow
 
-(tbd)
+Renders a customizable `<svg>` pointing arrow triangle inside the floating element that gets automatically positioned.
+
+
+```html
+<script lang="ts">
+	import { arrow, useFloating, FloatingArrow, autoUpdate, offset } from '$lib/index.js';
+
+	let arrowRef: HTMLElement | null = $state(null);
+
+	const elements: { reference: HTMLElement | null; floating: HTMLElement | null } = $state({
+		reference: null,
+		floating: null
+	});
+
+	const floating = useFloating({
+		elements,
+		get middleware() {
+			return [
+				offset(10),
+				arrowRef && arrow({ element: arrowRef })
+			];
+		}
+	});
+</script>
+
+<button bind:this={elements.reference}>Reference</button>
+<div bind:this={elements.floating} style={floating.floatingStyles} class="floating">
+	<div>Floating</div>
+	<FloatingArrow
+		bind:ref={arrowRef}
+		context={floating.context}
+		classes="fill-surface-500"
+	/>
+</div>
+```
 
 ### FloatingOverlay
 

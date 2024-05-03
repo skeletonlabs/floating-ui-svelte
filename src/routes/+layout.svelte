@@ -1,4 +1,6 @@
 <script lang="ts">
+	export const ssr = false;
+
 	import { fly } from 'svelte/transition';
 	// Stylesheets
 	import '../app.pcss';
