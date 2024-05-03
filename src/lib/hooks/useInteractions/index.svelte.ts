@@ -84,30 +84,21 @@ function mergeProps<Key extends keyof ElementProps>(
 }
 
 function useInteractions(propsList: Array<ElementProps | void> = []): UseInteractionsReturn {
-	const getReferenceProps = $derived((userProps?: HTMLAttributes<Element>) =>
-		mergeProps(userProps, propsList, 'reference')
-	);
-	const getFloatingProps = $derived((userProps?: HTMLAttributes<Element>) =>
-		mergeProps(userProps, propsList, 'floating')
-	);
-
-	const getItemProps = $derived(
-		(userProps?: Omit<HTMLAttributes<Element>, 'selected' | 'active'> & ExtendedUserProps) => {
-			return mergeProps(userProps, propsList, 'item');
-		}
-	);
-
-	return {
-		get getReferenceProps() {
-			return getReferenceProps;
-		},
-		get getFloatingProps() {
-			return getFloatingProps;
-		},
-		get getItemProps() {
-			return getItemProps;
-		}
+	const getReferenceProps = (userProps?: HTMLAttributes<Element>) => {
+		return mergeProps(userProps, propsList, 'reference');
 	};
+
+	const getFloatingProps = (userProps?: HTMLAttributes<Element>) => {
+		return mergeProps(userProps, propsList, 'floating');
+	};
+
+	const getItemProps = (
+		userProps?: Omit<HTMLAttributes<Element>, 'selected' | 'active'> & ExtendedUserProps
+	) => {
+		return mergeProps(userProps, propsList, 'item');
+	};
+
+	return { getReferenceProps, getFloatingProps, getItemProps };
 }
 
 export { useInteractions, type UseInteractionsReturn, type ElementProps };
