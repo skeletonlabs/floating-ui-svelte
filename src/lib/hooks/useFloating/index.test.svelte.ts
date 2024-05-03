@@ -1,4 +1,5 @@
 import { describe, expect, vi, it } from 'vitest';
+import { it_in_effect } from '$lib/test-utils.svelte.js';
 import {
 	offset,
 	useFloating,
@@ -8,18 +9,6 @@ import {
 	type UseFloatingOptions,
 	type Strategy
 } from '../../index.js';
-
-function it_in_effect(name: string, fn: () => void) {
-	it(name, async () => {
-		let promise;
-		const cleanup = $effect.root(() => (promise = fn()));
-		try {
-			await promise;
-		} finally {
-			cleanup();
-		}
-	});
-}
 
 describe('useFloating', () => {
 	function test_config(): UseFloatingOptions {

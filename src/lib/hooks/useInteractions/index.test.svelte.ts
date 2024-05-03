@@ -1,5 +1,6 @@
 import { describe, expect, vi, it } from 'vitest';
 import { type ElementProps, useInteractions } from '../../index.js';
+import { it_in_effect } from '$lib/test-utils.svelte.js';
 
 describe('useInteractions', () => {
 	it('returns props to the corresponding getter', () => {
@@ -70,5 +71,23 @@ describe('useInteractions', () => {
 
 		expect(one).toHaveBeenCalledOnce();
 		expect(two).toHaveBeenCalledOnce();
+	});
+	it_in_effect('updates props reactively', () => {
+		const reference = $state({
+			'data-count': 0
+		});
+
+		const interaction: ElementProps = {
+			reference
+		};
+
+		const interactions = useInteractions([interaction]);
+
+		expect(interactions.getReferenceProps()).toHaveProperty('data-count');
+		expect(interactions.getReferenceProps()['data-count']).toBe(0);
+
+		reference['data-count'] = 1;
+
+		expect(interactions.getReferenceProps()['data-count']).toBe(1);
 	});
 });
