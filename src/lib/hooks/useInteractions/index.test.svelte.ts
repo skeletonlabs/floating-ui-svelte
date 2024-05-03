@@ -44,7 +44,7 @@ describe('useInteractions', () => {
 		expect(interactions.getReferenceProps()).toHaveProperty('id');
 		expect(interactions.getReferenceProps().id).toBe('two');
 	});
-	it('does not override duplicate eventlistener props but instead runes them sequentially', () => {
+	it('does not override duplicate eventlistener props but instead runs them sequentially', () => {
 		const one = vi.fn();
 		const two = vi.fn();
 
