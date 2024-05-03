@@ -1,3 +1,8 @@
+<!--
+	@component Renders a customizable `<svg>` pointing arrow triangle inside the floating element that gets automatically positioned.
+	@link https://floating-ui.com/docs/FloatingArrow 
+-->
+
 <script lang="ts">
 	import { platform, type Alignment, type Side } from '@floating-ui/dom';
 	import { styleParser } from '$lib/utils.js';

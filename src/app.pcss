@@ -102,7 +102,10 @@ footer .anchor {
 	@apply text-black dark:text-white;
 }
 
-/* Code */
+/* Pre & Code */
+.pre {
+	@apply bg-black text-white p-4 rounded;
+}
 .code {
 	@apply bg-surface-50/50 dark:bg-surface-600 px-2 py-1 rounded;
 	@apply text-sm text-emerald-500 dark:text-emerald-300;
@@ -122,10 +125,9 @@ html.dark .shiki span {
 
 /* Utility Classes */
 
-/* Floating */
+/* Floating (required) */
 .floating {
-	/* Floating UI Requirements */
-	@apply w-max absolute top-0 left-0;
+	@apply w-max absolute top-0 left-0 z-10;
 }
 
 /* Buttons */
