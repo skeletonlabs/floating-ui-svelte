@@ -6,7 +6,7 @@
 
 <script lang="ts">
 	import { platform, type Alignment, type Side } from '@floating-ui/dom';
-	import { styleParser } from '$lib/utils.js';
+	import { styleObjectToString } from '$lib/utils.js';
 	import type { FloatingArrowProps } from './types.js';
 
 	let {
@@ -23,8 +23,7 @@
 		// ---
 		transform,
 		fill,
-		classes,
-		styles
+		classes
 	}: FloatingArrowProps = $props();
 
 	// TODO: migrate to useId();
@@ -92,14 +91,13 @@
 	viewBox={`0 0 ${width} ${height > width ? height : width}`}
 	aria-hidden
 	class={classes}
-	style={styleParser({
+	style={styleObjectToString({
 		position: 'absolute',
 		pointerEvents: 'none',
-		[xOffsetProp]: arrowX,
-		[yOffsetProp]: arrowY,
+		[xOffsetProp]: `${arrowX}`,
+		[yOffsetProp]: `${arrowY}`,
 		[side]: isVerticalSide || isCustomShape ? '100%' : `calc(100% - ${computedStrokeWidth / 2}px)`,
-		transform: `${rotation} ${transform ?? ''}`,
-		styles
+		transform: `${rotation} ${transform ?? ''}`
 	})}
 >
 	{#if computedStrokeWidth > 0}

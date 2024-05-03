@@ -17,6 +17,10 @@ export function roundByDPR(element: Element, value: number) {
 	return Math.round(value * dpr) / dpr;
 }
 
+interface foo {
+	styles: string;
+}
+
 /**
  * Converts a JavaScript object representing CSS styles into a string.
  */
@@ -56,13 +60,4 @@ export function createPubSub() {
  */
 export function generateId() {
 	return `floating-ui-${Math.random().toString(36).slice(2, 6)}`;
-}
-
-/**
- * Converts an object of key/values to a style attribute string.
- */
-export function styleParser(obj: Record<string, unknown>) {
-	return Object.keys(obj)
-		.map((k) => `${k}: ${obj[k]}`)
-		.join(';');
 }
