@@ -4,7 +4,7 @@
 	import type { FloatingArrowProps } from './types.js';
 
 	let {
-		arrowRef = $bindable(null),
+		ref = $bindable(null),
 		context,
 		// ---
 		width = 14,
@@ -66,7 +66,7 @@
 </script>
 
 <svg
-	bind:this={arrowRef}
+	bind:this={ref}
 	width={isCustomShape ? width : width + computedStrokeWidth}
 	height={width}
 	viewBox={`0 0 ${width} ${height > width ? height : width}`}

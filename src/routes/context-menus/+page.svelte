@@ -20,9 +20,13 @@
 <div class="space-y-10">
 	<section>
 		<button bind:this={elements.reference} class="btn-rose-sm">Reference</button>
-		<div bind:this={elements.floating} style={floating.floatingStyles} class="tooltip">
-			<div>Floating</div>
-			<FloatingArrow bind:arrowRef context={floating.context} classes="fill-surface-500" />
+		<div
+			bind:this={elements.floating}
+			style={floating.floatingStyles}
+			class="floating bg-surface-500 text-white p-4 rounded"
+		>
+			<p>Floating</p>
+			<FloatingArrow bind:ref={arrowRef} context={floating.context} classes="fill-surface-500" />
 		</div>
 	</section>
 </div>
