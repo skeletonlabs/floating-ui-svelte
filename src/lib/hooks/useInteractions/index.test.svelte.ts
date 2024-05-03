@@ -38,12 +38,13 @@ describe('useInteractions', () => {
 
 		const interactions = useInteractions([interaction]);
 
-		expect(interactions.getReferenceProps()).toHaveProperty('data-count');
-		expect(interactions.getReferenceProps()['data-count']).toBe(0);
+		const count = $derived(interactions.getReferenceProps()['data-count']);
+
+		expect(count).toBe(0);
 
 		reference['data-count'] = 1;
 
-		expect(interactions.getReferenceProps()['data-count']).toBe(1);
+		expect(count).toBe(1);
 	});
 	it('overrides duplicate non-eventlistener props with the latest interaction', () => {
 		const interactionOne: ElementProps = {
