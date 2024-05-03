@@ -263,6 +263,7 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 
 		const position = await computePosition(reference, floating, config);
 
+		state.x = position.x;
 		state.y = position.y;
 		state.placement = position.placement;
 		state.strategy = position.strategy;

@@ -69,11 +69,11 @@ describe('useFloating', () => {
 			expect(floating.y).toBe(5);
 		});
 
-		placement = 'top';
+		placement = 'right';
 
 		await vi.waitFor(() => {
-			expect(floating.x).toBe(0);
-			expect(floating.y).toBe(-5);
+			expect(floating.x).toBe(5);
+			expect(floating.y).toBe(0);
 		});
 	});
 	it_in_effect('updates `floatingStyles` on `strategy` change', async () => {
