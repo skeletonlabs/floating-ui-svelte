@@ -46,7 +46,7 @@ describe('useInteractions', () => {
 
 		expect(count).toBe(1);
 	});
-	it('overrides duplicate non-eventlistener props with the latest interaction', () => {
+	it('overrides duplicate non-eventlistener props with the prop from the last ineraction passed in that has said duplicate prop', () => {
 		const interactionOne: ElementProps = {
 			reference: {
 				id: 'one'
