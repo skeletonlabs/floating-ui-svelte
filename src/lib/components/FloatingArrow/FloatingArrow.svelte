@@ -42,7 +42,7 @@
 	const isCustomShape = !!d;
 	const isVerticalSide = side === 'top' || side === 'bottom';
 
-	const yOffsetProp = $state(staticOffset && alignment === 'end' ? 'bottom' : 'top');
+	let yOffsetProp = $state(staticOffset && alignment === 'end' ? 'bottom' : 'top');
 	let xOffsetProp = $state(staticOffset && alignment === 'end' ? 'right' : 'left');
 
 	$effect(() => {

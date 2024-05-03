@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { autoUpdate } from '@floating-ui/dom';
-	import { arrow, useFloating, FloatingArrow } from '$lib/index.js';
+	import { arrow, useFloating, FloatingArrow, autoUpdate, offset } from '$lib/index.js';
 
 	let arrowRef: HTMLElement | null = $state(null);
 
@@ -11,24 +10,23 @@
 
 	const floating = useFloating({
 		whileElementsMounted: autoUpdate,
-		placement: 'top',
+		placement: 'bottom',
 		elements,
 		get middleware() {
-			return [arrowRef && arrow({ element: arrowRef })];
+			return [offset(10), arrowRef && arrow({ element: arrowRef })];
 		}
 	});
 </script>
 
 <div class="space-y-10">
-	<pre class="pre">floatingStyles: {floating.floatingStyles}</pre>
 	<section>
 		<button bind:this={elements.reference} class="btn-rose-sm">Reference</button>
 		<div
 			bind:this={elements.floating}
 			style={floating.floatingStyles}
-			class="floating bg-surface-500 text-white p-4 rounded"
+			class="floating bg-surface-500 text-white p-4 rounded shadow-xl"
 		>
-			<p>Floating</p>
+			<p>This is the floating element</p>
 			<FloatingArrow bind:ref={arrowRef} context={floating.context} classes="fill-surface-500" />
 		</div>
 	</section>
