@@ -105,8 +105,8 @@
 		<path
 			fill="none"
 			{stroke}
-			style:clipPath={`url(#${clipPathId})`}
-			style:strokeWidth={computedStrokeWidth + (d ? 0 : 1)}
+			style:clip-path={`url(#${clipPathId})`}
+			style:stroke-width={computedStrokeWidth + (d ? 0 : 1)}
 			d={dValue}
 		/>
 	{/if}

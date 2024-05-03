@@ -17,10 +17,6 @@ export function roundByDPR(element: Element, value: number) {
 	return Math.round(value * dpr) / dpr;
 }
 
-interface foo {
-	styles: string;
-}
-
 /**
  * Converts a JavaScript object representing CSS styles into a string.
  */
