@@ -80,7 +80,7 @@ The `useInteractions` Svelte hook allows you to consume multiple interactions. I
 
 ```html
 <script>
-	import { useFloating, useHover, useFocus, useInteractions } from '@skeletonlabs/floating-ui-svelte';
+	import { useFloating, useInteractions, useHover, useFocus } from '@skeletonlabs/floating-ui-svelte';
 
 	const floating = useFloating();
 
@@ -94,10 +94,10 @@ The `useInteractions` Svelte hook allows you to consume multiple interactions. I
 <div {...interactions.getFloatingProps()}>Floating</div>
 ```
 
-If you want to apply an event handler the an element using a props getter make sure to pass them through the getter instead of applying them directly:
+If you want to apply an event handler the an element that is using a props getter make sure to pass them through the getter instead of applying them directly:
 ```diff
-- <div {...interactions.getReferenceProps()} onclick={() => console.log('click!')}>Reference</div>
-+ <div {...interactions.getReferenceProps({ onclick: () => console.log('click!') })}>Reference</div>
+- <div {...interactions.getReferenceProps()} onclick={/* ... */}>Reference</div>
++ <div {...interactions.getReferenceProps({ onclick: /* ... */})}>Reference</div>
 ```
 This will ensure all event handlers will be registered rather being overruled by eachother.
 
@@ -105,9 +105,9 @@ This will ensure all event handlers will be registered rather being overruled by
 
 | Property | Description | Type |
 | -------- | ----------- | ---- |
-| getReferenceProps | Function that returns spreadable properties for the `reference` element.  |  (userProps?: HTMLAttributes<Element>) => Record<string, unknown> |
-| getFloatingProps | Function that returns spreadable properties for the `floating` element. |  (userProps?: HTMLAttributes<Element>) => Record<string, unknown> |
-| getItemProps | Function that returns spreadable properties for when dealing with a list inside the `floating` element. |  (userProps?: HTMLAttributes<Element> & ExtendedUserProps) => Record<string, unknown> |
+| getReferenceProps | The merged attributes for the `reference` element  |  (userProps?: HTMLAttributes<Element>) => Record<string, unknown> |
+| getFloatingProps | The merged attributes for the `floating` element |  (userProps?: HTMLAttributes<Element>) => Record<string, unknown> |
+| getItemProps | The merged attributes for when dealing with a list inside the `floating` element. |  (userProps?: HTMLAttributes<Element> & ExtendedUserProps) => Record<string, unknown> |
 
 ### useHover
 
