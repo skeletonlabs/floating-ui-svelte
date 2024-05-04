@@ -26,6 +26,12 @@
 		classes
 	}: FloatingArrowProps = $props();
 
+	const {
+		elements: { floating },
+		placement,
+		middlewareData: { arrow }
+	} = $derived(context);
+
 	// TODO: migrate to useId();
 	const clipPathId = 'abc123';
 
@@ -37,17 +43,12 @@
 	const svgX = $derived((width / 2) * (tipRadius / -8 + 1));
 	const svgY = $derived(((height / 2) * tipRadius) / 4);
 
-	const [side, alignment] = $derived(context.placement.split('-') as [Side, Alignment]);
-	const isRTL = $derived(
-		context.elements.floating ? platform.isRTL(context.elements.floating) : false
-	);
+	const [side, alignment] = $derived(placement.split('-') as [Side, Alignment]);
+	const isRTL = $derived(floating ? platform.isRTL(floating) : false);
 	const isCustomShape = $derived(!!d);
 	const isVerticalSide = $derived(side === 'top' || side === 'bottom');
 
-	const yOffsetProp = $derived.by(() => {
-		return staticOffset && alignment === 'end' ? 'bottom' : 'top';
-	});
-
+	const yOffsetProp = $derived(staticOffset && alignment === 'end' ? 'bottom' : 'top');
 	const xOffsetProp = $derived.by(() => {
 		if (!staticOffset) {
 			return 'left';
@@ -58,12 +59,8 @@
 		return alignment === 'end' ? 'right' : 'left';
 	});
 
-	const arrowX = $derived(
-		context.middlewareData.arrow?.x != null ? staticOffset || context.middlewareData.arrow.x : ''
-	);
-	const arrowY = $derived(
-		context.middlewareData.arrow?.y != null ? staticOffset || context.middlewareData.arrow.y : ''
-	);
+	const arrowX = $derived(arrow?.x != null ? staticOffset || arrow.x : '');
+	const arrowY = $derived(arrow?.y != null ? staticOffset || arrow.y : '');
 
 	const dValue = $derived(
 		d ||
