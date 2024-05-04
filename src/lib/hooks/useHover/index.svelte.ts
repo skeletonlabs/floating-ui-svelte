@@ -118,10 +118,14 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 	let performedPointerEventsMutation = false;
 	let unbindMouseMove = noop;
 
-	const isHoverOpen = () => {
+	const isHoverOpen = $derived.by(() => {
 		const type = data.openEvent?.type;
 		return type?.includes('mouse') && type !== 'mousedown';
-	};
+	});
+
+	const isClickLikeOpenEvent = $derived(
+		data.openEvent ? ['click', 'mousedown'].includes(data.openEvent.type) : false
+	);
 
 	$effect(() => {
 		if (!enabled) {
@@ -148,7 +152,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 		}
 
 		const onLeave = (event: MouseEvent) => {
-			if (!isHoverOpen()) {
+			if (!isHoverOpen) {
 				return;
 			}
 			onOpenChange(false, event, 'hover');
@@ -198,10 +202,6 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 			return;
 		}
 
-		const isClickLikeOpenEvent = () => {
-			return data.openEvent ? ['click', 'mousedown'].includes(data.openEvent.type) : false;
-		};
-
 		const onMouseEnter = (event: MouseEvent) => {
 			clearTimeout(timeout);
 			blockMouseMove = false;
@@ -225,7 +225,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 		};
 
 		const onMouseLeave = (event: MouseEvent) => {
-			if (isClickLikeOpenEvent()) {
+			if (isClickLikeOpenEvent) {
 				return;
 			}
 
@@ -276,7 +276,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 		// did not move.
 		// https://github.com/floating-ui/floating-ui/discussions/1692
 		const onScrollMouseLeave = (event: MouseEvent) => {
-			if (isClickLikeOpenEvent()) {
+			if (isClickLikeOpenEvent) {
 				return;
 			}
 
@@ -319,7 +319,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 			return;
 		}
 
-		if (open && handleClose?.__options.blockPointerEvents && isHoverOpen()) {
+		if (open && handleClose?.__options.blockPointerEvents && isHoverOpen) {
 			const body = getDocument(floating).body;
 			body.setAttribute(safePolygonIdentifier, '');
 			body.style.pointerEvents = 'none';
