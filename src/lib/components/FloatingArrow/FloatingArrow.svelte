@@ -71,14 +71,18 @@
 				' Z'
 	);
 
-	const rotation = $derived(
-		{
-			top: isCustomShape ? 'rotate(180deg)' : '',
-			left: isCustomShape ? 'rotate(90deg)' : 'rotate(-90deg)',
-			bottom: isCustomShape ? '' : 'rotate(180deg)',
-			right: isCustomShape ? 'rotate(-90deg)' : 'rotate(90deg)'
-		}[side]
-	);
+	const rotation = $derived.by(() => {
+		switch (side) {
+			case 'top':
+				return isCustomShape ? 'rotate(180deg)' : '';
+			case 'left':
+				return isCustomShape ? 'rotate(90deg)' : 'rotate(-90deg)';
+			case 'bottom':
+				return isCustomShape ? '' : 'rotate(180deg)';
+			case 'right':
+				return isCustomShape ? 'rotate(-90deg)' : 'rotate(90deg)';
+		}
+	});
 </script>
 
 <svg
