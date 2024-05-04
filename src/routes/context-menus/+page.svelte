@@ -17,11 +17,12 @@
 		elements
 	});
 
-	const hover = useHover(floating.context);
+	const hover = useHover(floating.context, { move: false });
 
 	const { getReferenceProps, getFloatingProps } = useInteractions([hover]);
 </script>
 
+<svelte:window on:keydown={(e: KeyboardEvent) => e.key === 'Escape' && (open = false)} />
 <section class="h-[300vh]">
 	<div class="bg-red-600" bind:this={elements.reference} {...getReferenceProps()}>Reference</div>
 
