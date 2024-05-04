@@ -186,12 +186,13 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 	};
 
 	const clearPointerEvents = () => {
-		if (performedPointerEventsMutation) {
-			const body = getDocument(floating).body;
-			body.style.pointerEvents = '';
-			body.removeAttribute(safePolygonIdentifier);
-			performedPointerEventsMutation = false;
+		if (!performedPointerEventsMutation) {
+			return;
 		}
+		const body = getDocument(floating).body;
+		body.style.pointerEvents = '';
+		body.removeAttribute(safePolygonIdentifier);
+		performedPointerEventsMutation = false;
 	};
 
 	// Registering the mouse events on the reference directly to bypass React's
