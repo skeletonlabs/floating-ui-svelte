@@ -27,8 +27,8 @@
 	}: FloatingArrowProps = $props();
 
 	const {
-		elements: { floating },
 		placement,
+		elements: { floating },
 		middlewareData: { arrow }
 	} = $derived(context);
 
@@ -44,7 +44,7 @@
 	const svgY = $derived(((height / 2) * tipRadius) / 4);
 
 	const [side, alignment] = $derived(placement.split('-') as [Side, Alignment]);
-	const isRTL = $derived(floating ? platform.isRTL(floating) : false);
+	const isRTL = $derived(floating && platform.isRTL(floating));
 	const isCustomShape = $derived(!!d);
 	const isVerticalSide = $derived(side === 'top' || side === 'bottom');
 
