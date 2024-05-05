@@ -248,7 +248,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 		};
 	});
 
-	const result = $derived.by(() => {
+	const elementProps = $derived.by(() => {
 		if (!enabled) {
 			return {};
 		}
@@ -386,14 +386,13 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 							}
 						})(event);
 					}
-
 					closeWithDelay(event, false);
 				}
 			}
 		};
 	});
 
-	return result;
+	return elementProps;
 }
 
 export { useHover, type UseHoverOptions };
