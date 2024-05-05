@@ -10,7 +10,7 @@
 		get open() {
 			return open;
 		},
-		onOpenChange(v) {
+		onOpenChange(v, reason) {
 			open = v;
 		},
 		whileElementsMounted: autoUpdate,
