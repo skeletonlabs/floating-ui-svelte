@@ -141,11 +141,11 @@ This will ensure all event handlers will be registered rather being overruled by
 ```
 
 #### Options
+
 | Property | Description | Type | Default Value |
 | -------- | ----------- | ---- | ------------- |
 | enabled | Enables the interaction | boolean | true |
 | role | The role that the floating element should be | AriaRole | 'dialog' |
-
 
 ### useDismiss
 
