@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import CodeBlock from '../CodeBlock/CodeBlock.svelte';
 
 	interface PreviewProps {
 		preview: Snippet;
@@ -10,13 +9,11 @@
 	let { preview, code }: PreviewProps = $props();
 
 	let activeTab = $state('preview');
+	const buttonBase = 'py-2 px-4 border-b-2 border-transparent hover:bg-surface-500/5';
 
 	function setTab(v: string) {
 		activeTab = v;
 	}
-
-	// Styles
-	const buttonBase = 'py-2 px-4 border-b-2 border-transparent hover:bg-surface-500/5';
 </script>
 
 <figure class="space-y-4">
