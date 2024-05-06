@@ -135,7 +135,7 @@ This will ensure all event handlers will be registered rather being overruled by
 | delay | Time in ms that will delay the change of the open state. Also accepts an object with open and close properties for finer grained control. | number | 0 |
 | restMs | Time in ms that the pointer must rest on the reference element before the open state is set to true. | number | 0 |
 | move | Whether moving the pointer over the floating element will open it, without a regular hover event required. | boolean | true |
-
+| handleClose | Callback to handle the closing of the floating element. | HandleCloseFn | null |
 
 ### useFocus
 
