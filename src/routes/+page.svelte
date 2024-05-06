@@ -9,7 +9,13 @@
 	>
 		<Logo />
 		<h1 class="h1 text-black dark:text-white">Floating UI Svelte</h1>
-		<p>A Svelte library for position floating elements and create interactions for them.</p>
+		<p class="max-w-md">
+			A Svelte library for position floating elements and handling interaction. Inspired by <a
+				class="anchor"
+				href="https://floating-ui.com/"
+				target="_blank">Floating UI</a
+			>
+		</p>
 		<div class="flex gap-4">
 			<a href="/tooltips" class="btn-cta">
 				<span>Get Started</span>
