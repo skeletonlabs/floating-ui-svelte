@@ -4,7 +4,11 @@
 	import { useInteractions } from '../useInteractions/index.svelte.js';
 	import { useHover, type UseHoverOptions } from './index.svelte.js';
 
-	const { ...rest }: UseHoverOptions = $props();
+	interface Props extends UseHoverOptions {
+		showReference?: boolean;
+	}
+
+	const { showReference = true, ...rest }: Props = $props();
 
 	let open = $state(false);
 	const elements: { reference: HTMLElement | null; floating: HTMLElement | null } = $state({
@@ -27,12 +31,19 @@
 	const interactions = useInteractions([hover]);
 </script>
 
-<div data-testid="reference" bind:this={elements.reference} {...interactions.getReferenceProps()}>
-	Reference
-</div>
+{#if showReference}
+	<div
+		role="button"
+		data-testid="reference"
+		bind:this={elements.reference}
+		{...interactions.getReferenceProps()}
+	>
+		Reference
+	</div>
+{/if}
 {#if open}
 	<div
-		data-testid="floating"
+		role="tooltip"
 		bind:this={elements.floating}
 		style={floating.floatingStyles}
 		{...interactions.getFloatingProps()}

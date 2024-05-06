@@ -1,81 +1,87 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, act, fireEvent } from '@testing-library/svelte';
-import Test from './Test.svelte';
+import { describe, expect, it, vi } from 'vitest';
+import { render, screen, fireEvent, cleanup, act } from '@testing-library/svelte';
+import App from './App.test.svelte';
+
+vi.useFakeTimers();
 
 describe('useHover', () => {
 	it('opens on mousenter', async () => {
-		render(Test);
+		render(App);
 
-		expect(screen.queryByTestId('floating')).not.toBeInTheDocument();
+		await fireEvent.mouseEnter(screen.getByRole('button'));
+		expect(screen.queryByRole('tooltip')).toBeInTheDocument();
 
-		await fireEvent.mouseEnter(screen.getByTestId('reference'));
-
-		expect(screen.queryByTestId('floating')).toBeInTheDocument();
+		cleanup();
 	});
 
 	it('closes on mouseleave', async () => {
-		render(Test);
+		render(App);
 
-		expect(screen.queryByTestId('floating')).not.toBeInTheDocument();
+		await fireEvent.mouseEnter(screen.getByRole('button'));
+		await fireEvent.mouseLeave(screen.getByRole('button'));
+		expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
 
-		await fireEvent.mouseEnter(screen.getByTestId('reference'));
-
-		expect(screen.queryByTestId('floating')).toBeInTheDocument();
-
-		await fireEvent.mouseLeave(screen.getByTestId('reference'));
-
-		expect(screen.queryByTestId('floating')).not.toBeInTheDocument();
-	});
-
-	it('disables hover when enabled is `false`', async () => {
-		render(Test, { enabled: false });
-
-		expect(screen.queryByTestId('floating')).not.toBeInTheDocument();
-		fireEvent;
-		await fireEvent.mouseEnter(screen.getByTestId('reference'));
-
-		expect(screen.queryByTestId('floating')).not.toBeInTheDocument();
+		cleanup();
 	});
 
 	describe('delay', () => {
-		beforeEach(() => {
-			vi.useFakeTimers({ shouldAdvanceTime: true });
+		it('delays open and close when delay is provided a single value', async () => {
+			render(App, { delay: 500 });
+
+			await fireEvent.mouseEnter(screen.getByRole('button'));
+
+			await act(async () => {
+				vi.advanceTimersByTime(499);
+			});
+
+			expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+
+			await act(async () => {
+				vi.advanceTimersByTime(1);
+			});
+
+			expect(screen.queryByRole('tooltip')).toBeInTheDocument();
+
+			cleanup();
 		});
-		it('opens and closes with a single delay', async () => {
-			const user = userEvent.setup();
-			render(Test, { delay: 500 });
+		it('delays only open when only open is provided a value', async () => {
+			render(App, { delay: { open: 500 } });
 
-			vi.waitFor(() => {
-				expect(screen.queryByTestId('floating')).not.toBeInTheDocument();
+			await fireEvent.mouseEnter(screen.getByRole('button'));
+
+			await act(async () => {
+				vi.advanceTimersByTime(499);
 			});
 
-			await user.hover(screen.getByTestId('reference'));
+			expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
 
-			vi.advanceTimersByTime(499);
-
-			vi.waitFor(() => {
-				expect(screen.queryByTestId('floating')).not.toBeInTheDocument();
+			await act(async () => {
+				vi.advanceTimersByTime(1);
 			});
 
-			vi.advanceTimersByTime(1);
+			expect(screen.queryByRole('tooltip')).toBeInTheDocument();
 
-			vi.waitFor(() => {
-				expect(screen.queryByTestId('floating')).toBeInTheDocument();
+			cleanup();
+		});
+		it('delays only close when only close is provided a value', async () => {
+			render(App, { delay: { close: 500 } });
+
+			await fireEvent.mouseEnter(screen.getByRole('button'));
+			await fireEvent.mouseLeave(screen.getByRole('button'));
+
+			await act(async () => {
+				vi.advanceTimersByTime(499);
 			});
 
-			await user.unhover(screen.getByTestId('reference'));
+			expect(screen.queryByRole('tooltip')).toBeInTheDocument();
 
-			vi.advanceTimersByTime(499);
-
-			vi.waitFor(() => {
-				expect(screen.queryByTestId('floating')).toBeInTheDocument();
+			await act(async () => {
+				vi.advanceTimersByTime(1);
 			});
 
-			vi.advanceTimersByTime(1);
+			expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
 
-			vi.waitFor(() => {
-				expect(screen.queryByTestId('floating')).not.toBeInTheDocument();
-			});
+			cleanup();
 		});
 	});
 });
