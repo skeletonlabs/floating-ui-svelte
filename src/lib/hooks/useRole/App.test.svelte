@@ -3,9 +3,9 @@
 	import { useFloating } from '../useFloating/index.svelte.js';
 	import { useInteractions } from '../useInteractions/index.svelte.js';
 	import { useRole, type UseRoleOptions } from '../useRole/index.svelte.js';
-    interface Props extends UseRoleOptions {
-        open?: boolean;
-    }
+	interface Props extends UseRoleOptions {
+		open?: boolean;
+	}
 	let { open = true, ...rest }: Props = $props();
 	const elements: { reference: HTMLElement | null; floating: HTMLElement | null } = $state({
 		reference: null,
@@ -26,12 +26,7 @@
 </script>
 
 <p>{open}</p>
-<button
-    bind:this={elements.reference}
-    {...interactions.getReferenceProps()}
->
-    Reference
-</button>
+<button bind:this={elements.reference} {...interactions.getReferenceProps()}> Reference </button>
 {#if open}
 	<div
 		bind:this={elements.floating}
