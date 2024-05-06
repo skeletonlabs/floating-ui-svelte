@@ -118,9 +118,7 @@ This will ensure all event handlers will be registered rather being overruled by
 	import { useFloating, useInteractions, useHover } from '@skeletonlabs/floating-ui-svelte';
 
 	const floating = useFloating();
-
 	const hover = useHover(floating.context);
-
 	const interactions = useInteractions([hover]);
 </script>
 
