@@ -13,6 +13,22 @@ npm install @skeletonlabs/floating-ui-svelte
 
 ## Usage
 
+### Making elements "float"
+
+We want it to float on top of the UI though, so it doesn’t disrupt the flow of the document. Add this class to all floating elements. Note that Floating UI does not have opinions about how your elements stack on the z-axis.
+
+```css
+.floating {
+	width: max-content;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+```
+
+### The Basics
+
 Import the desired hook or component from floating-ui-svelte. [View each example](https://floating-ui-svelte.vercel.app/) for additional guidance.
 
 ```js
@@ -38,8 +54,8 @@ The `useFloating` Svelte hook acts as a controller for all other Floating UI Sve
 	const floating = useFloating({ elements });
 </script>
 
-<div bind:this="{elements.reference}">Reference</div>
-<div bind:this="{elements.floating}" style="{floating.floatingStyles}">Floating</div>
+<button bind:this="{elements.reference}">Reference</button>
+<div bind:this="{elements.floating}" style="{floating.floatingStyles}" class="floating">Floating</div>
 ```
 
 > [!WARNING]
@@ -135,7 +151,63 @@ This will ensure all event handlers will be registered rather being overruled by
 
 ### FloatingArrow
 
-(tbd)
+Renders a customizable `<svg>` pointing arrow triangle inside the floating element that gets automatically positioned.
+
+```html
+<script lang="ts">
+	import { arrow, useFloating, FloatingArrow, autoUpdate, offset } from '$lib/index.js';
+
+	let arrowRef: HTMLElement | null = $state(null);
+
+	const elements: { reference: HTMLElement | null; floating: HTMLElement | null } = $state({
+		reference: null,
+		floating: null
+	});
+
+	const floating = useFloating({
+		elements,
+		get middleware() {
+			return [
+				offset(10),
+				arrowRef && arrow({ element: arrowRef })
+			];
+		}
+	});
+</script>
+
+<button bind:this={elements.reference}>Reference</button>
+<div bind:this={elements.floating} style={floating.floatingStyles} class="floating">
+	<div>Floating</div>
+	<FloatingArrow
+		bind:ref={arrowRef}
+		context={floating.context}
+		classes="fill-surface-500"
+	/>
+</div>
+```
+
+#### Props
+
+| Prop | Description | Default | Type |
+| -------- | ----------- | ---- | ---- |
+| ref* | Binded element reference. | - | HTMLElement, null |
+| context* | The context object returned from useFloating(). | - | FloatingContext |
+| width | The width of the arrow. | `14` | number |
+| height | The height of the arrow. | `7` | number |
+| tipRadius | The radius (rounding) of the arrow tip. | `0` (sharp) | number |
+| staticOffset | A static offset override of the arrow from the floating element edge. Often desirable if the floating element is smaller than the reference element along the relevant axis and has an edge alignment (`start`/`end`). | `undefined` (use dynamic path) | string, number, null |
+| d | A custom path for the arrow. Useful if you want fancy rounding. The path should be inside a square SVG and placed at the `bottom` of it. The path is designed for the 'bottom' placement, which will be rotated for other placements. | `"black"` (browser default) | string |
+| fill | The color of the arrow. | xxx | string |
+| stroke | The stroke (border) color of the arrow. This must match (or be less than) the floating element’s border width. | `"none"` | string |
+| strokeWidth | The stroke (border) width of the arrow. | `0` | number |
+
+#### Utility Classes and Styles
+
+Provide artibrary utility classes using the standard attribute.
+
+```html
+<FloatingArrow class="fill-white" />
+```
 
 ### FloatingOverlay
 

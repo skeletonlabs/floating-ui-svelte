@@ -322,4 +322,4 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 	};
 }
 
-export { useFloating, type UseFloatingOptions, type UseFloatingReturn };
+export { useFloating, type UseFloatingOptions, type UseFloatingReturn, type FloatingContext };
