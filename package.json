@@ -28,7 +28,8 @@
 		"!dist/**/*.spec.*"
 	],
 	"dependencies": {
-		"@floating-ui/dom": "^1.6.3"
+		"@floating-ui/dom": "^1.6.3",
+		"@floating-ui/utils": "^0.2.2"
 	},
 	"peerDependencies": {
 		"svelte": "^5.0.0-next.1"
