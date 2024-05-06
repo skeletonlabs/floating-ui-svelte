@@ -203,10 +203,10 @@ Renders a customizable `<svg>` pointing arrow triangle inside the floating eleme
 
 #### Utility Classes and Styles
 
-Provide artibrary utility classes or styles using the plural version of respective prop.
+Provide artibrary utility classes using the standard attribute.
 
 ```html
-<FloatingArrow classes="fill-white" styles="fill: white;"/>
+<FloatingArrow class="fill-white" />
 ```
 
 ### FloatingOverlay

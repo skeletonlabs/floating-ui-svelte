@@ -1,6 +1,7 @@
 import type { FloatingContext } from '$lib/hooks/useFloating/index.svelte.js';
+import type { SVGAttributes } from 'svelte/elements';
 
-export interface FloatingArrowProps {
+export interface FloatingArrowProps extends SVGAttributes<SVGElement> {
 	/** The binded HTML element reference. */
 	ref: Element | null;
 	/** The floating context. */
@@ -42,13 +43,8 @@ export interface FloatingArrowProps {
 	strokeWidth?: number;
 
 	// Styling ---
-
 	/** Set transform styles. */
 	transform?: string;
 	/** Set fill styles. */
 	fill?: string;
-	/** Provide arbitrary classes to the root SVG element. */
-	classes?: string;
-	/** Provide arbitrary styles to the root SVG element. */
-	styles?: string;
 }

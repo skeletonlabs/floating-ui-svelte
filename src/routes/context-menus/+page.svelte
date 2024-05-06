@@ -32,7 +32,7 @@
 						<FloatingArrow
 							bind:ref={arrowRef}
 							context={floating.context}
-							classes="fill-surface-500"
+							class="fill-surface-500"
 						/>
 					</div>
 				{/if}

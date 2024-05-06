@@ -23,7 +23,8 @@
 		// ---
 		transform,
 		fill,
-		classes
+		// ---
+		...rest
 	}: FloatingArrowProps = $props();
 
 	const {
@@ -32,7 +33,7 @@
 		middlewareData: { arrow }
 	} = $derived(context);
 
-	// TODO: migrate to useId();
+	// FIXME: migrate to useId();
 	const clipPathId = 'abc123';
 
 	// Strokes must be double the border width, this ensures the stroke's width
@@ -85,13 +86,14 @@
 	});
 </script>
 
+<!-- FIXME: extend styleObjectToString type to accept `rest.styles` -->
 <svg
 	bind:this={ref}
 	width={isCustomShape ? width : width + computedStrokeWidth}
 	height={width}
 	viewBox={`0 0 ${width} ${height > width ? height : width}`}
 	aria-hidden
-	class={classes}
+	class={rest.class}
 	style={styleObjectToString({
 		position: 'absolute',
 		pointerEvents: 'none',
@@ -106,8 +108,8 @@
 		<path
 			fill="none"
 			{stroke}
-			style:clip-path={`url(#${clipPathId})`}
-			style:stroke-width={computedStrokeWidth + (d ? 0 : 1)}
+			clip-path={`url(#${clipPathId})`}
+			stroke-width={computedStrokeWidth + (d ? 0 : 1)}
 			d={dValue}
 		/>
 	{/if}
