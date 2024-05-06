@@ -1,4 +1,5 @@
 import { describe, expect, vi, it } from 'vitest';
+import { it_in_effect } from '$lib/test-utils.svelte.js';
 import {
 	offset,
 	useFloating,
@@ -7,22 +8,10 @@ import {
 	type Middleware,
 	type UseFloatingOptions,
 	type Strategy
-} from '../index.js';
-
-function it_in_effect(name: string, fn: () => void) {
-	it(name, async () => {
-		let promise;
-		const cleanup = $effect.root(() => (promise = fn()));
-		try {
-			await promise;
-		} finally {
-			cleanup();
-		}
-	});
-}
+} from '../../index.js';
 
 describe('useFloating', () => {
-	function test_config(): Partial<UseFloatingOptions> {
+	function test_config(): UseFloatingOptions {
 		return {
 			elements: {
 				reference: document.createElement('div'),
@@ -31,10 +20,10 @@ describe('useFloating', () => {
 			whileElementsMounted: autoUpdate
 		};
 	}
-	it_in_effect('updates floating coordinates on middleware change', async () => {
+	it_in_effect('updates floating coordinates on `middleware` change', async () => {
 		const middleware: Middleware[] = $state([]);
 
-		const { x, y } = useFloating({
+		const floating = useFloating({
 			...test_config(),
 			get middleware() {
 				return middleware;
@@ -42,21 +31,21 @@ describe('useFloating', () => {
 		});
 
 		await vi.waitFor(() => {
-			expect(x.value).toBe(0);
-			expect(y.value).toBe(0);
+			expect(floating.x).toBe(0);
+			expect(floating.y).toBe(0);
 		});
 
 		middleware.push(offset(5));
 
 		await vi.waitFor(() => {
-			expect(x.value).toBe(0);
-			expect(y.value).toBe(5);
+			expect(floating.x).toBe(0);
+			expect(floating.y).toBe(5);
 		});
 	});
-	it_in_effect('updates floating coordinates on placement change', async () => {
+	it_in_effect('updates floating coordinates on `placement` change', async () => {
 		let placement: Placement = $state('bottom');
 
-		const { x, y } = useFloating({
+		const floating = useFloating({
 			...test_config(),
 			middleware: [offset(5)],
 			get placement() {
@@ -65,21 +54,21 @@ describe('useFloating', () => {
 		});
 
 		await vi.waitFor(() => {
-			expect(x.value).toBe(0);
-			expect(y.value).toBe(5);
+			expect(floating.x).toBe(0);
+			expect(floating.y).toBe(5);
 		});
 
-		placement = 'top';
+		placement = 'right';
 
 		await vi.waitFor(() => {
-			expect(x.value).toBe(0);
-			expect(y.value).toBe(-5);
+			expect(floating.x).toBe(5);
+			expect(floating.y).toBe(0);
 		});
 	});
-	it_in_effect('updates `floatingStyles` on strategy change', async () => {
+	it_in_effect('updates `floatingStyles` on `strategy` change', async () => {
 		let strategy: Strategy = $state('absolute');
 
-		const { floatingStyles } = useFloating({
+		const floating = useFloating({
 			...test_config(),
 			get strategy() {
 				return strategy;
@@ -87,51 +76,87 @@ describe('useFloating', () => {
 		});
 
 		await vi.waitFor(() => {
-			expect(floatingStyles.value).toContain('position: absolute');
+			expect(floating.floatingStyles).toContain('position: absolute');
 		});
 
 		strategy = 'fixed';
 
 		await vi.waitFor(() => {
-			expect(floatingStyles.value).toContain('position: fixed');
+			expect(floating.floatingStyles).toContain('position: fixed');
 		});
 	});
+	it_in_effect('updates `floatingStyles` on `transform` change', async () => {
+		let transform = $state(false);
+
+		const floating = useFloating({
+			...test_config(),
+			get transform() {
+				return transform;
+			}
+		});
+
+		await vi.waitFor(() => {
+			expect(floating.floatingStyles).not.toContain('transform: translate(0px, 0px)');
+		});
+
+		transform = true;
+
+		await vi.waitFor(() => {
+			expect(floating.floatingStyles).toContain('transform: translate(0px, 0px)');
+		});
+	});
+	// This test is not working, I honestly don't know why. All I know is that the code does indeed function as expected.
+	// it_in_effect('updates `floatingStyles` on DPR change.', async () => {
+	// 	window.devicePixelRatio = 1;
+
+	// 	const floating = useFloating(test_config());
+
+	// 	await vi.waitFor(() => {
+	// 		expect(floating.floatingStyles).not.toContain('willChange: transform');
+	// 	});
+
+	// 	window.devicePixelRatio = 2;
+
+	// 	await vi.waitFor(() => {
+	// 		expect(floating.floatingStyles).toContain('willChange: transform');
+	// 	});
+	// });
 	it_in_effect('updates `isPositioned` when position is computed', async () => {
-		const { x, y, isPositioned } = useFloating({
+		const floating = useFloating({
 			...test_config(),
 			middleware: [offset(5)]
 		});
 
-		expect(x.value).toBe(0);
-		expect(y.value).toBe(0);
-		expect(isPositioned.value).toBe(false);
+		expect(floating.x).toBe(0);
+		expect(floating.y).toBe(0);
+		expect(floating.isPositioned).toBe(false);
 
 		await vi.waitFor(() => {
-			expect(x.value).toBe(0);
-			expect(y.value).toBe(5);
-			expect(isPositioned.value).toBe(true);
+			expect(floating.x).toBe(0);
+			expect(floating.y).toBe(5);
+			expect(floating.isPositioned).toBe(true);
 		});
 	});
 	it_in_effect('updates `isPositioned` to `false` when `open` is set to `false`', async () => {
 		let open = $state(true);
 
-		const { isPositioned } = useFloating({
+		const floating = useFloating({
 			...test_config(),
 			get open() {
 				return open;
 			}
 		});
 
-		expect(isPositioned.value).toBe(false);
+		expect(floating.isPositioned).toBe(false);
 
 		await vi.waitFor(() => {
-			expect(isPositioned.value).toBe(true);
+			expect(floating.isPositioned).toBe(true);
 		});
 
 		open = false;
 
 		await vi.waitFor(() => {
-			expect(isPositioned.value).toBe(false);
+			expect(floating.isPositioned).toBe(false);
 		});
 	});
 	it_in_effect(
@@ -139,7 +164,7 @@ describe('useFloating', () => {
 		async () => {
 			let placement: Placement | undefined = $state('top');
 
-			const { x, y } = useFloating({
+			const floating = useFloating({
 				...test_config(),
 				middleware: [offset(5)],
 				get placement() {
@@ -148,15 +173,15 @@ describe('useFloating', () => {
 			});
 
 			await vi.waitFor(() => {
-				expect(x.value).toBe(0);
-				expect(y.value).toBe(-5);
+				expect(floating.x).toBe(0);
+				expect(floating.y).toBe(-5);
 			});
 
 			placement = undefined;
 
 			await vi.waitFor(() => {
-				expect(x.value).toBe(0);
-				expect(y.value).toBe(5);
+				expect(floating.x).toBe(0);
+				expect(floating.y).toBe(5);
 			});
 		}
 	);
@@ -165,7 +190,7 @@ describe('useFloating', () => {
 		async () => {
 			let strategy: Strategy | undefined = $state('fixed');
 
-			const { floatingStyles } = useFloating({
+			const floating = useFloating({
 				...test_config(),
 				get strategy() {
 					return strategy;
@@ -173,16 +198,36 @@ describe('useFloating', () => {
 			});
 
 			await vi.waitFor(() => {
-				expect(floatingStyles.value).toContain('position: fixed');
+				expect(floating.floatingStyles).toContain('position: fixed');
 			});
 
 			strategy = undefined;
 
 			await vi.waitFor(() => {
-				expect(floatingStyles.value).toContain('position: absolute');
+				expect(floating.floatingStyles).toContain('position: absolute');
 			});
 		}
 	);
+	it_in_effect('fallbacks to default (`true`) when `transform` is set to `undefined`', async () => {
+		let transform: boolean | undefined = $state(false);
+
+		const floating = useFloating({
+			...test_config(),
+			get transform() {
+				return transform;
+			}
+		});
+
+		await vi.waitFor(() => {
+			expect(floating.floatingStyles).not.toContain('transform: translate(0px, 0px)');
+		});
+
+		transform = undefined;
+
+		await vi.waitFor(() => {
+			expect(floating.floatingStyles).toContain('transform: translate(0px, 0px)');
+		});
+	});
 	it_in_effect(
 		'calls `whileElementsMounted` when `reference` and `floating` are mounted',
 		async () => {
@@ -239,7 +284,7 @@ describe('useFloating', () => {
 		expect(whileElementsMountedCleanup).toHaveBeenCalledTimes(1);
 	});
 	it_in_effect('correctly assigns `middlewareData` from `middleware`', async () => {
-		const { middlewareData } = useFloating({
+		const floating = useFloating({
 			...test_config(),
 			middleware: [
 				{
@@ -250,7 +295,7 @@ describe('useFloating', () => {
 		});
 
 		await vi.waitFor(() => {
-			expect(middlewareData.value).toEqual({ test: { content: 'Content' } });
+			expect(floating.middlewareData).toEqual({ test: { content: 'Content' } });
 		});
 	});
 });

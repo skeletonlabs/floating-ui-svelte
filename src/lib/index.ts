@@ -1,3 +1,10 @@
 export * from '@floating-ui/dom';
-export { useFloating } from '$lib/hooks/use-floating.svelte.js';
-export { type UseFloatingOptions, type UseFloatingReturn } from '$lib/types.js';
+
+// Hooks
+export * from '$lib/hooks/useFloating/index.svelte.js';
+export * from '$lib/hooks/useInteractions/index.svelte.js';
+export * from '$lib/hooks/useHover/index.svelte.js';
+export * from '$lib/hooks/useRole/index.svelte.js';
+
+// Components
+export { default as FloatingArrow } from '$lib/components/FloatingArrow/FloatingArrow.svelte';
