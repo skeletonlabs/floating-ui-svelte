@@ -1,24 +1,33 @@
-import { it_in_effect } from '$lib/test-utils.svelte.js';
-import { describe, expect } from 'vitest';
-import { useFloating } from '../useFloating/index.svelte.js';
-import { useRole } from './index.svelte.js';
+import { describe, it, expect } from 'vitest';
+import { cleanup, render, screen } from '@testing-library/svelte';
+import App from './App.test.svelte';
+
+const ARIA_ROLES = ['grid', 'listbox', 'menu', 'tree', 'tooltip', 'alertdialog', 'dialog'] as const;
 
 describe('useRole', () => {
-	describe('tooltip', () => {
-		it_in_effect('sets the correct role', async () => {
-			const referenceEl = document.createElement('div');
-			const floatingEl = document.createElement('div');
+	it('by default applies the "dialog" role to the floating element', () => {
+		render(App, { role: undefined });
+		expect(screen.queryByRole('dialog')).toBeInTheDocument();
+		cleanup();
+	});
 
-			const floating = useFloating({
-				elements: {
-					reference: referenceEl,
-					floating: floatingEl
-				}
-			});
-
-			const role = useRole(floating.context, { role: 'tooltip' });
-
-			expect(role.floating?.role).toBe('tooltip');
+	for (const role of ARIA_ROLES) {
+		it(`applies the "${role}" role to the floating element`, () => {
+			render(App, { role });
+			expect(screen.queryByRole(role)).toBeInTheDocument();
+			cleanup();
 		});
+	}
+
+	it('sets correct aria attributes based on the open state', async () => {
+		const { rerender } = render(App, { role: 'tooltip', open: true });
+
+		expect(screen.getByRole('button')).toHaveAttribute('aria-describedby');
+
+		await rerender({ role: 'tooltip', open: false });
+
+		expect(screen.getByRole('buton')).not.toHaveAttribute('aria-describedby');
+
+		cleanup();
 	});
 });
