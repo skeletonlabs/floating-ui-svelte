@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent, cleanup, act } from '@testing-library/svelte';
 import App from './App.test.svelte';
-import { useFloating } from '../useFloating/index.svelte.js';
 
 vi.useFakeTimers();
 
