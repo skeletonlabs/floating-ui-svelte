@@ -93,7 +93,6 @@
 	height={width}
 	viewBox={`0 0 ${width} ${height > width ? height : width}`}
 	aria-hidden
-	class={rest.class}
 	style={styleObjectToString({
 		position: 'absolute',
 		pointerEvents: 'none',
@@ -102,6 +101,8 @@
 		[side]: isVerticalSide || isCustomShape ? '100%' : `calc(100% - ${computedStrokeWidth / 2}px)`,
 		transform: `${rotation} ${transform ?? ''}`
 	})}
+	data-testid="floating-arrow"
+	{...rest}
 >
 	{#if computedStrokeWidth > 0}
 		<!-- Account for the stroke on the fill path rendered below. -->
