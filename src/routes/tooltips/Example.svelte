@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fade } from 'svelte/transition';
 	import {
 		autoUpdate,
 		offset,
@@ -57,8 +58,11 @@
 		{...interactions.getFloatingProps()}
 		class="floating"
 	>
-		{#if floating.isPositioned}
-			<div class="bg-surface-500 text-white p-4 rounded shadow-xl">
+		{#if open}
+			<div
+				class="bg-surface-500 text-white p-4 rounded shadow-xl"
+				transition:fade={{ duration: 200 }}
+			>
 				<p>This is the floating element</p>
 				<FloatingArrow bind:ref={elemArrow} context={floating.context} class="fill-surface-500" />
 			</div>
