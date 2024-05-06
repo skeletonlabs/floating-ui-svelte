@@ -3,6 +3,7 @@
 	import {
 		autoUpdate,
 		offset,
+		flip,
 		arrow,
 		useFloating,
 		FloatingArrow,
@@ -36,7 +37,7 @@
 			}
 		},
 		get middleware() {
-			return [offset(10), elemArrow && arrow({ element: elemArrow })];
+			return [offset(10), flip(), elemArrow && arrow({ element: elemArrow })];
 		}
 	});
 
@@ -48,7 +49,7 @@
 
 <div>
 	<!-- Reference Element -->
-	<button bind:this={elemReference} {...interactions.getReferenceProps()} class="btn-rose-sm">
+	<button bind:this={elemReference} {...interactions.getReferenceProps()} class="btn-cta">
 		Hover Me
 	</button>
 	<!-- Floating Element -->
@@ -60,10 +61,13 @@
 	>
 		{#if open}
 			<div
-				class="bg-surface-500 text-white p-4 rounded shadow-xl"
+				class="bg-surface-500 text-white p-8 max-w-sm rounded shadow-xl"
 				transition:fade={{ duration: 200 }}
 			>
-				<p>This is the floating element</p>
+				<p>
+					A <strong>floating element</strong> is one that floats on top of the UI without disrupting
+					the flow, like this one!
+				</p>
 				<FloatingArrow bind:ref={elemArrow} context={floating.context} class="fill-surface-500" />
 			</div>
 		{/if}

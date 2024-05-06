@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { drawer } from '$docs/stores.svelte';
 	// Icons
-	import IconStart from 'lucide-svelte/icons/rocket';
+	import IconApi from 'lucide-svelte/icons/cog';
 	import IconTooltips from 'lucide-svelte/icons/message-square';
 	import IconPopovers from 'lucide-svelte/icons/square-mouse-pointer';
 	import IconModals from 'lucide-svelte/icons/layers-2';
@@ -14,18 +14,18 @@
 	let { classes = '' } = $props();
 
 	// Navigation
-	const navExternal = [
-		{
-			icon: IconStart,
-			href: 'https://github.com/skeletonlabs/floating-ui-svelte?tab=readme-ov-file#floating-ui-svelte',
-			label: 'Getting Started'
-		}
-	];
 	const navHooks = [
 		{ icon: IconTooltips, href: '/tooltips', label: 'Tooltips' },
 		{ icon: IconPopovers, href: '/popovers', label: 'Popovers' },
 		{ icon: IconModals, href: '/modals', label: 'Modals' },
 		{ icon: IconContextMenus, href: '/context-menus', label: 'Context Menus' }
+	];
+	const navExternal = [
+		{
+			icon: IconApi,
+			href: 'https://github.com/skeletonlabs/floating-ui-svelte?tab=readme-ov-file#floating-ui-svelte',
+			label: 'API Reference'
+		}
 	];
 
 	// FIXME: Remove when Svelte 5 supports $page, see: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
@@ -46,6 +46,22 @@
 	</header>
 	<!-- Nav List -->
 	<nav class="space-y-8 p-4 py-8 pb-32">
+		<!-- Hooks -->
+		<ul>
+			{#each navHooks as link}
+				<li>
+					<a
+						href={link.href}
+						class="nav-link"
+						class:nav-active={$page.route.id === link.href}
+						onclick={() => drawer.close()}
+					>
+						<svelte:component this={link.icon} size={24} />
+						<span>{link.label}</span>
+					</a>
+				</li>
+			{/each}
+		</ul>
 		<!-- External Links -->
 		<ul>
 			{#each navExternal as link}
@@ -55,22 +71,6 @@
 						target="_blank"
 						class="nav-link"
 						class:nav-active={navActive(link.href)}
-						onclick={() => drawer.close()}
-					>
-						<svelte:component this={link.icon} size={24} />
-						<span>{link.label}</span>
-					</a>
-				</li>
-			{/each}
-		</ul>
-		<!-- Hooks -->
-		<ul>
-			{#each navHooks as link}
-				<li>
-					<a
-						href={link.href}
-						class="nav-link"
-						class:nav-active={$page.route.id === link.href}
 						onclick={() => drawer.close()}
 					>
 						<svelte:component this={link.icon} size={24} />

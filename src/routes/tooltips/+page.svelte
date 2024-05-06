@@ -6,16 +6,12 @@
 </script>
 
 <div class="space-y-10">
-	<!-- Alert: Work in Progress -->
-	<aside class="alert text-center">
-		<p>NOTE: this section is a working in progress and still under active developement.</p>
-	</aside>
 	<!-- Header -->
 	<header class="card card-gradient space-y-8">
 		<h1 class="h1"><span>Tooltips</span></h1>
 		<p>
-			A tooltip is a floating element that displays information related to an anchor element when it
-			receives keyboard focus or the mouse hovers over it.
+			A tooltip is a floating element that displays information related to a button or anchor
+			element when it receives keyboard focus or the mouse hovers over it.
 		</p>
 	</header>
 	<!-- Essentials -->
@@ -45,6 +41,10 @@
 	<!-- Preview -->
 	<section class="space-y-8">
 		<h2 class="h2">Example</h2>
+		<p>
+			This is a functional Tooltip that uses a combination of hooks and components, each of which is
+			described in the sections below.
+		</p>
 		<Preview>
 			{#snippet preview()}<Example />{/snippet}
 			{#snippet code()}<CodeBlock code={exampleCode} lang="html" />{/snippet}
@@ -91,12 +91,9 @@
 	<section class="space-y-8">
 		<h2 class="h2">Interaction Hooks</h2>
 		<p>
-			The <code class="code">useInteractions()</code> hooks returns an object containing keys of props
-			that enable the tooltip to be opened, closed, or accessible to screen readers.
-		</p>
-		<p>
-			Using the <code class="code">context</code> that was returned from the Hook, call the interaction
-			Hooks.
+			The <code class="code">useInteractions()</code> hooks returns an object containing keys of
+			props that enable the tooltip to be opened, closed, or accessible to screen readers. Using the
+			<code class="code">context</code> that was returned from the Hook, call the interaction Hooks.
 		</p>
 		<CodeBlock
 			code={`
