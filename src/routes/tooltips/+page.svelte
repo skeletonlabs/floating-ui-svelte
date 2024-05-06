@@ -1,5 +1,7 @@
 <script>
 	import CodeBlock from '$docs/components/CodeBlock/CodeBlock.svelte';
+	import Example from './Example.svelte';
+	import exampleCode from './Example.svelte?raw';
 </script>
 
 <div class="space-y-10">
@@ -43,18 +45,13 @@
 	<section class="space-y-8">
 		<h2 class="h2">Examples</h2>
 		<p>Both of these examples have sections explaining them in-depth below.</p>
-		<div class="alert">Example Here</div>
+		<div>
+			<Example />
+		</div>
 	</section>
 	<section class="space-y-8">
 		<h2 class="h2">Open state</h2>
-		<CodeBlock
-			code={`
-import { useFloating } from '@skeletonlabs/floating-ui-svelte';
-
-// TBD`}
-			lang="typescript"
-		/>
-
+		<CodeBlock code={exampleCode} lang="html" />
 		<p>
 			<code class="code">isOpen</code> determines whether or not the tooltip is currently open on the
 			screen. It is used for conditional rendering.

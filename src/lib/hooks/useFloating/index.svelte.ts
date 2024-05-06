@@ -117,9 +117,12 @@ interface UseFloatingData {
 }
 
 interface FloatingEvents {
-	emit<T extends string>(event: T, data?: unknown): void;
-	on(event: string, handler: (data: unknown) => void): void;
-	off(event: string, handler: (data: unknown) => void): void;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	emit<T extends string>(event: T, data?: any): void;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	on(event: string, handler: (data: any) => void): void;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	off(event: string, handler: (data: any) => void): void;
 }
 
 interface ContextData {

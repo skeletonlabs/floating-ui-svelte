@@ -121,13 +121,37 @@ This will ensure all event handlers will be registered rather being overruled by
 
 | Property | Description | Type |
 | -------- | ----------- | ---- |
-| getReferenceProps | The merged attributes for the `reference` element  |  (userProps?: HTMLAttributes<Element>) => Record<string, unknown> |
-| getFloatingProps | The merged attributes for the `floating` element |  (userProps?: HTMLAttributes<Element>) => Record<string, unknown> |
-| getItemProps | The merged attributes for when dealing with a list inside the `floating` element. |  (userProps?: HTMLAttributes<Element> & ExtendedUserProps) => Record<string, unknown> |
+| getReferenceProps | The merged attributes for the `reference` element. | (userProps?: HTMLAttributes<Element>) => Record<string, unknown> |
+| getFloatingProps | The merged attributes for the `floating` element. | (userProps?: HTMLAttributes<Element>) => Record<string, unknown> |
+| getItemProps | The merged attributes for when dealing with a list inside the `floating` element. | (userProps?: HTMLAttributes<Element> & ExtendedUserProps) => Record<string, unknown> |
 
 ### useHover
 
-(tbd)
+#### Usage
+
+```html
+<script>
+	import { useFloating, useInteractions, useHover } from '@skeletonlabs/floating-ui-svelte';
+
+	const floating = useFloating();
+	const hover = useHover(floating.context);
+	const interactions = useInteractions([hover]);
+</script>
+
+<button {...interactions.getReferenceProps()}>Reference</button>
+<div {...interactions.getFloatingProps()}>Tooltip</div>
+```
+
+#### Options
+
+| Property | Description | Type | Default Value |
+| -------- | ----------- | ---- | ------------- |
+| enabled | Enables the hook. | boolean | true |
+| mouseOnly | Only allow pointers of type mouse to trigger the hover (thus excluding pens and touchscreens). | boolean | false |
+| delay | Time in ms that will delay the change of the open state. Also accepts an object with open and close properties for finer grained control. | number | 0 |
+| restMs | Time in ms that the pointer must rest on the reference element before the open state is set to true. | number | 0 |
+| move | Whether moving the pointer over the floating element will open it, without a regular hover event required. | boolean | true |
+| handleClose | Callback to handle the closing of the floating element. | HandleCloseFn | null |
 
 ### useFocus
 
