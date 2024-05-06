@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent, cleanup, act } from '@testing-library/svelte';
 import App from './App.test.svelte';
+import { useFloating } from '../useFloating/index.svelte.js';
 
 vi.useFakeTimers();
 
@@ -26,12 +27,12 @@ describe('useHover', () => {
 
 	describe('delay', () => {
 		it('delays open and close when delay is provided a single value', async () => {
-			render(App, { delay: 500 });
+			render(App, { delay: 100 });
 
 			await fireEvent.mouseEnter(screen.getByRole('button'));
 
 			await act(async () => {
-				vi.advanceTimersByTime(499);
+				vi.advanceTimersByTime(99);
 			});
 
 			expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
@@ -45,12 +46,12 @@ describe('useHover', () => {
 			cleanup();
 		});
 		it('delays only open when only open is provided a value', async () => {
-			render(App, { delay: { open: 500 } });
+			render(App, { delay: { open: 100 } });
 
 			await fireEvent.mouseEnter(screen.getByRole('button'));
 
 			await act(async () => {
-				vi.advanceTimersByTime(499);
+				vi.advanceTimersByTime(99);
 			});
 
 			expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
@@ -64,13 +65,13 @@ describe('useHover', () => {
 			cleanup();
 		});
 		it('delays only close when only close is provided a value', async () => {
-			render(App, { delay: { close: 500 } });
+			render(App, { delay: { close: 100 } });
 
 			await fireEvent.mouseEnter(screen.getByRole('button'));
 			await fireEvent.mouseLeave(screen.getByRole('button'));
 
 			await act(async () => {
-				vi.advanceTimersByTime(499);
+				vi.advanceTimersByTime(99);
 			});
 
 			expect(screen.queryByRole('tooltip')).toBeInTheDocument();
@@ -144,5 +145,37 @@ describe('useHover', () => {
 
 			cleanup();
 		});
+
+		it('ignores restMs on touch pointers when mouseOnly is true ', async () => {
+			render(App, { restMs: 100, mouseOnly: true });
+
+			await fireEvent.pointerDown(screen.getByRole('button'), { pointerType: 'touch' });
+			await fireEvent.mouseMove(screen.getByRole('button'));
+
+			await act(async () => {});
+
+			expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+
+			cleanup();
+		});
+	});
+
+	it.skip('does not show after delay when reference element changes mid delay', async () => {
+		const { rerender } = render(App, { delay: 100 });
+		await fireEvent.mouseEnter(screen.getByRole('button'));
+
+		await act(async () => {
+			vi.advanceTimersByTime(50);
+		});
+
+		await rerender({ showReference: false });
+
+		await act(async () => {
+			vi.advanceTimersByTime(50);
+		});
+
+		expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+
+		cleanup();
 	});
 });
