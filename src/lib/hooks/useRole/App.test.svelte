@@ -6,7 +6,7 @@
 	interface Props extends UseRoleOptions {
 		open?: boolean;
 	}
-	let { open = true, ...rest }: Props = $props();
+	let { open = false, ...rest }: Props = $props();
 	const elements: { reference: HTMLElement | null; floating: HTMLElement | null } = $state({
 		reference: null,
 		floating: null
