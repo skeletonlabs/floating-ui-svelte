@@ -163,7 +163,27 @@ This will ensure all event handlers will be registered rather being overruled by
 
 ### useRole
 
-(tbd)
+#### Usage
+
+```html
+<script>
+	import { useFloating, useInteractions, useRole } from '@skeletonlabs/floating-ui-svelte';
+
+	const floating = useFloating();
+	const role = useRole(floating.context, { role: 'tooltip' });
+	const interactions = useInteractions([role]);
+</script>
+
+<button {...interactions.getReferenceProps()}>Reference</button>
+<div {...interactions.getFloatingProps()}>Tooltip</div>
+```
+
+#### Options
+
+| Property | Description | Type | Default Value |
+| -------- | ----------- | ---- | ------------- |
+| enabled | Enables the interaction | boolean | true |
+| role | The role that the floating element should be | [AriaRole](https://floating-ui.com/docs/useRole#native-roles) \| [ComponentRole](https://floating-ui.com/docs/useRole#component-roles) | 'dialog' |
 
 ### useDismiss
 
