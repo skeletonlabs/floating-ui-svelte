@@ -38,7 +38,7 @@ interface UseFloatingOptions {
 	readonly open?: boolean;
 
 	/**
-	 * Event handler that can be invoked whenever the open state changes.
+	 * Callback that is called whenever the open state changes.
 	 */
 	readonly onOpenChange?: (open: boolean, event?: Event, reason?: OpenChangeReason) => void;
 
@@ -68,8 +68,8 @@ interface UseFloatingOptions {
 	readonly transform?: boolean;
 
 	/**
-	 * The reference and floating elements.
-	 * @default undefined
+	 * Object containing the floating and reference elements.
+	 * @default {}
 	 */
 	readonly elements?: FloatingElements;
 
@@ -126,16 +126,46 @@ interface FloatingEvents {
 }
 
 interface ContextData {
+	/**
+	 * The latest even that caused the open state to change.
+	 */
 	openEvent?: Event;
 }
 
 interface FloatingContext extends UseFloatingData {
+	/**
+	 * Represents the open/close state of the floating element.
+	 */
 	open: boolean;
+
+	/**
+	 * Callback that is called whenever the open state changes.
+	 */
 	onOpenChange(open: boolean, event?: Event, reason?: OpenChangeReason): void;
+
+	/**
+	 * Events for other hooks to consume.
+	 */
 	events: FloatingEvents;
+
+	/**
+	 * Arbitrary data produced and consumer by other hooks.
+	 */
 	data: ContextData;
+
+	/**
+	 * The id for the reference element
+	 */
 	nodeId: string | undefined;
+
+	/**
+	 * The id for the floating element
+	 */
 	floatingId: string;
+
+	/**
+	 * Object containing the floating and reference elements.
+	 */
 	elements: FloatingElements;
 }
 
