@@ -59,14 +59,30 @@ describe('useFloating', () => {
 		});
 
 		describe('transform', () => {
-			testInEffect('transform can be set', () => {
+			testInEffect('transform can be set', async () => {
 				const transform = true;
-				const floating = useFloating({ transform });
-				expect(floating.floatingStyles).contain('transform: translate(0px, 0px)');
+				const floating = useFloating({
+					elements: {
+						reference: document.createElement('div'),
+						floating: document.createElement('div')
+					},
+					transform
+				});
+
+				await vi.waitFor(() => {
+					expect(floating.floatingStyles).contain('transform: translate(0px, 0px)');
+				});
 			});
-			testInEffect('transform defaults to "true"', () => {
-				const floating = useFloating();
-				expect(floating.floatingStyles).contain('transform: translate(0px, 0px)');
+			testInEffect('transform defaults to "true"', async () => {
+				const floating = useFloating({
+					elements: {
+						reference: document.createElement('div'),
+						floating: document.createElement('div')
+					}
+				});
+				await vi.waitFor(() => {
+					expect(floating.floatingStyles).contain('transform: translate(0px, 0px)');
+				});
 			});
 			testInEffect('transform is reactive', async () => {
 				let transform = $state(true);
@@ -80,7 +96,9 @@ describe('useFloating', () => {
 					}
 				});
 
-				expect(floating.floatingStyles).contain('transform: translate(0px, 0px)');
+				await vi.waitFor(() => {
+					expect(floating.floatingStyles).contain('transform: translate(0px, 0px)');
+				});
 
 				transform = false;
 
@@ -296,6 +314,10 @@ describe('useFloating', () => {
 				const floating = useFloating();
 				expect(floating.x).toBeTypeOf('number');
 			});
+			testInEffect('default', () => {
+				const floating = useFloating();
+				expect(floating.x).toBe(0);
+			});
 		});
 
 		describe('y', () => {
@@ -306,6 +328,10 @@ describe('useFloating', () => {
 			testInEffect('type', () => {
 				const floating = useFloating();
 				expect(floating.y).toBeTypeOf('number');
+			});
+			testInEffect('default', () => {
+				const floating = useFloating();
+				expect(floating.y).toBe(0);
 			});
 		});
 
@@ -318,6 +344,10 @@ describe('useFloating', () => {
 				const floating = useFloating();
 				expect(floating.placement).toBeTypeOf('string');
 			});
+			testInEffect('default', () => {
+				const floating = useFloating();
+				expect(floating.placement).toBe('bottom');
+			});
 		});
 
 		describe('strategy', () => {
@@ -328,6 +358,10 @@ describe('useFloating', () => {
 			testInEffect('type', () => {
 				const floating = useFloating();
 				expect(floating.strategy).toBeTypeOf('string');
+			});
+			testInEffect('default', () => {
+				const floating = useFloating();
+				expect(floating.strategy).toBe('absolute');
 			});
 		});
 
@@ -340,6 +374,10 @@ describe('useFloating', () => {
 				const floating = useFloating();
 				expect(floating.middlewareData).toBeTypeOf('object');
 			});
+			testInEffect('default', () => {
+				const floating = useFloating();
+				expect(floating.middlewareData).toEqual({});
+			});
 		});
 
 		describe('isPositioned', () => {
@@ -350,6 +388,10 @@ describe('useFloating', () => {
 			testInEffect('type', () => {
 				const floating = useFloating();
 				expect(floating.isPositioned).toBeTypeOf('boolean');
+			});
+			testInEffect('default', () => {
+				const floating = useFloating();
+				expect(floating.isPositioned).toBe(false);
 			});
 		});
 
@@ -362,6 +404,10 @@ describe('useFloating', () => {
 				const floating = useFloating();
 				expect(floating.open).toBeTypeOf('boolean');
 			});
+			testInEffect('default', () => {
+				const floating = useFloating();
+				expect(floating.open).toBe(true);
+			});
 		});
 
 		describe('floatingStyles', () => {
@@ -369,12 +415,24 @@ describe('useFloating', () => {
 				const floating = useFloating();
 				expect(floating).toHaveProperty('floatingStyles');
 			});
+			testInEffect('type', () => {
+				const floating = useFloating();
+				expect(floating.floatingStyles).toBeTypeOf('string');
+			});
+			testInEffect('default', () => {
+				const floating = useFloating();
+				expect(floating.floatingStyles).toBe('position: absolute; left: 0px; top: 0px;');
+			});
 		});
 
 		describe('elements', () => {
 			testInEffect('presence', () => {
 				const floating = useFloating();
 				expect(floating).toHaveProperty('elements');
+			});
+			testInEffect('type', () => {
+				const floating = useFloating();
+				expect(floating.elements).toBeTypeOf('object');
 			});
 		});
 
