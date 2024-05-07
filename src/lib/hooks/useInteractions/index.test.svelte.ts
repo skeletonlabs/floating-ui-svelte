@@ -1,5 +1,5 @@
 import { describe, expect, vi, it } from 'vitest';
-import { it_in_effect } from '$lib/test-utils.svelte.js';
+import { testInEffect } from '$lib/test-utils.svelte.js';
 import { useInteractions, type ElementProps } from '../../index.js';
 
 describe('useInteractions', () => {
@@ -27,7 +27,7 @@ describe('useInteractions', () => {
 		expect(interactions.getItemProps()).toHaveProperty('id');
 		expect(interactions.getItemProps().id).toBe('item');
 	});
-	it_in_effect('updates props reactively', () => {
+	testInEffect('updates props reactively', () => {
 		const reference = $state({
 			'data-count': 0
 		});
