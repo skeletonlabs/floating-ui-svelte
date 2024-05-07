@@ -171,8 +171,8 @@ interface UseFloatingReturn extends UseFloatingData {
  */
 function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 	const elements = $state(options.elements ?? {});
-	const floating = $state(elements.floating);
-	const reference = $state(elements.reference);
+	const floating = $derived(elements.floating);
+	const reference = $derived(elements.reference);
 	const placement = $derived(options.placement ?? 'bottom');
 	const strategy = $derived(options.strategy ?? 'absolute');
 	const middleware = $derived(options.middleware ?? []);
