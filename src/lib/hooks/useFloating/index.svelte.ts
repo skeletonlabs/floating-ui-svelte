@@ -38,7 +38,7 @@ interface UseFloatingOptions {
 	readonly open?: boolean;
 
 	/**
-	 * Event handler that can be invoked whenever the open state changes.
+	 * Callback that is called whenever the open state changes.
 	 */
 	readonly onOpenChange?: (open: boolean, event?: Event, reason?: OpenChangeReason) => void;
 
@@ -68,8 +68,8 @@ interface UseFloatingOptions {
 	readonly transform?: boolean;
 
 	/**
-	 * The reference and floating elements.
-	 * @default undefined
+	 * Object containing the floating and reference elements.
+	 * @default {}
 	 */
 	readonly elements?: FloatingElements;
 
@@ -126,16 +126,46 @@ interface FloatingEvents {
 }
 
 interface ContextData {
+	/**
+	 * The latest even that caused the open state to change.
+	 */
 	openEvent?: Event;
 }
 
 interface FloatingContext extends UseFloatingData {
+	/**
+	 * Represents the open/close state of the floating element.
+	 */
 	open: boolean;
+
+	/**
+	 * Callback that is called whenever the open state changes.
+	 */
 	onOpenChange(open: boolean, event?: Event, reason?: OpenChangeReason): void;
+
+	/**
+	 * Events for other hooks to consume.
+	 */
 	events: FloatingEvents;
+
+	/**
+	 * Arbitrary data produced and consumer by other hooks.
+	 */
 	data: ContextData;
+
+	/**
+	 * The id for the reference element
+	 */
 	nodeId: string | undefined;
+
+	/**
+	 * The id for the floating element
+	 */
 	floatingId: string;
+
+	/**
+	 * Object containing the floating and reference elements.
+	 */
 	elements: FloatingElements;
 }
 
@@ -149,6 +179,11 @@ interface UseFloatingReturn extends UseFloatingData {
 	 * CSS styles to apply to the floating element to position it.
 	 */
 	readonly floatingStyles: string;
+
+	/**
+	 * The reference and floating elements.
+	 */
+	readonly elements: FloatingElements;
 
 	/**
 	 * Updates the floating element position.
@@ -165,15 +200,16 @@ interface UseFloatingReturn extends UseFloatingData {
  * Hook for managing floating elements.
  */
 function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
-	const floating = $derived(options.elements?.floating);
-	const reference = $derived(options.elements?.reference);
-	const placement = $derived(options.placement ?? 'bottom');
-	const strategy = $derived(options.strategy ?? 'absolute');
-	const middleware = $derived(options.middleware ?? []);
-	const transform = $derived(options.transform ?? true);
-	const open = $derived(options.open ?? true);
-	const onOpenChange = $derived(options.onOpenChange ?? noop);
-	const whileElementsMounted = $derived(options.whileElementsMounted);
+	const {
+		placement = 'bottom',
+		strategy = 'absolute',
+		middleware = [],
+		transform = true,
+		open = true,
+		onOpenChange = noop,
+		whileElementsMounted
+	} = $derived(options);
+	const elements = $state(options.elements ?? {});
 	const floatingStyles = $derived.by(() => {
 		const initialStyles = {
 			position: strategy,
@@ -181,18 +217,18 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 			top: '0px'
 		};
 
-		if (!floating) {
+		if (!elements.floating) {
 			return styleObjectToString(initialStyles);
 		}
 
-		const x = roundByDPR(floating, state.x);
-		const y = roundByDPR(floating, state.y);
+		const x = roundByDPR(elements.floating, state.x);
+		const y = roundByDPR(elements.floating, state.y);
 
 		if (transform) {
 			return styleObjectToString({
 				...initialStyles,
 				transform: `translate(${x}px, ${y}px)`,
-				...(getDPR(floating) >= 1.5 && { willChange: 'transform' })
+				...(getDPR(elements.floating) >= 1.5 && { willChange: 'transform' })
 			});
 		}
 
@@ -243,18 +279,11 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		nodeId: undefined,
 		// TODO: Ensure nodeId works the same way as in @floating-ui/react
 		floatingId: generateId(),
-		elements: {
-			get floating() {
-				return floating;
-			},
-			get reference() {
-				return reference;
-			}
-		}
+		elements
 	});
 
 	const update = async () => {
-		if (!floating || !reference) {
+		if (!elements.floating || !elements.reference) {
 			return;
 		}
 
@@ -264,7 +293,7 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 			middleware
 		};
 
-		const position = await computePosition(reference, floating, config);
+		const position = await computePosition(elements.reference, elements.floating, config);
 
 		state.x = position.x;
 		state.y = position.y;
@@ -275,6 +304,14 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 	};
 
 	$effect.pre(() => {
+		elements.reference = options.elements?.reference;
+	});
+
+	$effect.pre(() => {
+		elements.floating = options.elements?.floating;
+	});
+
+	$effect.pre(() => {
 		if (open || !state.isPositioned) {
 			return;
 		}
@@ -283,7 +320,7 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 	});
 
 	$effect.pre(() => {
-		if (!floating || !reference) {
+		if (!elements.floating || !elements.reference) {
 			return;
 		}
 
@@ -292,7 +329,7 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 			return;
 		}
 
-		return whileElementsMounted(reference, floating, update);
+		return whileElementsMounted(elements.reference, elements.floating, update);
 	});
 
 	return {
@@ -320,6 +357,7 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		get floatingStyles() {
 			return floatingStyles;
 		},
+		elements,
 		update,
 		context
 	};

@@ -14,11 +14,7 @@
 
 	// State
 	let open = $state(false);
-
-	// Element References
 	let elemArrow: HTMLElement | null = $state(null);
-	let elemReference: HTMLElement | null = $state(null);
-	let elemFloating: HTMLElement | null = $state(null);
 
 	// Use Floating
 	const floating = useFloating({
@@ -28,14 +24,6 @@
 		},
 		onOpenChange: (v) => (open = v),
 		placement: 'top',
-		elements: {
-			get reference() {
-				return elemReference;
-			},
-			get floating() {
-				return elemFloating;
-			}
-		},
 		get middleware() {
 			return [offset(10), flip(), elemArrow && arrow({ element: elemArrow })];
 		}
@@ -49,12 +37,16 @@
 
 <div>
 	<!-- Reference Element -->
-	<button bind:this={elemReference} {...interactions.getReferenceProps()} class="btn-cta">
+	<button
+		bind:this={floating.elements.reference}
+		{...interactions.getReferenceProps()}
+		class="btn-cta"
+	>
 		Hover Me
 	</button>
 	<!-- Floating Element -->
 	<div
-		bind:this={elemFloating}
+		bind:this={floating.elements.floating}
 		style={floating.floatingStyles}
 		{...interactions.getFloatingProps()}
 		class="floating"

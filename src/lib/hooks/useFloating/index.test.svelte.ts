@@ -105,22 +105,6 @@ describe('useFloating', () => {
 			expect(floating.floatingStyles).toContain('transform: translate(0px, 0px)');
 		});
 	});
-	// This test is not working, I honestly don't know why. All I know is that the code does indeed function as expected.
-	// it_in_effect('updates `floatingStyles` on DPR change.', async () => {
-	// 	window.devicePixelRatio = 1;
-
-	// 	const floating = useFloating(test_config());
-
-	// 	await vi.waitFor(() => {
-	// 		expect(floating.floatingStyles).not.toContain('willChange: transform');
-	// 	});
-
-	// 	window.devicePixelRatio = 2;
-
-	// 	await vi.waitFor(() => {
-	// 		expect(floating.floatingStyles).toContain('willChange: transform');
-	// 	});
-	// });
 	it_in_effect('updates `isPositioned` when position is computed', async () => {
 		const floating = useFloating({
 			...test_config(),
@@ -228,6 +212,29 @@ describe('useFloating', () => {
 			expect(floating.floatingStyles).toContain('transform: translate(0px, 0px)');
 		});
 	});
+	it_in_effect('fallbacks to default ({}) when `elements` is set to `undefined`', async () => {
+		let elements: UseFloatingOptions['elements'] | undefined = $state({
+			reference: document.createElement('div'),
+			floating: document.createElement('div')
+		});
+
+		const floating = useFloating({
+			...test_config(),
+			get elements() {
+				return elements;
+			}
+		});
+
+		await vi.waitFor(() => {
+			expect(floating.elements).toEqual(elements);
+		});
+
+		elements = undefined;
+
+		await vi.waitFor(() => {
+			expect(floating.elements).toEqual({});
+		});
+	});
 	it_in_effect(
 		'calls `whileElementsMounted` when `reference` and `floating` are mounted',
 		async () => {
@@ -296,6 +303,26 @@ describe('useFloating', () => {
 
 		await vi.waitFor(() => {
 			expect(floating.middlewareData).toEqual({ test: { content: 'Content' } });
+		});
+	});
+	it_in_effect('allows elements to be defined upstream', async () => {
+		const floating = useFloating();
+
+		await vi.waitFor(() => {
+			expect(floating.elements.reference).toBeUndefined();
+			expect(floating.elements.floating).toBeUndefined();
+		});
+
+		floating.elements.reference = document.createElement('div');
+
+		await vi.waitFor(() => {
+			expect(floating.elements.reference).toBeInstanceOf(HTMLElement);
+		});
+
+		floating.elements.floating = document.createElement('div');
+
+		await vi.waitFor(() => {
+			expect(floating.elements.floating).toBeInstanceOf(HTMLElement);
 		});
 	});
 });
