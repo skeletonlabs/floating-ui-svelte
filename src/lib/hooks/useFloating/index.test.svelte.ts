@@ -6,7 +6,7 @@ import { offset, type Middleware, type Placement, type Strategy } from '@floatin
 describe('useFloating', () => {
 	describe('options', () => {
 		describe('elements', () => {
-			testInEffect('elements can be set through options', () => {
+			testInEffect('elements can be set', () => {
 				const elements = {
 					reference: document.createElement('div'),
 					floating: document.createElement('div')
@@ -58,8 +58,40 @@ describe('useFloating', () => {
 			});
 		});
 
+		describe('transform', () => {
+			testInEffect('transform can be set', () => {
+				const transform = true;
+				const floating = useFloating({ transform });
+				expect(floating.floatingStyles).contain('transform: translate(0px, 0px)');
+			});
+			testInEffect('transform defaults to "true"', () => {
+				const floating = useFloating();
+				expect(floating.floatingStyles).contain('transform: translate(0px, 0px)');
+			});
+			testInEffect('transform is reactive', async () => {
+				let transform = $state(true);
+				const floating = useFloating({
+					elements: {
+						reference: document.createElement('div'),
+						floating: document.createElement('div')
+					},
+					get transform() {
+						return transform;
+					}
+				});
+
+				expect(floating.floatingStyles).contain('transform: translate(0px, 0px)');
+
+				transform = false;
+
+				await vi.waitFor(() => {
+					expect(floating.floatingStyles).not.contain('transform: translate(0px, 0px)');
+				});
+			});
+		});
+
 		describe('strategy', () => {
-			testInEffect('strategy can be set through options', () => {
+			testInEffect('strategy can be set', () => {
 				const strategy = 'fixed';
 				const floating = useFloating({ strategy });
 				expect(floating.strategy).toBe(strategy);
@@ -91,7 +123,7 @@ describe('useFloating', () => {
 		});
 
 		describe('placement', () => {
-			testInEffect('placement can be set through options', () => {
+			testInEffect('placement can be set', () => {
 				const placement = 'top';
 				const floating = useFloating({ placement });
 				expect(floating.placement).toBe(placement);
@@ -123,7 +155,7 @@ describe('useFloating', () => {
 		});
 
 		describe('middleware', () => {
-			testInEffect('middleware is properly passed through', async () => {
+			testInEffect('middleware can be set', async () => {
 				const middleware: Array<Middleware> = [offset(5)];
 				const floating = useFloating({
 					elements: {
@@ -164,7 +196,7 @@ describe('useFloating', () => {
 		});
 
 		describe('open', () => {
-			testInEffect('open can be set through options', () => {
+			testInEffect('open can be set', () => {
 				const floating = useFloating({ open: true });
 				expect(floating.open).toBe(true);
 			});
@@ -195,7 +227,7 @@ describe('useFloating', () => {
 		});
 
 		describe('whileElementsMounted', () => {
-			testInEffect('whileElementsMounted can be set through options', async () => {
+			testInEffect('whileElementsMounted can be set', async () => {
 				const whileElementsMounted = vi.fn();
 				useFloating({
 					elements: {
@@ -249,6 +281,9 @@ describe('useFloating', () => {
 				}
 			);
 		});
+
+		// TODO: Add tests for onOpenChange once we have well tested hooks that can trigger the
+		describe.skip('onOpenChange', () => {});
 	});
 
 	describe('returns', () => {
@@ -358,6 +393,10 @@ describe('useFloating', () => {
 			testInEffect('presence', () => {
 				const floating = useFloating();
 				expect(floating).toHaveProperty('context');
+			});
+			testInEffect('type', () => {
+				const floating = useFloating();
+				expect(floating.context).toBeTypeOf('object');
 			});
 		});
 	});
