@@ -300,8 +300,23 @@ describe('useFloating', () => {
 			);
 		});
 
-		// TODO: Add tests for onOpenChange once we have well tested hooks that can trigger the
-		describe.skip('onOpenChange', () => {});
+		describe('onOpenChange', () => {
+			testInEffect('onOpenChange can be set', async () => {
+				const onOpenChange = vi.fn();
+				useFloating({
+					elements: {
+						reference: document.createElement('div'),
+						floating: document.createElement('div')
+					},
+					onOpenChange
+				});
+
+				await vi.waitFor(() => {
+					expect(onOpenChange).not.toHaveBeenCalled();
+				});
+			});
+			// TODO: Add tests for onOpenChange once we have well tested hooks that can trigger the open state
+		});
 	});
 
 	describe('returns', () => {
