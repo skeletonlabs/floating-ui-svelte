@@ -333,6 +333,29 @@ describe('useFloating', () => {
 				const floating = useFloating();
 				expect(floating.x).toBe(0);
 			});
+			testInEffect('reactive', async () => {
+				let placement: Placement = $state('left');
+				const floating = useFloating({
+					elements: {
+						reference: document.createElement('div'),
+						floating: document.createElement('div')
+					},
+					middleware: [offset(10)],
+					get placement() {
+						return placement;
+					}
+				});
+
+				await vi.waitFor(() => {
+					expect(floating.x).toBe(-10);
+				});
+
+				placement = 'right';
+
+				await vi.waitFor(() => {
+					expect(floating.x).toBe(10);
+				});
+			});
 		});
 
 		describe('y', () => {
@@ -347,6 +370,29 @@ describe('useFloating', () => {
 			testInEffect('default', () => {
 				const floating = useFloating();
 				expect(floating.y).toBe(0);
+			});
+			testInEffect('reactive', async () => {
+				let placement: Placement = $state('bottom');
+				const floating = useFloating({
+					elements: {
+						reference: document.createElement('div'),
+						floating: document.createElement('div')
+					},
+					middleware: [offset(10)],
+					get placement() {
+						return placement;
+					}
+				});
+
+				await vi.waitFor(() => {
+					expect(floating.y).toBe(10);
+				});
+
+				placement = 'top';
+
+				await vi.waitFor(() => {
+					expect(floating.y).toBe(-10);
+				});
 			});
 		});
 
