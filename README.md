@@ -50,12 +50,11 @@ The `useFloating` Svelte hook acts as a controller for all other Floating UI Sve
 <script lang="ts">
 	import { useFloating } from '@skeletonlabs/floating-ui-svelte';
 
-	const elements: { reference: HTMLElement | null; floating: HTMLElement | null } = $state({ reference: null, floating: null });
 	const floating = useFloating({ elements });
 </script>
 
-<button bind:this="{elements.reference}">Reference</button>
-<div bind:this="{elements.floating}" style="{floating.floatingStyles}" class="floating">Floating</div>
+<button bind:this="{floating.elements.reference}">Reference</button>
+<div bind:this="{floating.elements.floating}" style="{floating.floatingStyles}" class="floating">Floating</div>
 ```
 
 > [!WARNING]
@@ -85,6 +84,7 @@ The `useFloating` Svelte hook acts as a controller for all other Floating UI Sve
 | middlewareData | Additional data from middleware. | MiddlewareData  |
 | isPositioned   | The boolean that let you know if the floating element has been positioned. | boolean |
 | floatingStyles | CSS styles to apply to the floating element to position it. | string |
+| elements | The reference and floating elements. | FloatingElements |
 | update | The function to update floating position manually. | () => void |
 | context | Context object containing internal logic to alter the behavior of the floating element. | FloatingContext |
 

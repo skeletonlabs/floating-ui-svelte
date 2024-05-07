@@ -151,6 +151,11 @@ interface UseFloatingReturn extends UseFloatingData {
 	readonly floatingStyles: string;
 
 	/**
+	 * The reference and floating elements.
+	 */
+	readonly elements: FloatingElements;
+
+	/**
 	 * Updates the floating element position.
 	 */
 	readonly update: () => Promise<void>;
@@ -165,8 +170,8 @@ interface UseFloatingReturn extends UseFloatingData {
  * Hook for managing floating elements.
  */
 function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
-	const floating = $derived(options.elements?.floating);
-	const reference = $derived(options.elements?.reference);
+	const elements = $state(options.elements ?? {});
+	const { floating, reference } = $derived(elements);
 	const placement = $derived(options.placement ?? 'bottom');
 	const strategy = $derived(options.strategy ?? 'absolute');
 	const middleware = $derived(options.middleware ?? []);
@@ -275,6 +280,14 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 	};
 
 	$effect.pre(() => {
+		elements.reference = options.elements?.reference;
+	});
+
+	$effect.pre(() => {
+		elements.floating = options.elements?.floating;
+	});
+
+	$effect.pre(() => {
 		if (open || !state.isPositioned) {
 			return;
 		}
@@ -320,6 +333,7 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		get floatingStyles() {
 			return floatingStyles;
 		},
+		elements,
 		update,
 		context
 	};
