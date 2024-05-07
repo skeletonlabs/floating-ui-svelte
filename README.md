@@ -50,7 +50,7 @@ The `useFloating` Svelte hook acts as a controller for all other Floating UI Sve
 <script lang="ts">
 	import { useFloating } from '@skeletonlabs/floating-ui-svelte';
 
-	const floating = useFloating({ elements });
+	const floating = useFloating();
 </script>
 
 <button bind:this="{floating.elements.reference}">Reference</button>
@@ -138,8 +138,8 @@ This will ensure all event handlers will be registered rather being overruled by
 	const interactions = useInteractions([hover]);
 </script>
 
-<button {...interactions.getReferenceProps()}>Reference</button>
-<div {...interactions.getFloatingProps()}>Tooltip</div>
+<button bind:this="{floating.elements.reference}"  {...interactions.getReferenceProps()}>Reference</button>
+<div bind:this="{floating.elements.floating}" style="{floating.floatingStyles}" {...interactions.getFloatingProps()}>Tooltip</div>
 ```
 
 #### Options
@@ -174,8 +174,8 @@ This will ensure all event handlers will be registered rather being overruled by
 	const interactions = useInteractions([role]);
 </script>
 
-<button {...interactions.getReferenceProps()}>Reference</button>
-<div {...interactions.getFloatingProps()}>Tooltip</div>
+<button bind:this="{floating.elements.reference}" {...interactions.getReferenceProps()}>Reference</button>
+<div bind:this="{floating.elements.floating}" style="{floating.floatingStyles}" {...interactions.getFloatingProps()}>Tooltip</div>
 ```
 
 #### Options
@@ -203,13 +203,7 @@ Renders a customizable `<svg>` pointing arrow triangle inside the floating eleme
 
 	let arrowRef: HTMLElement | null = $state(null);
 
-	const elements: { reference: HTMLElement | null; floating: HTMLElement | null } = $state({
-		reference: null,
-		floating: null
-	});
-
 	const floating = useFloating({
-		elements,
 		get middleware() {
 			return [
 				offset(10),
@@ -219,8 +213,8 @@ Renders a customizable `<svg>` pointing arrow triangle inside the floating eleme
 	});
 </script>
 
-<button bind:this={elements.reference}>Reference</button>
-<div bind:this={elements.floating} style={floating.floatingStyles} class="floating">
+<button bind:this="{floating.elements.reference}">Reference</button>
+<div bind:this="{floating.elements.floating}" style="{floating.floatingStyles}" class="floating">
 	<div>Floating</div>
 	<FloatingArrow
 		bind:ref={arrowRef}
