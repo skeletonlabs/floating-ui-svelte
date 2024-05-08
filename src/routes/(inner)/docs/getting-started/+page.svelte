@@ -22,7 +22,37 @@
 	<!-- Install -->
 	<section class="space-y-8">
 		<h2 class="h2">Install</h2>
-		<p>To install Floating UI, you can use a package manager like npm, pnpm, or yarn.</p>
-		<CodeBlock lang="bash" code={`npm install @skeletonlabs/floating-ui-svelte`} />
+		<p>To install Floating UI, use your package manager of choice.</p>
+		<CodeBlock
+			lang="bash"
+			code={`
+npm install @skeletonlabs/floating-ui-svelte
+# pnpm install @skeletonlabs/floating-ui-svelte
+# yarn install @skeletonlabs/floating-ui-svelte
+# bun install @skeletonlabs/floating-ui-svelte
+		`}
+		/>
+	</section>
+	<!-- Usage -->
+	<section class="space-y-8">
+		<h2 class="h2">Usage</h2>
+		<h3 class="h3">Making elements "float</h3>
+		<p>
+			We want floating elements to appear on the top of the UI, so it doesn’t disrupt the flow of
+			the document. We recommend using a class that you apply to all floating elements. Note that
+			Floating UI does not have opinions about how your elements stack on the z-axis.
+		</p>
+		<CodeBlock
+			lang="css"
+			code={`
+.floating {
+	width: max-content;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+		`}
+		/>
+		<CodeBlock lang="html" code={`<div class="floating">Some floating element.</div>`} />
 	</section>
 </div>
