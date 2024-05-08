@@ -454,6 +454,28 @@ describe('useFloating', () => {
 				const floating = useFloating();
 				expect(floating.isPositioned).toBe(false);
 			});
+			testInEffect('reactive', async () => {
+				let open = $state(true);
+				const floating = useFloating({
+					elements: {
+						reference: document.createElement('div'),
+						floating: document.createElement('div')
+					},
+					get open() {
+						return open;
+					}
+				});
+
+				await vi.waitFor(() => {
+					expect(floating.isPositioned).toBe(true);
+				});
+
+				open = false;
+
+				await vi.waitFor(() => {
+					expect(floating.isPositioned).toBe(false);
+				});
+			});
 		});
 
 		describe('open', () => {
