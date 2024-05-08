@@ -495,6 +495,10 @@ describe('useFloating', () => {
 				const floating = useFloating();
 				expect(floating.elements).toBeTypeOf('object');
 			});
+			testInEffect('default', () => {
+				const floating = useFloating();
+				expect(floating.elements).toEqual({});
+			});
 		});
 
 		describe('update', () => {
