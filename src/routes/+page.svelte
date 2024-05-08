@@ -24,7 +24,7 @@
 			>
 		</p>
 		<div class="flex gap-4">
-			<a href="/docs/installation" class="btn-cta">
+			<a href="/docs/getting-started" class="btn-cta">
 				<span>Get Started</span>
 				<IconArrowRight />
 			</a>

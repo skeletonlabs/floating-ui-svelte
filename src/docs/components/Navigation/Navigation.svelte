@@ -3,6 +3,8 @@
 	import { drawer } from '$docs/stores.svelte';
 	// Icons (API)
 	import IconPlaceholder from 'lucide-svelte/icons/box';
+	// Icons (Docs)
+	import IconGetStarted from 'lucide-svelte/icons/rocket';
 	// Icons (Examples)
 	import IconTooltips from 'lucide-svelte/icons/message-square';
 	import IconPopovers from 'lucide-svelte/icons/square-mouse-pointer';
@@ -17,8 +19,8 @@
 	// Navigation
 	const navigation = [
 		{
-			label: 'Getting Started',
-			links: [{ icon: IconPlaceholder, href: '/docs/installation', label: 'Installation' }]
+			label: 'Docs',
+			links: [{ icon: IconGetStarted, href: '/docs/getting-started', label: 'Getting Started' }]
 		},
 		{
 			label: 'Examples',
@@ -43,7 +45,7 @@
 
 	// FIXME: Remove when Svelte 5 supports $page, see: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
 	// eslint-disable-next-line svelte/valid-compile
-	const navActive = (href: string) => $page.route.id == href;
+	const navActive = (href: string) => $page.route.id?.replace('/(inner)', '') == href;
 </script>
 
 <div
@@ -68,7 +70,7 @@
 							<a
 								href={link.href}
 								class="nav-link"
-								class:nav-active={$page.route.id === link.href}
+								class:nav-active={navActive(link.href)}
 								onclick={() => drawer.close()}
 							>
 								<svelte:component this={link.icon} size={24} />
