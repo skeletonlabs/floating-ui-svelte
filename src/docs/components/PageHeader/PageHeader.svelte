@@ -6,7 +6,9 @@
 	import IconMenu from 'lucide-svelte/icons/menu';
 </script>
 
-<header class="sticky top-0 z-10 bg-surface-200/75 dark:bg-surface-800/75 backdrop-blur">
+<header
+	class="sticky top-0 z-10 bg-surface-200/75 dark:bg-surface-800/75 backdrop-blur border-b border-surface-500/20"
+>
 	<div class="container mx-auto flex justify-between gap-4 p-4 lg:px-32">
 		<div class="flex items-center gap-4">
 			<button type="button" class="inline-block lg:hidden" onclick={() => drawer.toggle()}>

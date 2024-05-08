@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { drawer } from '$docs/stores.svelte';
+	// Icons (API)
+	import IconPlaceholder from 'lucide-svelte/icons/box';
 	// Icons (Examples)
 	import IconTooltips from 'lucide-svelte/icons/message-square';
 	import IconPopovers from 'lucide-svelte/icons/square-mouse-pointer';
 	import IconModals from 'lucide-svelte/icons/layers-2';
 	import IconContextMenus from 'lucide-svelte/icons/square-menu';
-	// Icons (API)
-	import IconPlaceholder from 'lucide-svelte/icons/box';
 	// Components
 	import Logo from '$docs/components/Logo/Logo.svelte';
 
@@ -16,6 +16,10 @@
 
 	// Navigation
 	const navigation = [
+		{
+			label: 'Getting Started',
+			links: [{ icon: IconPlaceholder, href: '/docs/installation', label: 'Installation' }]
+		},
 		{
 			label: 'Examples',
 			links: [
