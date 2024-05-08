@@ -38,12 +38,12 @@
 		`}
 		/>
 	</section>
-	<!-- Alert -->
+	<!-- Alert: Destructuring -->
 	<div class="alert">
 		<h3 class="h3">Note</h3>
 		<p>Destructured variables are not supported as this would break reactivity.</p>
 	</div>
-	<!-- Options -->
+	<!-- Table: Options -->
 	<section class="space-y-8">
 		<h2 class="h2">Options</h2>
 		<div class="table-wrap">
@@ -65,7 +65,7 @@
 			</table>
 		</div>
 	</section>
-	<!-- Returns -->
+	<!-- Table: Returns -->
 	<section class="space-y-8">
 		<h2 class="h2">Returns</h2>
 		<div class="table-wrap">
@@ -88,6 +88,8 @@
 	<section class="space-y-8">
 		<h2 class="h2">Compare</h2>
 		<!-- prettier-ignore -->
-		<p>Compare to <a class="anchor" href="https://floating-ui.com/docs/useFloating" target="_blank">Floating UI React</a>.</p>
+		<p>
+			Compare to <a class="anchor" href="https://floating-ui.com/docs/useFloating" target="_blank">Floating UI React</a>.
+		</p>
 	</section>
 </div>

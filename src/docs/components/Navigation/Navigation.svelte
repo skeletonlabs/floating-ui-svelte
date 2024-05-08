@@ -34,11 +34,11 @@
 		{
 			label: 'API Reference',
 			links: [
-				{ icon: IconPlaceholder, href: '/api/use-floating', label: 'useFloating' },
-				{ icon: IconPlaceholder, href: '/api/use-interactions', label: 'userInteractions' },
-				{ icon: IconPlaceholder, href: '/api/use-hover', label: 'useHover' },
-				{ icon: IconPlaceholder, href: '/api/use-role', label: 'useRole' },
-				{ icon: IconPlaceholder, href: '/api/floating-arrow', label: 'FloatingArrow' }
+				{ icon: IconPlaceholder, href: '/api/use-floating', label: 'useFloating' }
+				// { icon: IconPlaceholder, href: '/api/use-interactions', label: 'userInteractions' },
+				// { icon: IconPlaceholder, href: '/api/use-hover', label: 'useHover' },
+				// { icon: IconPlaceholder, href: '/api/use-role', label: 'useRole' },
+				// { icon: IconPlaceholder, href: '/api/floating-arrow', label: 'FloatingArrow' }
 			]
 		}
 	];
