@@ -21,13 +21,15 @@
 			to an anchored element. Automatically calculates the best placement and updates it as needed, providing
 			access to properties for position and style.
 		</p>
-		<CodeBlock lang="ts" code={`const floating = useFloating();`} />
+		<CodeBlock lang="ts" code={`const floating = useFloating({\n\t/* options */\n});`} />
 		<CodeBlock
 			lang="html"
 			code={`
+<!-- Reference Element -->
 <button bind:this="{floating.elements.reference}">
 	Reference
 </button>\n
+<!-- Floating Element -->
 <div
 	bind:this="{floating.elements.floating}"
 	style="{floating.floatingStyles}"
