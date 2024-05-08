@@ -1,4 +1,4 @@
-import { isShadowRoot } from '@floating-ui/utils/dom';
+import { isHTMLElement, isShadowRoot } from '@floating-ui/utils/dom';
 
 /**
  * Retrieves the device pixel ratio (DPR) of the current environment.
@@ -117,4 +117,12 @@ export function contains(parent?: Element | null, child?: Element | null) {
 
 	// Give up, the result is false
 	return false;
+}
+
+export const TYPEABLE_SELECTOR =
+	"input:not([type='hidden']):not([disabled])," +
+	"[contenteditable]:not([contenteditable='false']),textarea:not([disabled])";
+
+export function isTypeableElement(element: unknown): boolean {
+	return isHTMLElement(element) && element.matches(TYPEABLE_SELECTOR);
 }
