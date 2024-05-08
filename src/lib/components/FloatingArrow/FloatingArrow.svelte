@@ -92,7 +92,7 @@
 	width={isCustomShape ? width : width + computedStrokeWidth}
 	height={width}
 	viewBox={`0 0 ${width} ${height > width ? height : width}`}
-	aria-hidden
+	aria-hidden="true"
 	style={styleObjectToString({
 		position: 'absolute',
 		pointerEvents: 'none',
