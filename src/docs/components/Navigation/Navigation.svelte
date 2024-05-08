@@ -1,15 +1,21 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { drawer } from '$docs/stores.svelte';
-	// Icons (API)
-	import IconPlaceholder from 'lucide-svelte/icons/box';
 	// Icons (Docs)
 	import IconGetStarted from 'lucide-svelte/icons/rocket';
 	// Icons (Examples)
 	import IconTooltips from 'lucide-svelte/icons/message-square';
-	import IconPopovers from 'lucide-svelte/icons/square-mouse-pointer';
+	import IconPopovers from 'lucide-svelte/icons/square-chevron-down';
 	import IconModals from 'lucide-svelte/icons/layers-2';
 	import IconContextMenus from 'lucide-svelte/icons/square-menu';
+	// Icons (API)
+	import IconUseFloating from 'lucide-svelte/icons/cloud';
+	import IconUseInteractions from 'lucide-svelte/icons/pointer';
+	import IconUseHover from 'lucide-svelte/icons/square-mouse-pointer';
+	import IconUseClick from 'lucide-svelte/icons/mouse-pointer-2';
+	import IconUseRole from 'lucide-svelte/icons/person-standing';
+	import IconFloatingArrow from 'lucide-svelte/icons/triangle';
+	import IconUtils from 'lucide-svelte/icons/wand-sparkles';
 	// Components
 	import Logo from '$docs/components/Logo/Logo.svelte';
 
@@ -34,11 +40,13 @@
 		{
 			label: 'API Reference',
 			links: [
-				{ icon: IconPlaceholder, href: '/api/use-floating', label: 'useFloating' }
-				// { icon: IconPlaceholder, href: '/api/use-interactions', label: 'userInteractions' },
-				// { icon: IconPlaceholder, href: '/api/use-hover', label: 'useHover' },
-				// { icon: IconPlaceholder, href: '/api/use-role', label: 'useRole' },
-				// { icon: IconPlaceholder, href: '/api/floating-arrow', label: 'FloatingArrow' }
+				{ icon: IconUseFloating, href: '/api/use-floating', label: 'useFloating' },
+				{ icon: IconUseInteractions, href: '/api/use-interactions', label: 'useInteractions' },
+				{ icon: IconUseHover, href: '/api/use-hover', label: 'useHover' },
+				{ icon: IconUseClick, href: '/api/use-click', label: 'useClick' },
+				{ icon: IconUseRole, href: '/api/use-role', label: 'useRole' },
+				{ icon: IconFloatingArrow, href: '/api/floating-arrow', label: 'Floating Arrow' },
+				{ icon: IconUtils, href: '/api/utilities', label: 'Utilities' }
 			]
 		}
 	];
