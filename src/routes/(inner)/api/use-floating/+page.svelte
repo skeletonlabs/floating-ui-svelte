@@ -1,5 +1,6 @@
 <script lang="ts">
 	import CodeBlock from '$docs/components/CodeBlock/CodeBlock.svelte';
+	import Table from '$docs/components/Table/Table.svelte';
 	import { tableOptions, tableReturns } from './data.js';
 </script>
 
@@ -48,43 +49,12 @@
 	<!-- Table: Options -->
 	<section class="space-y-8">
 		<h2 class="h2">Options</h2>
-		<div class="table-wrap">
-			<table class="table caption-bottom">
-				<tbody class="hover:[&>tr]:preset-tonal-primary">
-					{#each tableOptions as row}
-						<tr>
-							<td><code class="code">{row.property}</code></td>
-							<td class="space-y-1">
-								<p>{row.description}</p>
-								<div class="flex items-center gap-2">
-									<p class="meta-type" title="Type">{row.type}</p>
-									{#if row.default}<p class="meta-default" title="Default">{row.default}</p>{/if}
-								</div>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
+		<Table data={tableOptions} />
 	</section>
 	<!-- Table: Returns -->
 	<section class="space-y-8">
 		<h2 class="h2">Returns</h2>
-		<div class="table-wrap">
-			<table class="table caption-bottom">
-				<tbody class="hover:[&>tr]:preset-tonal-primary">
-					{#each tableReturns as row}
-						<tr>
-							<td><code class="code">{row.property}</code></td>
-							<td class="space-y-1">
-								<p>{row.description}</p>
-								<p class="meta-type" title="Type">{row.type}</p>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
+		<Table data={tableReturns} />
 	</section>
 	<!-- Compare -->
 	<section class="space-y-8">

@@ -1,5 +1,9 @@
+// Hook: useFloating
+
+import type { TableData } from '$docs/types.js';
+
 // Options
-export const tableOptions = [
+export const tableOptions: TableData[] = [
 	{
 		property: `open`,
 		description: `Represents the open/close state of the floating element.`,
@@ -51,7 +55,7 @@ export const tableOptions = [
 ];
 
 // Returns
-export const tableReturns = [
+export const tableReturns: TableData[] = [
 	{ property: `x`, description: `The x-coord of the floating element.`, type: `number` },
 	{ property: `y`, description: `The y-coord of the floating element.`, type: `number` },
 	{
