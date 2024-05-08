@@ -1,4 +1,4 @@
-import { describe, expect, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { testInEffect } from '$lib/test-utils.svelte.js';
 import { useFloating } from './index.svelte.js';
 import { offset, type Middleware, type Placement, type Strategy } from '@floating-ui/dom';
@@ -439,6 +439,31 @@ describe('useFloating', () => {
 				const floating = useFloating();
 				expect(floating.middlewareData).toEqual({});
 			});
+			testInEffect(
+				'middlewareData is popuplated with the data returned by middleware',
+				async () => {
+					const floating = useFloating({
+						elements: {
+							reference: document.createElement('div'),
+							floating: document.createElement('div')
+						},
+						middleware: [
+							{
+								name: 'foobar',
+								fn: () => ({
+									data: {
+										foo: 'bar'
+									}
+								})
+							}
+						]
+					});
+
+					vi.waitFor(() => {
+						expect(floating.middlewareData).toEqual({ foobar: { foo: 'bar' } });
+					});
+				}
+			);
 		});
 
 		describe('isPositioned', () => {
@@ -454,7 +479,24 @@ describe('useFloating', () => {
 				const floating = useFloating();
 				expect(floating.isPositioned).toBe(false);
 			});
-			testInEffect('reactive', async () => {
+			testInEffect('isPositioned is set to true once the position is calculated', async () => {
+				const floating = useFloating({
+					open: false,
+					elements: {
+						reference: document.createElement('div'),
+						floating: document.createElement('div')
+					}
+				});
+
+				expect(floating.isPositioned).toBe(false);
+
+				await floating.update();
+
+				vi.waitFor(() => {
+					expect(floating.isPositioned).toBe(true);
+				});
+			});
+			testInEffect('isPositioned is reset to false when open is set to false', async () => {
 				let open = $state(true);
 				const floating = useFloating({
 					elements: {
