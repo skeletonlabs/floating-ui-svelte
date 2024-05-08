@@ -12,7 +12,7 @@
 	<PageHeader />
 	<!-- Content -->
 	<main
-		class="h-[calc(100%-250px)] flex flex-col justify-center items-center space-y-8 text-center text-balance"
+		class="h-[calc(100%-275px)] flex flex-col justify-center items-center space-y-8 text-center text-balance"
 	>
 		<Logo />
 		<h1 class="h1 text-black dark:text-white">Floating UI Svelte</h1>
@@ -21,7 +21,7 @@
 				class="anchor"
 				href="https://floating-ui.com/"
 				target="_blank">Floating UI</a
-			>
+			>.
 		</p>
 		<div class="flex gap-4">
 			<a href="/docs/getting-started" class="btn-cta">

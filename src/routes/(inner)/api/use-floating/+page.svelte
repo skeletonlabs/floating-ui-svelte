@@ -1,7 +1,6 @@
 <script lang="ts">
 	import CodeBlock from '$docs/components/CodeBlock/CodeBlock.svelte';
-
-	// ...
+	import { tableOptions, tableReturns } from './data.js';
 </script>
 
 <div class="space-y-10">
@@ -16,17 +15,79 @@
 	<!-- Usage -->
 	<section class="space-y-8">
 		<h2 class="h2">Usage</h2>
-		<p>Call the Hook inside a component.</p>
-		<CodeBlock lang="ts" code={`(snippet)`} />
+		<p>
+			The <code class="code">useFloating</code> Svelte hook acts as a controller for all other Floating
+			UI Svelte features. It handles positioning your floating elements (tooltips, popovers, etc.) relative
+			to an anchored element. Automatically calculates the best placement and updates it as needed, providing
+			access to properties for position and style.
+		</p>
+		<CodeBlock lang="ts" code={`const floating = useFloating();`} />
+		<CodeBlock
+			lang="html"
+			code={`
+<button bind:this="{floating.elements.reference}">
+	Reference
+</button>\n
+<div
+	bind:this="{floating.elements.floating}"
+	style="{floating.floatingStyles}"
+	class="floating"
+>
+	Floating
+</div>
+		`}
+		/>
 	</section>
+	<!-- Alert -->
+	<div class="alert">
+		<h3 class="h3">Note</h3>
+		<p>Destructured variables are not supported as this would break reactivity.</p>
+	</div>
 	<!-- Options -->
 	<section class="space-y-8">
 		<h2 class="h2">Options</h2>
-		<p>The Hook accepts an object of options to configure its behavior.</p>
-		<CodeBlock lang="ts" code={`(snippet)`} />
-		<h3 class="h3"><code class="code">placement</code></h3>
-		<p>default: <code class="code">'bottom'</code></p>
-		<p>The placement of the floating element relative to the reference element.</p>
-		<CodeBlock lang="ts" code={`(snippet)`} />
+		<div class="table-wrap">
+			<table class="table caption-bottom">
+				<tbody class="hover:[&>tr]:preset-tonal-primary">
+					{#each tableOptions as row}
+						<tr>
+							<td><code class="code">{row.property}</code></td>
+							<td class="space-y-1">
+								<p>{row.description}</p>
+								<div class="flex items-center gap-2">
+									<p class="meta-type" title="Type">{row.type}</p>
+									{#if row.default}<p class="meta-default" title="Default">{row.default}</p>{/if}
+								</div>
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+	</section>
+	<!-- Returns -->
+	<section class="space-y-8">
+		<h2 class="h2">Returns</h2>
+		<div class="table-wrap">
+			<table class="table caption-bottom">
+				<tbody class="hover:[&>tr]:preset-tonal-primary">
+					{#each tableReturns as row}
+						<tr>
+							<td><code class="code">{row.property}</code></td>
+							<td class="space-y-1">
+								<p>{row.description}</p>
+								<p class="meta-type" title="Type">{row.type}</p>
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+	</section>
+	<!-- Compare -->
+	<section class="space-y-8">
+		<h2 class="h2">Compare</h2>
+		<!-- prettier-ignore -->
+		<p>Compare to <a class="anchor" href="https://floating-ui.com/docs/useFloating" target="_blank">Floating UI React</a>.</p>
 	</section>
 </div>

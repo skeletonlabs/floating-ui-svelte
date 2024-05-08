@@ -24,6 +24,7 @@
 			>
 				GitHub
 			</a>
+			<a href="https://discord.gg/EXqV7W8MtY" class="hover:underline" target="_blank"> Discord </a>
 			<a
 				href="https://github.com/skeletonlabs/floating-ui-svelte/releases"
 				class="btn-rose-sm"
