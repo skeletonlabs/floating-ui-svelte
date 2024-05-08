@@ -77,7 +77,7 @@
 						<li>
 							<a
 								href={link.href}
-								class="nav-link"
+								class="grid grid-cols-[24px_1fr] items-center gap-4 rounded-tr-xl rounded-br-xl px-4 py-3 text-left hover:bg-surface-500/20"
 								class:nav-active={navActive(link.href)}
 								onclick={() => drawer.close()}
 							>
@@ -93,9 +93,6 @@
 </div>
 
 <style lang="postcss">
-	.nav-link {
-		@apply grid grid-cols-[24px_1fr] items-center gap-4 rounded-tr-xl rounded-br-xl px-4 py-3 text-left hover:bg-surface-500/20;
-	}
 	.nav-active {
 		@apply bg-pink-400/10 text-pink-400 hover:bg-pink-400/20;
 	}

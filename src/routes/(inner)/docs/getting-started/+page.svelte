@@ -16,7 +16,7 @@
 		<h2 class="h2">Support</h2>
 		<!-- prettier-ignore -->
 		<p>
-			Floating UI Svelte currently supports Svelte projects built with <a class="anchor" href="https://kit.svelte.dev/" target="_blank">SvelteKit</a>, <a class="anchor" href="https://vitejs.dev/" target="_blank">Vite/Svelte</a>, or <a class="anchor" href="https://astro.build/" target="_blank">Astro</a>.
+			Supports <u>Svelte v5</u> projects created with <a class="anchor" href="https://kit.svelte.dev/" target="_blank">SvelteKit</a>, <a class="anchor" href="https://vitejs.dev/" target="_blank">Vite/Svelte</a>, or <a class="anchor" href="https://astro.build/" target="_blank">Astro</a>.
 		</p>
 	</section>
 	<!-- Install -->
@@ -38,9 +38,9 @@ npm install @skeletonlabs/floating-ui-svelte
 		<h2 class="h2">Usage</h2>
 		<h3 class="h3">Making elements "float</h3>
 		<p>
-			We want floating elements to appear on the top of the UI, so it doesn’t disrupt the flow of
-			the document. We recommend using a class that you apply to all floating elements. Note that
-			Floating UI does not have opinions about how your elements stack on the z-axis.
+			The following styles must be applied to any and all floating elements. We recommend using a
+			class as shown below. Note that Floating UI does not take an opinionated stance on z-index
+			stacking.
 		</p>
 		<CodeBlock
 			lang="css"
