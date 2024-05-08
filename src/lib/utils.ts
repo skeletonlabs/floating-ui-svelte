@@ -54,13 +54,6 @@ export function createPubSub() {
 }
 
 /**
- * Generates a unique identifier.
- */
-export function generateId() {
-	return `floating-ui-${Math.random().toString(36).slice(2, 6)}`;
-}
-
-/**
  * Checks if the pointer type is mouse-like.
  */
 export function isMouseLikePointerType(pointerType: string | undefined, strict?: boolean) {
