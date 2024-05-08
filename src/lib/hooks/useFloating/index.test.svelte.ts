@@ -2,7 +2,6 @@ import { describe, expect, expectTypeOf, vi } from 'vitest';
 import { testInEffect } from '$lib/test-utils.svelte.js';
 import { useFloating, type FloatingContext } from './index.svelte.js';
 import {
-	Strategy,
 	offset,
 	type Middleware,
 	type MiddlewareData,
