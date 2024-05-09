@@ -10,7 +10,7 @@
 	</header>
 	<!-- Usage -->
 	<section class="space-y-8">
-		<h2 class="h2"><code class="code-title">useId()</code></h2>
+		<h2 class="h2">useId</h2>
 		<p>
 			Generates a unique identifier string. This function combines a random string and an
 			incrementing counter to ensure uniqueness.
