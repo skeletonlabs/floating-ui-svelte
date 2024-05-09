@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
-import { withEffect } from '$lib/test-utils.svelte.js';
+import { withEffect } from '../../utils/test.svelte.js';
 import { useFloating, type FloatingContext } from './index.svelte.js';
 import {
 	offset,
