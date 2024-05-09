@@ -1,3 +1,7 @@
+<script>
+	import App from "$lib/hooks/useClick/App.test.svelte";
+
+</script>
 <div class="space-y-10">
 	<!-- Header -->
 	<header class="card card-gradient space-y-8">
@@ -5,3 +9,6 @@
 		<p>Coming Soon!</p>
 	</header>
 </div>
+
+
+<App enableHover={true} />

@@ -3,10 +3,18 @@
 	import { useClick, type UseClickOptions } from './index.svelte.js';
 	import { useFloating } from '../useFloating/index.svelte.js';
 	import { useInteractions } from '../useInteractions/index.svelte.js';
-
-	const { ...rest }: UseClickOptions = $props();
-
-	let open = $state(false);
+	import { useHover } from '../useHover/index.svelte.js';
+	interface Props extends UseClickOptions {
+		open?: boolean;
+		element?: string;
+		enableHover?: boolean;
+	}
+	let {
+		open = false,
+		element = 'button',
+		enableHover = false,
+		...useClickOptions
+	}: Props = $props();
 	const elements: { reference: HTMLElement | null; floating: HTMLElement | null } = $state({
 		reference: null,
 		floating: null,
@@ -21,20 +29,20 @@
 		},
 		elements,
 	});
-
-	const click = useClick(floating.context, { ...rest });
-
-	const interactions = useInteractions([click]);
+	const click = useClick(floating.context, useClickOptions);
+	const hover = useHover(floating.context, { enabled: enableHover });
+	const interactions = useInteractions([click, hover]);
 </script>
 
-<div
+<svelte:element
+	this={element}
 	role="button"
 	data-testid="reference"
 	bind:this={elements.reference}
 	{...interactions.getReferenceProps()}
 >
 	Reference
-</div>
+</svelte:element>
 
 {#if open}
 	<div

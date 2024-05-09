@@ -11,6 +11,7 @@
 		useInteractions,
 		useRole,
 	} from '$lib/index.js';
+	import { useClick } from '$lib/hooks/useClick/index.svelte.js';
 
 	// State
 	let open = $state(false);
@@ -31,8 +32,9 @@
 
 	// Interactions
 	const hover = useHover(floating.context);
+	const click = useClick(floating.context);
 	const role = useRole(floating.context, { role: 'tooltip' });
-	const interactions = useInteractions([hover, role]);
+	const interactions = useInteractions([click, hover, role]);
 </script>
 
 <div>

@@ -8,7 +8,7 @@
 		showReference?: boolean;
 	}
 
-	const { showReference = true, ...rest }: Props = $props();
+	const { showReference = true, ...useHoverOptions }: Props = $props();
 
 	let open = $state(false);
 	const elements: { reference: HTMLElement | null; floating: HTMLElement | null } = $state({
@@ -26,7 +26,7 @@
 		elements,
 	});
 
-	const hover = useHover(floating.context, { ...rest });
+	const hover = useHover(floating.context, useHoverOptions);
 
 	const interactions = useInteractions([hover]);
 </script>
