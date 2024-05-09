@@ -111,16 +111,14 @@ footer .anchor {
 	@apply text-sm text-emerald-500 dark:text-emerald-300;
 }
 
-/* Shiki Highlighting */
-html.dark .shiki,
-html.dark .shiki span {
-	color: var(--shiki-dark) !important;
-	background-color: var(--shiki-dark-bg) !important;
-}
-
 /* Keyboard */
 .kbd {
 	@apply text-sm bg-surface-50/50 dark:bg-surface-600 px-2 py-1 rounded;
+}
+
+/* Unordered List */
+.ul {
+	@apply list-disc list-outside ml-7 space-y-4;
 }
 
 /* Utility Classes */
@@ -168,6 +166,35 @@ html.dark .shiki span {
 	@apply bg-blue-500 text-white p-8 rounded-lg space-y-4;
 }
 
+/* Tables */
+.table-wrap {
+	@apply w-full overflow-auto;
+}
+.table {
+	@apply relative w-full;
+}
+.table thead {
+	@apply border-b border-surface-500/50;
+}
+.table th {
+	@apply text-left font-bold;
+}
+.table tbody {
+	@apply divide-y divide-surface-500/50;
+}
+.table th,
+.table td {
+	@apply p-2 py-4 align-top;
+}
+.table .meta-type {
+	@apply inline-block bg-surface-50/50 dark:bg-surface-600 px-2 py-1 rounded;
+	@apply text-xs text-purple-500 dark:text-purple-300;
+}
+.table .meta-default {
+	@apply inline-block bg-surface-50/50 dark:bg-surface-600 px-2 py-1 rounded;
+	@apply text-xs italic text-blue-500 dark:text-blue-300;
+}
+
 /* Scrollbars --- */
 
 :root {
@@ -204,4 +231,12 @@ html.dark .shiki span {
 	100% {
 		transform: translateY(0px);
 	}
+}
+
+/* Shiki Highlighting --- */
+
+html.dark .shiki,
+html.dark .shiki span {
+	color: var(--shiki-dark) !important;
+	background-color: var(--shiki-dark-bg) !important;
 }
