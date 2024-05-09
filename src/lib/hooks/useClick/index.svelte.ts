@@ -1,4 +1,4 @@
-import { isMouseLikePointerType, isTypeableElement } from '$lib/utils.js';
+import { isMouseLikePointerType, isTypeableElement } from '../../utils.js';
 import { isHTMLElement } from '@floating-ui/utils/dom';
 import type { FloatingContext } from '../useFloating/index.svelte.js';
 import type { ElementProps } from '../useInteractions/index.svelte.js';
