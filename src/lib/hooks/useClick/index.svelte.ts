@@ -1,5 +1,6 @@
-import { isMouseLikePointerType, isTypeableElement } from '../../utils.js';
 import { isHTMLElement } from '@floating-ui/utils/dom';
+import { isTypeableElement } from '$lib/utils/is-typable-element.js';
+import { isMouseLikePointerType } from '$lib/utils/is-mouse-like-pointer-type.js';
 import type { FloatingContext } from '../useFloating/index.svelte.js';
 import type { ElementProps } from '../useInteractions/index.svelte.js';
 
@@ -56,7 +57,7 @@ function useClick(context: FloatingContext, options: UseClickOptions = {}): Elem
 		open,
 		onOpenChange,
 		data,
-		elements: { reference }
+		elements: { reference },
 	} = $derived(context);
 
 	const {
@@ -64,7 +65,7 @@ function useClick(context: FloatingContext, options: UseClickOptions = {}): Elem
 		event: eventOption = 'click',
 		toggle = true,
 		ignoreMouse = false,
-		keyboardHandlers = true
+		keyboardHandlers = true,
 	} = $derived(options);
 
 	let pointerType: PointerEvent['pointerType'] | undefined = undefined;
@@ -158,8 +159,8 @@ function useClick(context: FloatingContext, options: UseClickOptions = {}): Elem
 							onOpenChange(true, event, 'click');
 						}
 					}
-				}
-			}
+				},
+			},
 		};
 	});
 
