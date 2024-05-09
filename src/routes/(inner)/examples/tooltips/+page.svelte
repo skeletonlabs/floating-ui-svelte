@@ -18,7 +18,7 @@
 	<section class="space-y-8">
 		<h2 class="h2">Essentials</h2>
 		<p>An accessible tooltip component has the following qualities:</p>
-		<ul class="list-disc list-outside translate-x-8 space-y-4">
+		<ul class="ul">
 			<li>
 				<span class="highlight">Dynamic anchor positioning</span>: The tooltip is positioned next to
 				its reference element, and remains anchored to it while avoiding collisions.
@@ -67,7 +67,7 @@
 			We need to pass it some information:
 		</p>
 		<CodeBlock code={`const floating = useFloating({ /* ...settings... */ });`} lang="ts" />
-		<ul class="list-disc list-outside translate-x-8 space-y-4">
+		<ul class="ul">
 			<li>
 				<code class="code">open</code>: The open state from our <code class="code">useState()</code>
 				Hook above.
@@ -103,7 +103,7 @@ const interactions = useInteractions([hover, role]);
 		`}
 			lang="ts"
 		/>
-		<ul class="list-disc list-outside translate-x-8 space-y-4">
+		<ul class="ul">
 			<li>
 				<code class="code">useHover()</code>: adds the ability to toggle the tooltip open or closed
 				when the reference element is hovered over. The <code class="code">move</code> option is set

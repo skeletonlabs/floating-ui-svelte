@@ -8,6 +8,7 @@
 	import { platform, type Alignment, type Side } from '@floating-ui/dom';
 	import { styleObjectToString } from '$lib/utils.js';
 	import type { FloatingArrowProps } from './types.js';
+	import { useId } from '$lib/hooks/useId/index.js';
 
 	let {
 		ref = $bindable(null),
@@ -33,8 +34,7 @@
 		middlewareData: { arrow }
 	} = $derived(context);
 
-	// FIXME: migrate to useId();
-	const clipPathId = 'abc123';
+	const clipPathId = useId();
 
 	// Strokes must be double the border width, this ensures the stroke's width
 	// works as you'd expect.
@@ -92,7 +92,7 @@
 	width={isCustomShape ? width : width + computedStrokeWidth}
 	height={width}
 	viewBox={`0 0 ${width} ${height > width ? height : width}`}
-	aria-hidden
+	aria-hidden="true"
 	style={styleObjectToString({
 		position: 'absolute',
 		pointerEvents: 'none',

@@ -1,12 +1,5 @@
 import type { OpenChangeReason } from '$lib/types.js';
-import {
-	createPubSub,
-	generateId,
-	getDPR,
-	noop,
-	roundByDPR,
-	styleObjectToString
-} from '$lib/utils.js';
+import { createPubSub, getDPR, noop, roundByDPR, styleObjectToString } from '$lib/utils.js';
 import {
 	type Strategy,
 	type Placement,
@@ -17,6 +10,7 @@ import {
 	type ComputePositionConfig,
 	computePosition
 } from '@floating-ui/dom';
+import { useId } from '../useId/index.js';
 
 interface FloatingElements {
 	/**
@@ -277,8 +271,7 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		data: {},
 		// TODO: Ensure nodeId works the same way as in @floating-ui/react
 		nodeId: undefined,
-		// TODO: Ensure nodeId works the same way as in @floating-ui/react
-		floatingId: generateId(),
+		floatingId: useId(),
 		elements
 	});
 
