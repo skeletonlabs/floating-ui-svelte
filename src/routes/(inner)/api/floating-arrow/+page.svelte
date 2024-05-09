@@ -77,7 +77,7 @@ const floating = useFloating({
 		<h2 class="h2">Compare</h2>
 		<!-- prettier-ignore -->
 		<p>
-			Compare to <a class="anchor" href="https://floating-ui.com/docs/useHover" target="_blank">Floating UI React</a>.
+			Compare to <a class="anchor" href="https://floating-ui.com/docs/floatingArrow" target="_blank">Floating UI React</a>.
 		</p>
 	</section>
 </div>
