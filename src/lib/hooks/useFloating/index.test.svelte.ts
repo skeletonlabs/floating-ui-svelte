@@ -13,10 +13,8 @@ import { useId } from '../useId/index.js';
 function createElements(): { reference: HTMLElement; floating: HTMLElement } {
 	const reference = document.createElement('div');
 	const floating = document.createElement('div');
-
 	reference.id = useId();
 	floating.id = useId();
-
 	return { reference, floating };
 }
 
@@ -33,9 +31,9 @@ describe('useFloating', () => {
 		it(
 			'can be set through the return value',
 			withEffect(() => {
-				const elements = createElements();
-
 				const floating = useFloating();
+
+				const elements = createElements();
 
 				floating.elements.reference = elements.reference;
 				floating.elements.floating = elements.floating;
@@ -116,6 +114,7 @@ describe('useFloating', () => {
 			'is reactive',
 			withEffect(async () => {
 				let transform = $state(true);
+
 				const floating = useFloating({
 					elements: createElements(),
 					get transform() {
@@ -140,7 +139,7 @@ describe('useFloating', () => {
 		it(
 			'can be set',
 			withEffect(() => {
-				const strategy = 'fixed';
+				const strategy: Strategy = 'fixed';
 				const floating = useFloating({ strategy });
 				expect(floating.strategy).toBe(strategy);
 			})
@@ -170,6 +169,7 @@ describe('useFloating', () => {
 			'is reactive',
 			withEffect(async () => {
 				let strategy: Strategy = $state('absolute');
+
 				const floating = useFloating({
 					elements: createElements(),
 					get strategy() {
@@ -192,7 +192,7 @@ describe('useFloating', () => {
 		it(
 			'can be set',
 			withEffect(() => {
-				const placement = 'top';
+				const placement: Placement = 'top';
 				const floating = useFloating({ placement });
 				expect(floating.placement).toBe(placement);
 			})
@@ -222,6 +222,7 @@ describe('useFloating', () => {
 			'is reactive',
 			withEffect(async () => {
 				let placement: Placement = $state('bottom');
+
 				const floating = useFloating({
 					elements: createElements(),
 					get placement() {
@@ -245,6 +246,7 @@ describe('useFloating', () => {
 			'can be set',
 			withEffect(async () => {
 				const middleware: Array<Middleware> = [offset(5)];
+
 				const floating = useFloating({
 					elements: createElements(),
 					middleware
@@ -259,6 +261,7 @@ describe('useFloating', () => {
 			'is reactive',
 			withEffect(async () => {
 				const middleware: Array<Middleware> = $state([]);
+
 				const floating = useFloating({
 					elements: createElements(),
 					get middleware() {
@@ -314,6 +317,7 @@ describe('useFloating', () => {
 			'is reactive',
 			withEffect(async () => {
 				let open = $state(false);
+
 				const floating = useFloating({
 					elements: createElements(),
 					get open() {
@@ -337,6 +341,7 @@ describe('useFloating', () => {
 			'can be set',
 			withEffect(async () => {
 				const whileElementsMounted = vi.fn();
+
 				useFloating({
 					elements: createElements(),
 					whileElementsMounted
@@ -351,6 +356,7 @@ describe('useFloating', () => {
 			'is only called when elements are mounted',
 			withEffect(async () => {
 				const whileElementsMounted = vi.fn();
+
 				useFloating({
 					elements: undefined,
 					whileElementsMounted
@@ -366,6 +372,7 @@ describe('useFloating', () => {
 			withEffect(async () => {
 				const cleanup = vi.fn();
 				const whileElementsMounted = vi.fn(() => cleanup);
+
 				const floating = useFloating({
 					elements: createElements(),
 					whileElementsMounted
@@ -410,6 +417,7 @@ describe('useFloating', () => {
 			'can be set',
 			withEffect(async () => {
 				const onOpenChange = vi.fn();
+
 				useFloating({
 					elements: createElements(),
 					onOpenChange
@@ -449,6 +457,7 @@ describe('useFloating', () => {
 			'is reactively set based on placement',
 			withEffect(async () => {
 				let placement: Placement = $state('left');
+
 				const floating = useFloating({
 					elements: createElements(),
 					middleware: [offset(10)],
@@ -496,6 +505,7 @@ describe('useFloating', () => {
 			'is reactively set based on placement',
 			withEffect(async () => {
 				let placement: Placement = $state('top');
+
 				const floating = useFloating({
 					elements: createElements(),
 					middleware: [offset(10)],
@@ -613,6 +623,7 @@ describe('useFloating', () => {
 			'isPositioned is reset to false when open is set to false',
 			withEffect(async () => {
 				let open = $state(true);
+
 				const floating = useFloating({
 					elements: createElements(),
 					get open() {
@@ -712,6 +723,7 @@ describe('useFloating', () => {
 			'updates placement reactively',
 			withEffect(async () => {
 				let placement: Placement = $state('left');
+
 				const floating = useFloating({
 					elements: createElements(),
 					get placement() {
@@ -732,6 +744,7 @@ describe('useFloating', () => {
 			'updates strategy reactively',
 			withEffect(async () => {
 				let strategy: Strategy = $state('absolute');
+
 				const floating = useFloating({
 					elements: createElements(),
 					get strategy() {
@@ -796,6 +809,7 @@ describe('useFloating', () => {
 			'updates isPositioned reactively',
 			withEffect(async () => {
 				let open = $state(true);
+
 				const floating = useFloating({
 					elements: createElements(),
 					get open() {
