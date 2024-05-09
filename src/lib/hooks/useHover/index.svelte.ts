@@ -92,19 +92,21 @@ function getDelay(
 
 function useHover(context: FloatingContext, options: UseHoverOptions = {}): ElementProps {
 	const {
+		enabled = true,
+		mouseOnly = false,
+		delay = 0,
+		restMs = 0,
+		move = true,
+		handleClose = null,
+	} = $derived(options);
+
+	const {
 		open,
 		onOpenChange,
 		data,
 		events,
 		elements: { reference, floating },
 	} = $derived(context);
-
-	const enabled = $derived(options.enabled ?? true);
-	const mouseOnly = $derived(options.mouseOnly ?? false);
-	const delay = $derived(options.delay ?? 0);
-	const restMs = $derived(options.restMs ?? 0);
-	const move = $derived(options.move ?? true);
-	const handleClose = $derived(options.handleClose ?? null);
 
 	// const tree = useFloatingTree();
 	// const parentId = useFloatingParentNodeId();
