@@ -1,6 +1,6 @@
 import { describe, expect, vi, it } from 'vitest';
-import { it_in_effect } from '$lib/test-utils.svelte.js';
 import { useInteractions, type ElementProps } from '../../index.js';
+import { withEffect } from '$lib/test-utils.svelte.js';
 
 describe('useInteractions', () => {
 	it('returns props to the corresponding getter', () => {
@@ -27,25 +27,28 @@ describe('useInteractions', () => {
 		expect(interactions.getItemProps()).toHaveProperty('id');
 		expect(interactions.getItemProps().id).toBe('item');
 	});
-	it_in_effect('updates props reactively', () => {
-		const reference = $state({
-			'data-count': 0
-		});
+	it(
+		'updates props reactively',
+		withEffect(() => {
+			const reference = $state({
+				'data-count': 0
+			});
 
-		const interaction: ElementProps = {
-			reference
-		};
+			const interaction: ElementProps = {
+				reference
+			};
 
-		const interactions = useInteractions([interaction]);
+			const interactions = useInteractions([interaction]);
 
-		const count = $derived(interactions.getReferenceProps()['data-count']);
+			const count = $derived(interactions.getReferenceProps()['data-count']);
 
-		expect(count).toBe(0);
+			expect(count).toBe(0);
 
-		reference['data-count'] = 1;
+			reference['data-count'] = 1;
 
-		expect(count).toBe(1);
-	});
+			expect(count).toBe(1);
+		})
+	);
 	it('overrides duplicate non-eventlistener props with the prop from the last ineraction passed in that has said duplicate prop', () => {
 		const interactionOne: ElementProps = {
 			reference: {

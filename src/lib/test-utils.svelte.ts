@@ -1,16 +1,14 @@
-import { it } from 'vitest';
-
 /**
- * Run a test in Svelte effect context
+ * Run a function inside Svelte's effect context
  */
-export function it_in_effect(name: string, fn: () => void) {
-	it(name, async () => {
+export function withEffect(fn: () => void) {
+	return async () => {
 		let promise;
 		const cleanup = $effect.root(() => (promise = fn()));
 		try {
-			await promise;
+			return await promise;
 		} finally {
 			cleanup();
 		}
-	});
+	};
 }
