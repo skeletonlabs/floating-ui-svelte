@@ -33,7 +33,7 @@ const floating = useFloating({
 			offset(10),
 			arrowRef && arrow({ element: arrowRef })
 		];
-		}
+	}
 });
 `}
 		/>
