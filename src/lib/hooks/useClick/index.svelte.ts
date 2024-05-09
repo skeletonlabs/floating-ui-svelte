@@ -59,8 +59,6 @@ function useClick(context: FloatingContext, options: UseClickOptions = {}): Elem
 		elements: { reference }
 	} = $derived(context);
 
-	$inspect(open);
-
 	const {
 		enabled = true,
 		event: eventOption = 'click',
