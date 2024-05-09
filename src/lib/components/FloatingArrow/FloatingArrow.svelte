@@ -31,7 +31,7 @@
 	const {
 		placement,
 		elements: { floating },
-		middlewareData: { arrow }
+		middlewareData: { arrow },
 	} = $derived(context);
 
 	const clipPathId = useId();
@@ -69,7 +69,7 @@
 				` H${width}` +
 				` L${width - svgX},${height - svgY}` +
 				` Q${width / 2},${height} ${svgX},${height - svgY}` +
-				' Z'
+				' Z',
 	);
 
 	const rotation = $derived.by(() => {
@@ -99,7 +99,7 @@
 		[xOffsetProp]: `${arrowX}`,
 		[yOffsetProp]: `${arrowY}`,
 		[side]: isVerticalSide || isCustomShape ? '100%' : `calc(100% - ${computedStrokeWidth / 2}px)`,
-		transform: `${rotation} ${transform ?? ''}`
+		transform: `${rotation} ${transform ?? ''}`,
 	})}
 	data-testid="floating-arrow"
 	{...rest}

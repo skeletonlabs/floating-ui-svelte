@@ -6,14 +6,14 @@ describe('useInteractions', () => {
 	it('returns props to the corresponding getter', () => {
 		const interaction: ElementProps = {
 			reference: {
-				id: 'reference'
+				id: 'reference',
 			},
 			floating: {
-				id: 'floating'
+				id: 'floating',
 			},
 			item: {
-				id: 'item'
-			}
+				id: 'item',
+			},
 		};
 
 		const interactions = useInteractions([interaction]);
@@ -31,11 +31,11 @@ describe('useInteractions', () => {
 		'updates props reactively',
 		withEffect(() => {
 			const reference = $state({
-				'data-count': 0
+				'data-count': 0,
 			});
 
 			const interaction: ElementProps = {
-				reference
+				reference,
 			};
 
 			const interactions = useInteractions([interaction]);
@@ -47,19 +47,19 @@ describe('useInteractions', () => {
 			reference['data-count'] = 1;
 
 			expect(count).toBe(1);
-		})
+		}),
 	);
 	it('overrides duplicate non-eventlistener props with the prop from the last ineraction passed in that has said duplicate prop', () => {
 		const interactionOne: ElementProps = {
 			reference: {
-				id: 'one'
-			}
+				id: 'one',
+			},
 		};
 
 		const interactionTwo: ElementProps = {
 			reference: {
-				id: 'two'
-			}
+				id: 'two',
+			},
 		};
 
 		const interactions = useInteractions([interactionOne, interactionTwo]);
@@ -73,14 +73,14 @@ describe('useInteractions', () => {
 
 		const interactionOne: ElementProps = {
 			reference: {
-				onclick: one
-			}
+				onclick: one,
+			},
 		};
 
 		const interactionTwo: ElementProps = {
 			reference: {
-				onclick: two
-			}
+				onclick: two,
+			},
 		};
 
 		const interactions = useInteractions([interactionOne, interactionTwo]);

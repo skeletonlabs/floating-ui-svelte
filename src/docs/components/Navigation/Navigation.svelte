@@ -26,7 +26,7 @@
 	const navigation = [
 		{
 			label: 'Docs',
-			links: [{ icon: IconGetStarted, href: '/docs/getting-started', label: 'Getting Started' }]
+			links: [{ icon: IconGetStarted, href: '/docs/getting-started', label: 'Getting Started' }],
 		},
 		{
 			label: 'Examples',
@@ -34,21 +34,21 @@
 				{ icon: IconTooltips, href: '/examples/tooltips', label: 'Tooltips' },
 				{ icon: IconPopovers, href: '/examples/popovers', label: 'Popovers' },
 				{ icon: IconModals, href: '/examples/modals', label: 'Modals' },
-				{ icon: IconContextMenus, href: '/examples/context-menus', label: 'Context Menus' }
-			]
+				{ icon: IconContextMenus, href: '/examples/context-menus', label: 'Context Menus' },
+			],
 		},
 		{
 			label: 'API Reference',
 			links: [
-				{ icon: IconUseFloating, href: '/api/use-floating', label: 'useFloating' }
+				{ icon: IconUseFloating, href: '/api/use-floating', label: 'useFloating' },
 				// { icon: IconUseInteractions, href: '/api/use-interactions', label: 'useInteractions' },
 				// { icon: IconUseHover, href: '/api/use-hover', label: 'useHover' },
 				// { icon: IconUseClick, href: '/api/use-click', label: 'useClick' },
 				// { icon: IconUseRole, href: '/api/use-role', label: 'useRole' },
 				// { icon: IconFloatingArrow, href: '/api/floating-arrow', label: 'Floating Arrow' },
 				// { icon: IconUtils, href: '/api/utilities', label: 'Utilities' }
-			]
-		}
+			],
+		},
 	];
 
 	// FIXME: Remove when Svelte 5 supports $page, see: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
