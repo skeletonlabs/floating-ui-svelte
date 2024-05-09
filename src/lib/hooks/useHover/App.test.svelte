@@ -13,7 +13,7 @@
 	let open = $state(false);
 	const elements: { reference: HTMLElement | null; floating: HTMLElement | null } = $state({
 		reference: null,
-		floating: null
+		floating: null,
 	});
 	const floating = useFloating({
 		whileElementsMounted: autoUpdate,
@@ -23,7 +23,7 @@
 		onOpenChange(v) {
 			open = v;
 		},
-		elements
+		elements,
 	});
 
 	const hover = useHover(floating.context, { ...rest });

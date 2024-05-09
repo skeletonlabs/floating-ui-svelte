@@ -18,14 +18,14 @@ interface UseInteractionsReturn {
 	getReferenceProps: (userProps?: HTMLAttributes<Element>) => Record<string, unknown>;
 	getFloatingProps: (userProps?: HTMLAttributes<Element>) => Record<string, unknown>;
 	getItemProps: (
-		userProps?: Omit<HTMLAttributes<Element>, 'selected' | 'active'> & ExtendedUserProps
+		userProps?: Omit<HTMLAttributes<Element>, 'selected' | 'active'> & ExtendedUserProps,
 	) => Record<string, unknown>;
 }
 
 function mergeProps<Key extends keyof ElementProps>(
 	userProps: (HTMLAttributes<Element> & ExtendedUserProps) | undefined,
 	propsList: Array<ElementProps | void>,
-	elementKey: Key
+	elementKey: Key,
 ): Record<string, unknown> {
 	const map = new Map<string, Array<(...args: unknown[]) => void>>();
 	const isItem = elementKey === 'item';
@@ -79,7 +79,7 @@ function mergeProps<Key extends keyof ElementProps>(
 				});
 
 				return acc;
-			}, {})
+			}, {}),
 	};
 }
 
@@ -93,7 +93,7 @@ function useInteractions(propsList: Array<ElementProps | void> = []): UseInterac
 	};
 
 	const getItemProps = (
-		userProps?: Omit<HTMLAttributes<Element>, 'selected' | 'active'> & ExtendedUserProps
+		userProps?: Omit<HTMLAttributes<Element>, 'selected' | 'active'> & ExtendedUserProps,
 	) => {
 		return mergeProps(userProps, propsList, 'item');
 	};

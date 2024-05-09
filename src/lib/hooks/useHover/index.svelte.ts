@@ -4,7 +4,7 @@ import {
 	createAttribute,
 	getDocument,
 	isMouseLikePointerType,
-	noop
+	noop,
 } from '$lib/utils.js';
 import { isElement } from '@floating-ui/utils/dom';
 import type { FloatingContext } from '../useFloating/index.svelte.js';
@@ -29,7 +29,7 @@ interface HandleCloseFn {
 		context: FloatingContext & {
 			onClose: () => void;
 			leave?: boolean;
-		}
+		},
 	): (event: MouseEvent) => void;
 	__options: {
 		blockPointerEvents: boolean;
@@ -79,7 +79,7 @@ const safePolygonIdentifier = createAttribute('safe-polygon');
 function getDelay(
 	value: UseHoverOptions['delay'],
 	prop: 'open' | 'close',
-	pointerType?: PointerEvent['pointerType']
+	pointerType?: PointerEvent['pointerType'],
 ) {
 	if (pointerType && !isMouseLikePointerType(pointerType)) {
 		return 0;
@@ -98,7 +98,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 		onOpenChange,
 		data,
 		events,
-		elements: { reference, floating }
+		elements: { reference, floating },
 	} = $derived(context);
 
 	const enabled = $derived(options.enabled ?? true);
@@ -124,7 +124,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 	});
 
 	const isClickLikeOpenEvent = $derived(
-		data.openEvent ? ['click', 'mousedown'].includes(data.openEvent.type) : false
+		data.openEvent ? ['click', 'mousedown'].includes(data.openEvent.type) : false,
 	);
 
 	$effect(() => {
@@ -168,7 +168,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 	const closeWithDelay = (
 		event: Event,
 		runElseBranch = true,
-		reason: OpenChangeReason = 'hover'
+		reason: OpenChangeReason = 'hover',
 	) => {
 		const closeDelay = getDelay(delay, 'close', pointerType);
 		if (closeDelay && !handler) {
@@ -328,7 +328,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 									clearPointerEvents();
 									cleanupMouseMoveHandler();
 									closeWithDelay(event, true, 'safe-polygon');
-								}
+								},
 							});
 
 							const localHandler = handler;
@@ -363,10 +363,10 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 								clearPointerEvents();
 								cleanupMouseMoveHandler();
 								closeWithDelay(event);
-							}
+							},
 						})(event);
 					}
-				}
+				},
 			},
 			floating: {
 				onmouseenter() {
@@ -383,12 +383,12 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 								clearPointerEvents();
 								cleanupMouseMoveHandler();
 								closeWithDelay(event);
-							}
+							},
 						})(event);
 					}
 					closeWithDelay(event, false);
-				}
-			}
+				},
+			},
 		};
 	});
 

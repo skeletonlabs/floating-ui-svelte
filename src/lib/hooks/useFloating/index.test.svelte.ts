@@ -6,7 +6,7 @@ import {
 	type Middleware,
 	type MiddlewareData,
 	type Placement,
-	type Strategy
+	type Strategy,
 } from '@floating-ui/dom';
 import { useId } from '../useId/index.js';
 
@@ -26,7 +26,7 @@ describe('useFloating', () => {
 				const elements = createElements();
 				const floating = useFloating({ elements });
 				expect(floating.elements).toEqual(elements);
-			})
+			}),
 		);
 		it(
 			'can be set through the return value',
@@ -39,28 +39,28 @@ describe('useFloating', () => {
 				floating.elements.floating = elements.floating;
 
 				expect(floating.elements).toEqual(elements);
-			})
+			}),
 		);
 		it(
 			'is returned',
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating).toHaveProperty('elements');
-			})
+			}),
 		);
 		it(
 			'is an object',
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating.elements).toBeTypeOf('object');
-			})
+			}),
 		);
 		it(
 			'defaults to {}',
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating.elements).toEqual({});
-			})
+			}),
 		);
 		it(
 			'is reactive',
@@ -70,7 +70,7 @@ describe('useFloating', () => {
 				const floating = useFloating({
 					get elements() {
 						return elements;
-					}
+					},
 				});
 
 				expect(floating.elements).toEqual(elements);
@@ -80,7 +80,7 @@ describe('useFloating', () => {
 				await vi.waitFor(() => {
 					expect(floating.elements).toEqual(elements);
 				});
-			})
+			}),
 		);
 	});
 
@@ -91,24 +91,24 @@ describe('useFloating', () => {
 				const transform = true;
 				const floating = useFloating({
 					elements: createElements(),
-					transform
+					transform,
 				});
 
 				await vi.waitFor(() => {
 					expect(floating.floatingStyles).contain('transform: translate(0px, 0px)');
 				});
-			})
+			}),
 		);
 		it(
 			'defaults to "true"',
 			withEffect(async () => {
 				const floating = useFloating({
-					elements: createElements()
+					elements: createElements(),
 				});
 				await vi.waitFor(() => {
 					expect(floating.floatingStyles).contain('transform: translate(0px, 0px)');
 				});
-			})
+			}),
 		);
 		it(
 			'is reactive',
@@ -119,7 +119,7 @@ describe('useFloating', () => {
 					elements: createElements(),
 					get transform() {
 						return transform;
-					}
+					},
 				});
 
 				await vi.waitFor(() => {
@@ -131,7 +131,7 @@ describe('useFloating', () => {
 				await vi.waitFor(() => {
 					expect(floating.floatingStyles).not.contain('transform: translate(0px, 0px)');
 				});
-			})
+			}),
 		);
 	});
 
@@ -142,28 +142,28 @@ describe('useFloating', () => {
 				const strategy: Strategy = 'fixed';
 				const floating = useFloating({ strategy });
 				expect(floating.strategy).toBe(strategy);
-			})
+			}),
 		);
 		it(
 			'is returned',
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating).toHaveProperty('strategy');
-			})
+			}),
 		);
 		it(
 			'is of type Strategy',
 			withEffect(() => {
 				const floating = useFloating();
 				expectTypeOf(floating.strategy).toMatchTypeOf<Strategy>();
-			})
+			}),
 		);
 		it(
 			'defaults to "absolute"',
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating.strategy).toBe('absolute');
-			})
+			}),
 		);
 		it(
 			'is reactive',
@@ -174,7 +174,7 @@ describe('useFloating', () => {
 					elements: createElements(),
 					get strategy() {
 						return strategy;
-					}
+					},
 				});
 
 				expect(floating.strategy).toBe(strategy);
@@ -184,7 +184,7 @@ describe('useFloating', () => {
 				await vi.waitFor(() => {
 					expect(floating.strategy).toBe(strategy);
 				});
-			})
+			}),
 		);
 	});
 
@@ -195,28 +195,28 @@ describe('useFloating', () => {
 				const placement: Placement = 'top';
 				const floating = useFloating({ placement });
 				expect(floating.placement).toBe(placement);
-			})
+			}),
 		);
 		it(
 			'is returned',
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating).toHaveProperty('placement');
-			})
+			}),
 		);
 		it(
 			'is of type Placement',
 			withEffect(() => {
 				const floating = useFloating();
 				expectTypeOf(floating.placement).toMatchTypeOf<Placement>();
-			})
+			}),
 		);
 		it(
 			'defaults to "bottom"',
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating.placement).toBe('bottom');
-			})
+			}),
 		);
 		it(
 			'is reactive',
@@ -227,7 +227,7 @@ describe('useFloating', () => {
 					elements: createElements(),
 					get placement() {
 						return placement;
-					}
+					},
 				});
 
 				expect(floating.placement).toBe(placement);
@@ -237,7 +237,7 @@ describe('useFloating', () => {
 				await vi.waitFor(() => {
 					expect(floating.placement).toBe(placement);
 				});
-			})
+			}),
 		);
 	});
 
@@ -249,13 +249,13 @@ describe('useFloating', () => {
 
 				const floating = useFloating({
 					elements: createElements(),
-					middleware
+					middleware,
 				});
 				await vi.waitFor(() => {
 					expect(floating.x).toBe(0);
 					expect(floating.y).toBe(5);
 				});
-			})
+			}),
 		);
 		it(
 			'is reactive',
@@ -266,7 +266,7 @@ describe('useFloating', () => {
 					elements: createElements(),
 					get middleware() {
 						return middleware;
-					}
+					},
 				});
 
 				await vi.waitFor(() => {
@@ -280,7 +280,7 @@ describe('useFloating', () => {
 					expect(floating.x).toBe(0);
 					expect(floating.y).toBe(10);
 				});
-			})
+			}),
 		);
 	});
 
@@ -290,28 +290,28 @@ describe('useFloating', () => {
 			withEffect(() => {
 				const floating = useFloating({ open: true });
 				expect(floating.open).toBe(true);
-			})
+			}),
 		);
 		it(
 			'is returned',
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating).toHaveProperty('open');
-			})
+			}),
 		);
 		it(
 			'defaults to true',
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating.open).toBe(true);
-			})
+			}),
 		);
 		it(
 			'is of type boolean',
 			withEffect(() => {
 				const floating = useFloating();
 				expectTypeOf(floating.open).toMatchTypeOf<boolean>();
-			})
+			}),
 		);
 		it(
 			'is reactive',
@@ -322,7 +322,7 @@ describe('useFloating', () => {
 					elements: createElements(),
 					get open() {
 						return open;
-					}
+					},
 				});
 
 				expect(floating.open).toBe(open);
@@ -332,7 +332,7 @@ describe('useFloating', () => {
 				await vi.waitFor(() => {
 					expect(floating.open).toBe(open);
 				});
-			})
+			}),
 		);
 	});
 
@@ -344,13 +344,13 @@ describe('useFloating', () => {
 
 				useFloating({
 					elements: createElements(),
-					whileElementsMounted
+					whileElementsMounted,
 				});
 
 				await vi.waitFor(() => {
 					expect(whileElementsMounted).toHaveBeenCalled();
 				});
-			})
+			}),
 		);
 		it(
 			'is only called when elements are mounted',
@@ -359,13 +359,13 @@ describe('useFloating', () => {
 
 				useFloating({
 					elements: undefined,
-					whileElementsMounted
+					whileElementsMounted,
 				});
 
 				await vi.waitFor(() => {
 					expect(whileElementsMounted).not.toHaveBeenCalled();
 				});
-			})
+			}),
 		);
 		it(
 			'calls the cleanup function when elements are unmounted',
@@ -375,7 +375,7 @@ describe('useFloating', () => {
 
 				const floating = useFloating({
 					elements: createElements(),
-					whileElementsMounted
+					whileElementsMounted,
 				});
 
 				await vi.waitFor(() => {
@@ -388,7 +388,7 @@ describe('useFloating', () => {
 				await vi.waitFor(() => {
 					expect(cleanup).toHaveBeenCalled();
 				});
-			})
+			}),
 		);
 		it(
 			'is called with the correct arguments',
@@ -398,17 +398,17 @@ describe('useFloating', () => {
 
 				const floating = useFloating({
 					elements,
-					whileElementsMounted
+					whileElementsMounted,
 				});
 
 				await vi.waitFor(() => {
 					expect(whileElementsMounted).toHaveBeenCalledWith(
 						elements.reference,
 						elements.floating,
-						floating.update
+						floating.update,
 					);
 				});
-			})
+			}),
 		);
 	});
 
@@ -420,13 +420,13 @@ describe('useFloating', () => {
 
 				useFloating({
 					elements: createElements(),
-					onOpenChange
+					onOpenChange,
 				});
 
 				await vi.waitFor(() => {
 					expect(onOpenChange).not.toHaveBeenCalled();
 				});
-			})
+			}),
 		);
 		// TODO: Add tests for onOpenChange once we have well tested hooks that can trigger the open state
 	});
@@ -437,21 +437,21 @@ describe('useFloating', () => {
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating).toHaveProperty('x');
-			})
+			}),
 		);
 		it(
 			'is of type number',
 			withEffect(() => {
 				const floating = useFloating();
 				expectTypeOf(floating.x).toMatchTypeOf<number>();
-			})
+			}),
 		);
 		it(
 			'defaults to 0',
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating.x).toBe(0);
-			})
+			}),
 		);
 		it(
 			'is reactively set based on placement',
@@ -463,7 +463,7 @@ describe('useFloating', () => {
 					middleware: [offset(10)],
 					get placement() {
 						return placement;
-					}
+					},
 				});
 
 				await vi.waitFor(() => {
@@ -475,7 +475,7 @@ describe('useFloating', () => {
 				await vi.waitFor(() => {
 					expect(floating.x).toBe(10);
 				});
-			})
+			}),
 		);
 	});
 
@@ -485,21 +485,21 @@ describe('useFloating', () => {
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating).toHaveProperty('y');
-			})
+			}),
 		);
 		it(
 			'is of type number',
 			withEffect(() => {
 				const floating = useFloating();
 				expectTypeOf(floating.y).toMatchTypeOf<number>();
-			})
+			}),
 		);
 		it(
 			'defaults to 0',
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating.y).toBe(0);
-			})
+			}),
 		);
 		it(
 			'is reactively set based on placement',
@@ -511,7 +511,7 @@ describe('useFloating', () => {
 					middleware: [offset(10)],
 					get placement() {
 						return placement;
-					}
+					},
 				});
 
 				await vi.waitFor(() => {
@@ -523,7 +523,7 @@ describe('useFloating', () => {
 				await vi.waitFor(() => {
 					expect(floating.y).toBe(10);
 				});
-			})
+			}),
 		);
 	});
 
@@ -533,21 +533,21 @@ describe('useFloating', () => {
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating).toHaveProperty('middlewareData');
-			})
+			}),
 		);
 		it(
 			'is of type MiddlewareData',
 			withEffect(() => {
 				const floating = useFloating();
 				expectTypeOf(floating.middlewareData).toMatchTypeOf<MiddlewareData>();
-			})
+			}),
 		);
 		it(
 			'defaults to {}',
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating.middlewareData).toEqual({});
-			})
+			}),
 		);
 		it(
 			'is reactively set based on data returned by middleware',
@@ -558,7 +558,7 @@ describe('useFloating', () => {
 					elements: createElements(),
 					get middleware() {
 						return middleware;
-					}
+					},
 				});
 
 				await vi.waitFor(() => {
@@ -567,13 +567,13 @@ describe('useFloating', () => {
 
 				middleware.push({
 					name: 'foobar',
-					fn: () => ({ data: { foo: 'bar' } })
+					fn: () => ({ data: { foo: 'bar' } }),
 				});
 
 				await vi.waitFor(() => {
 					expect(floating.middlewareData).toEqual({ foobar: { foo: 'bar' } });
 				});
-			})
+			}),
 		);
 	});
 
@@ -583,21 +583,21 @@ describe('useFloating', () => {
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating).toHaveProperty('isPositioned');
-			})
+			}),
 		);
 		it(
 			'is of type boolean',
 			withEffect(() => {
 				const floating = useFloating();
 				expectTypeOf(floating.isPositioned).toMatchTypeOf<boolean>();
-			})
+			}),
 		);
 		it(
 			'defaults to false',
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating.isPositioned).toBe(false);
-			})
+			}),
 		);
 		it(
 			'is set to true once the position is calculated',
@@ -606,8 +606,8 @@ describe('useFloating', () => {
 					open: false,
 					elements: {
 						reference: document.createElement('div'),
-						floating: document.createElement('div')
-					}
+						floating: document.createElement('div'),
+					},
 				});
 
 				expect(floating.isPositioned).toBe(false);
@@ -617,7 +617,7 @@ describe('useFloating', () => {
 				vi.waitFor(() => {
 					expect(floating.isPositioned).toBe(true);
 				});
-			})
+			}),
 		);
 		it(
 			'isPositioned is reset to false when open is set to false',
@@ -628,7 +628,7 @@ describe('useFloating', () => {
 					elements: createElements(),
 					get open() {
 						return open;
-					}
+					},
 				});
 
 				await vi.waitFor(() => {
@@ -640,7 +640,7 @@ describe('useFloating', () => {
 				await vi.waitFor(() => {
 					expect(floating.isPositioned).toBe(false);
 				});
-			})
+			}),
 		);
 	});
 
@@ -650,21 +650,21 @@ describe('useFloating', () => {
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating).toHaveProperty('floatingStyles');
-			})
+			}),
 		);
 		it(
 			'is of type string',
 			withEffect(() => {
 				const floating = useFloating();
 				expectTypeOf(floating.floatingStyles).toMatchTypeOf<string>();
-			})
+			}),
 		);
 		it(
 			'defaults to position: absolute; left: 0px; top: 0px;',
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating.floatingStyles).toBe('position: absolute; left: 0px; top: 0px;');
-			})
+			}),
 		);
 	});
 
@@ -674,14 +674,14 @@ describe('useFloating', () => {
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating).toHaveProperty('update');
-			})
+			}),
 		);
 		it(
 			'is of type function',
 			withEffect(() => {
 				const floating = useFloating();
 				expectTypeOf(floating.update).toBeFunction();
-			})
+			}),
 		);
 	});
 
@@ -691,14 +691,14 @@ describe('useFloating', () => {
 			withEffect(() => {
 				const floating = useFloating();
 				expect(floating).toHaveProperty('context');
-			})
+			}),
 		);
 		it(
 			'is of type FloatingContext',
 			withEffect(() => {
 				const floating = useFloating();
 				expectTypeOf(floating.context).toMatchTypeOf<FloatingContext>();
-			})
+			}),
 		);
 		it(
 			'updates open reactively',
@@ -709,7 +709,7 @@ describe('useFloating', () => {
 					elements: createElements(),
 					get open() {
 						return open;
-					}
+					},
 				});
 
 				expect(floating.context.open).toBe(true);
@@ -717,7 +717,7 @@ describe('useFloating', () => {
 				open = false;
 
 				expect(floating.context.open).toBe(false);
-			})
+			}),
 		);
 		it(
 			'updates placement reactively',
@@ -728,7 +728,7 @@ describe('useFloating', () => {
 					elements: createElements(),
 					get placement() {
 						return placement;
-					}
+					},
 				});
 
 				expect(floating.context.placement).toBe('left');
@@ -738,7 +738,7 @@ describe('useFloating', () => {
 				await vi.waitFor(() => {
 					expect(floating.context.placement).toBe('right');
 				});
-			})
+			}),
 		);
 		it(
 			'updates strategy reactively',
@@ -749,7 +749,7 @@ describe('useFloating', () => {
 					elements: createElements(),
 					get strategy() {
 						return strategy;
-					}
+					},
 				});
 
 				expect(floating.context.strategy).toBe('absolute');
@@ -759,7 +759,7 @@ describe('useFloating', () => {
 				await vi.waitFor(() => {
 					expect(floating.context.strategy).toBe('fixed');
 				});
-			})
+			}),
 		);
 		it(
 			'updates x reactively',
@@ -771,7 +771,7 @@ describe('useFloating', () => {
 					placement: 'right',
 					get middleware() {
 						return middleware;
-					}
+					},
 				});
 
 				expect(floating.context.x).toBe(0);
@@ -781,7 +781,7 @@ describe('useFloating', () => {
 				await vi.waitFor(() => {
 					expect(floating.context.x).toBe(10);
 				});
-			})
+			}),
 		);
 		it(
 			'updates y reactively',
@@ -793,7 +793,7 @@ describe('useFloating', () => {
 					placement: 'bottom',
 					get middleware() {
 						return middleware;
-					}
+					},
 				});
 
 				expect(floating.context.y).toBe(0);
@@ -803,7 +803,7 @@ describe('useFloating', () => {
 				await vi.waitFor(() => {
 					expect(floating.context.y).toBe(10);
 				});
-			})
+			}),
 		);
 		it(
 			'updates isPositioned reactively',
@@ -814,7 +814,7 @@ describe('useFloating', () => {
 					elements: createElements(),
 					get open() {
 						return open;
-					}
+					},
 				});
 
 				await vi.waitFor(() => {
@@ -826,7 +826,7 @@ describe('useFloating', () => {
 				await vi.waitFor(() => {
 					expect(floating.context.isPositioned).toBe(false);
 				});
-			})
+			}),
 		);
 
 		it(
@@ -838,20 +838,20 @@ describe('useFloating', () => {
 					elements: createElements(),
 					get middleware() {
 						return middleware;
-					}
+					},
 				});
 
 				expect(floating.context.middlewareData).toEqual({});
 
 				middleware.push({
 					name: 'foobar',
-					fn: () => ({ data: { foo: 'bar' } })
+					fn: () => ({ data: { foo: 'bar' } }),
 				});
 
 				await vi.waitFor(() => {
 					expect(floating.context.middlewareData).toEqual({ foobar: { foo: 'bar' } });
 				});
-			})
+			}),
 		);
 		it(
 			'updates elements reactively',
@@ -861,7 +861,7 @@ describe('useFloating', () => {
 				const floating = useFloating({
 					get elements() {
 						return elements;
-					}
+					},
 				});
 
 				expect(floating.context.elements).toEqual(elements);
@@ -871,7 +871,7 @@ describe('useFloating', () => {
 				await vi.waitFor(() => {
 					expect(floating.context.elements).toEqual(elements);
 				});
-			})
+			}),
 		);
 	});
 });

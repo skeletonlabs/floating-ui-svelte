@@ -8,7 +8,7 @@ import {
 	type FloatingElement,
 	type Middleware,
 	type ComputePositionConfig,
-	computePosition
+	computePosition,
 } from '@floating-ui/dom';
 import { useId } from '../useId/index.js';
 
@@ -74,7 +74,7 @@ interface UseFloatingOptions {
 	whileElementsMounted?: (
 		reference: ReferenceElement,
 		floating: FloatingElement,
-		update: () => void
+		update: () => void,
 	) => () => void;
 }
 
@@ -201,14 +201,14 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		transform = true,
 		open = true,
 		onOpenChange = noop,
-		whileElementsMounted
+		whileElementsMounted,
 	} = $derived(options);
 	const elements = $state(options.elements ?? {});
 	const floatingStyles = $derived.by(() => {
 		const initialStyles = {
 			position: strategy,
 			left: '0px',
-			top: '0px'
+			top: '0px',
 		};
 
 		if (!elements.floating) {
@@ -222,14 +222,14 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 			return styleObjectToString({
 				...initialStyles,
 				transform: `translate(${x}px, ${y}px)`,
-				...(getDPR(elements.floating) >= 1.5 && { willChange: 'transform' })
+				...(getDPR(elements.floating) >= 1.5 && { willChange: 'transform' }),
 			});
 		}
 
 		return styleObjectToString({
 			position: strategy,
 			left: `${x}px`,
-			top: `${y}px`
+			top: `${y}px`,
 		});
 	});
 
@@ -239,7 +239,7 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		strategy,
 		placement,
 		middlewareData: {},
-		isPositioned: false
+		isPositioned: false,
 	});
 
 	const context: FloatingContext = $state({
@@ -272,7 +272,7 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		// TODO: Ensure nodeId works the same way as in @floating-ui/react
 		nodeId: undefined,
 		floatingId: useId(),
-		elements
+		elements,
 	});
 
 	const update = async () => {
@@ -283,7 +283,7 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		const config: ComputePositionConfig = {
 			placement,
 			strategy,
-			middleware
+			middleware,
 		};
 
 		const position = await computePosition(elements.reference, elements.floating, config);
@@ -352,7 +352,7 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		},
 		elements,
 		update,
-		context
+		context,
 	};
 }
 

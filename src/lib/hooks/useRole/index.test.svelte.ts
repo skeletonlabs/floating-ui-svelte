@@ -25,7 +25,7 @@ describe('useRole', () => {
 
 			expect(screen.getByRole('button')).toHaveAttribute(
 				'aria-describedby',
-				screen.getByRole('tooltip').getAttribute('id')
+				screen.getByRole('tooltip').getAttribute('id'),
 			);
 
 			await rerender({ role: 'tooltip', open: false });
@@ -42,7 +42,7 @@ describe('useRole', () => {
 
 			expect(screen.getByRole('button')).toHaveAttribute(
 				'aria-labelledby',
-				screen.getByRole('tooltip').getAttribute('id')
+				screen.getByRole('tooltip').getAttribute('id'),
 			);
 
 			await rerender({ role: 'tooltip', open: false });
@@ -65,7 +65,7 @@ describe('useRole', () => {
 			expect(screen.getByRole('dialog')).toBeInTheDocument();
 			expect(screen.getByRole('button')).toHaveAttribute(
 				'aria-controls',
-				screen.getByRole('dialog').getAttribute('id')
+				screen.getByRole('dialog').getAttribute('id'),
 			);
 		});
 	});
