@@ -6,9 +6,9 @@
 
 <script lang="ts">
 	import { platform, type Alignment, type Side } from '@floating-ui/dom';
-	import { styleObjectToString } from '$lib/utils.js';
 	import type { FloatingArrowProps } from './types.js';
 	import { useId } from '$lib/hooks/useId/index.js';
+	import { styleObjectToString } from '$lib/utils/style-object-to-string.js';
 
 	let {
 		ref = $bindable(null),

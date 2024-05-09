@@ -1,5 +1,4 @@
 import type { OpenChangeReason } from '$lib/types.js';
-import { createPubSub, getDPR, noop, roundByDPR, styleObjectToString } from '$lib/utils.js';
 import {
 	type Strategy,
 	type Placement,
@@ -11,6 +10,10 @@ import {
 	computePosition,
 } from '@floating-ui/dom';
 import { useId } from '../useId/index.js';
+import { noop } from '$lib/utils/noop.js';
+import { styleObjectToString } from '$lib/utils/style-object-to-string.js';
+import { getDPR, roundByDPR } from '$lib/utils/dpr.js';
+import { createPubSub } from '$lib/utils/create-pub-sub.js';
 
 interface FloatingElements {
 	/**
