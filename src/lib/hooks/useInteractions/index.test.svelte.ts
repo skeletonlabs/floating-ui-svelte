@@ -1,6 +1,6 @@
 import { describe, expect, vi, it } from 'vitest';
+import { withEffect } from '$lib/utils/test.svelte.js';
 import { useInteractions, type ElementProps } from '../../index.js';
-import { withEffect } from '$lib/test-utils.svelte.js';
 
 describe('useInteractions', () => {
 	it('returns props to the corresponding getter', () => {
