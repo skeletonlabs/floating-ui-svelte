@@ -12,6 +12,7 @@
 	<PageHeader />
 	<!-- Content -->
 	<main
+		id="page-container"
 		class="h-[calc(100%-275px)] flex flex-col justify-center items-center space-y-8 text-center text-balance"
 	>
 		<Logo />
