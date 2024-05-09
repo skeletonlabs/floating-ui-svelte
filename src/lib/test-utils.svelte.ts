@@ -1,5 +1,6 @@
-import { it } from 'vitest';
-
+/**
+ * Run a function inside Svelte's effect context
+ */
 export function withEffect(fn: () => void) {
 	return async () => {
 		let promise;
@@ -10,20 +11,4 @@ export function withEffect(fn: () => void) {
 			cleanup();
 		}
 	};
-}
-
-/**
- * Run a test in Svelte effect context
- * @deprecated Use `withEffect` instead
- */
-export function testInEffect(name: string, fn: () => void) {
-	it(name, async () => {
-		let promise;
-		const cleanup = $effect.root(() => (promise = fn()));
-		try {
-			await promise;
-		} finally {
-			cleanup();
-		}
-	});
 }
