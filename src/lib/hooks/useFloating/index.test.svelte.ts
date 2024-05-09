@@ -67,7 +67,7 @@ describe('useFloating', () => {
 		it(
 			'is reactive',
 			withEffect(async () => {
-				let elements = createElements();
+				let elements = $state(createElements());
 
 				const floating = useFloating({
 					get elements() {
@@ -842,10 +842,7 @@ describe('useFloating', () => {
 		it(
 			'updates elements reactively',
 			withEffect(async () => {
-				let elements: { reference: HTMLElement; floating: HTMLElement } = $state({
-					reference: document.createElement('div'),
-					floating: document.createElement('div')
-				});
+				let elements = $state(createElements());
 
 				const floating = useFloating({
 					get elements() {
@@ -855,10 +852,7 @@ describe('useFloating', () => {
 
 				expect(floating.context.elements).toEqual(elements);
 
-				elements = {
-					reference: document.createElement('span'),
-					floating: document.createElement('span')
-				};
+				elements = createElements();
 
 				await vi.waitFor(() => {
 					expect(floating.context.elements).toEqual(elements);
