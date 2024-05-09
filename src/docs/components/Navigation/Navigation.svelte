@@ -14,7 +14,7 @@
 	import IconUseInteractions from 'lucide-svelte/icons/pointer';
 	// import IconUseClick from 'lucide-svelte/icons/mouse-pointer-2';
 	import IconUseRole from 'lucide-svelte/icons/person-standing';
-	// import IconFloatingArrow from 'lucide-svelte/icons/triangle';
+	import IconFloatingArrow from 'lucide-svelte/icons/triangle';
 	// import IconUtils from 'lucide-svelte/icons/wand-sparkles';
 	// Components
 	import Logo from '$docs/components/Logo/Logo.svelte';
@@ -43,10 +43,10 @@
 				{ icon: IconUseFloating, href: '/api/use-floating', label: 'useFloating' },
 				{ icon: IconUseHover, href: '/api/use-hover', label: 'useHover' },
 				{ icon: IconUseInteractions, href: '/api/use-interactions', label: 'useInteractions' },
-				// { icon: IconUseHover, href: '/api/use-hover', label: 'useHover' },
+				{ icon: IconUseHover, href: '/api/use-hover', label: 'useHover' },
 				// { icon: IconUseClick, href: '/api/use-click', label: 'useClick' },
 				{ icon: IconUseRole, href: '/api/use-role', label: 'useRole' },
-				// { icon: IconFloatingArrow, href: '/api/floating-arrow', label: 'Floating Arrow' },
+				{ icon: IconFloatingArrow, href: '/api/floating-arrow', label: 'Floating Arrow' },
 				// { icon: IconUtils, href: '/api/utilities', label: 'Utilities' }
 			],
 		},
