@@ -129,7 +129,7 @@ describe('useClick', () => {
 			cleanup();
 		});
 
-		it('changes `open` state to `true` when set to `false`', async () => {
+		it('changes `open` state to `true` and not back to `false` when set to `false`', async () => {
 			render(App, { toggle: false });
 
 			expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
