@@ -35,49 +35,49 @@ interface UseFloatingOptions {
 	 * Represents the open/close state of the floating element.
 	 * @default true
 	 */
-	readonly open?: boolean;
+	open?: boolean;
 
 	/**
 	 * Callback that is called whenever the open state changes.
 	 */
-	readonly onOpenChange?: (open: boolean, event?: Event, reason?: OpenChangeReason) => void;
+	onOpenChange?: (open: boolean, event?: Event, reason?: OpenChangeReason) => void;
 
 	/**
 	 * Where to place the floating element relative to its reference element.
 	 * @default 'bottom'
 	 */
-	readonly placement?: Placement;
+	placement?: Placement;
 
 	/**
 	 * The type of CSS position property to use.
 	 * @default 'absolute'
 	 */
-	readonly strategy?: Strategy;
+	strategy?: Strategy;
 
 	/**
 	 * These are plain objects that modify the positioning coordinates in some fashion, or provide useful data for the consumer to use.
 	 * @default []
 	 */
-	readonly middleware?: Array<Middleware | undefined | null | false>;
+	middleware?: Array<Middleware | undefined | null | false>;
 
 	/**
 	 * Whether to use `transform` instead of `top` and `left` styles to
 	 * position the floating element (`floatingStyles`).
 	 * @default true
 	 */
-	readonly transform?: boolean;
+	transform?: boolean;
 
 	/**
 	 * Object containing the floating and reference elements.
 	 * @default {}
 	 */
-	readonly elements?: FloatingElements;
+	elements?: FloatingElements;
 
 	/**
 	 * Callback to handle mounting/unmounting of the elements.
 	 * @default undefined
 	 */
-	readonly whileElementsMounted?: (
+	whileElementsMounted?: (
 		reference: ReferenceElement,
 		floating: FloatingElement,
 		update: () => void

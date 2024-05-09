@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { withEffect } from '$lib/test-utils.svelte.js';
-import { useFloating, type FloatingContext } from './index.svelte.js';
+import { useFloating, type FloatingContext, type UseFloatingOptions } from './index.svelte.js';
 import {
 	offset,
 	type Middleware,
@@ -741,6 +741,41 @@ describe('useFloating', () => {
 			withEffect(() => {
 				const floating = useFloating();
 				expectTypeOf(floating.context).toMatchTypeOf<FloatingContext>();
+			})
+		);
+		it(
+			'is reactive',
+			withEffect(async () => {
+				const options: UseFloatingOptions = $state({});
+
+				const floating = useFloating(options);
+
+				expect(floating.elements).toEqual({});
+				expect(floating.context.open).toBe(true);
+				expect(floating.context.strategy).toBe('absolute');
+				expect(floating.context.placement).toBe('bottom');
+				expect(floating.context.x).toBe(0);
+				expect(floating.context.y).toBe(0);
+				expect(floating.context.isPositioned).toBe(false);
+
+				options.elements = {
+					reference: document.createElement('div'),
+					floating: document.createElement('div')
+				};
+				options.open = false;
+				options.strategy = 'fixed';
+				options.placement = 'top';
+				options.middleware = [offset(10)];
+
+				await vi.waitFor(() => {
+					expect(floating.context.elements).toEqual(options.elements);
+					expect(floating.context.open).toBe(options.open);
+					expect(floating.context.strategy).toBe(options.strategy);
+					expect(floating.context.placement).toBe(options.placement);
+					expect(floating.context.x).toBe(-10);
+					expect(floating.context.y).toBe(0);
+					expect(floating.context.isPositioned).toBe(false);
+				});
 			})
 		);
 	});
