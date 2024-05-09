@@ -9,7 +9,7 @@
 	let { open = false, ...rest }: Props = $props();
 	const elements: { reference: HTMLElement | null; floating: HTMLElement | null } = $state({
 		reference: null,
-		floating: null
+		floating: null,
 	});
 	const floating = useFloating({
 		whileElementsMounted: autoUpdate,
@@ -19,7 +19,7 @@
 		onOpenChange(v) {
 			open = v;
 		},
-		elements
+		elements,
 	});
 	const role = useRole(floating.context, { ...rest });
 	const interactions = useInteractions([role]);

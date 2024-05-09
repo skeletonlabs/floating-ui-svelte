@@ -11,10 +11,10 @@ describe('FloatingArrow', () => {
 			const arrowRef = document.createElement('div');
 			const floating = useFloating();
 			const { getByTestId } = render(FloatingArrow, {
-				props: { ref: arrowRef, context: floating.context }
+				props: { ref: arrowRef, context: floating.context },
 			});
 			const component = getByTestId('floating-arrow');
 			expect(component).toBeInTheDocument();
-		})
+		}),
 	);
 });

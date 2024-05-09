@@ -49,7 +49,7 @@ export function createPubSub() {
 		},
 		off(event: string, listener: (data: unknown) => void) {
 			map.set(event, map.get(event)?.filter((l) => l !== listener) || []);
-		}
+		},
 	};
 }
 

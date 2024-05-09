@@ -22,7 +22,7 @@ interface UseRoleOptions {
 const componentRoleToAriaRoleMap = new ReactiveMap<AriaRole | ComponentRole, AriaRole | false>([
 	['select', 'listbox'],
 	['combobox', 'listbox'],
-	['label', false]
+	['label', false],
 ]);
 
 function useRole(context: FloatingContext, options: UseRoleOptions = {}): ElementProps {
@@ -30,7 +30,7 @@ function useRole(context: FloatingContext, options: UseRoleOptions = {}): Elemen
 	const role = $derived(options.role ?? 'dialog');
 
 	const ariaRole = $derived(
-		(componentRoleToAriaRoleMap.get(role) ?? role) as AriaRole | false | undefined
+		(componentRoleToAriaRoleMap.get(role) ?? role) as AriaRole | false | undefined,
 	);
 
 	// FIXME: Uncomment the commented code once useId and useFloatingParentNodeId are implemented.
@@ -48,7 +48,7 @@ function useRole(context: FloatingContext, options: UseRoleOptions = {}): Elemen
 
 		const floatingProps = {
 			id: context.floatingId,
-			...(ariaRole && { role: ariaRole })
+			...(ariaRole && { role: ariaRole }),
 		};
 
 		if (ariaRole === 'tooltip' || role === 'label') {
@@ -56,9 +56,9 @@ function useRole(context: FloatingContext, options: UseRoleOptions = {}): Elemen
 				reference: {
 					[`aria-${role === 'label' ? 'labelledby' : 'describedby'}`]: context.open
 						? context.floatingId
-						: undefined
+						: undefined,
 				},
-				floating: floatingProps
+				floating: floatingProps,
 			};
 		}
 
@@ -71,16 +71,16 @@ function useRole(context: FloatingContext, options: UseRoleOptions = {}): Elemen
 				...(ariaRole === 'menu' && { id: referenceId }),
 				...(ariaRole === 'menu' && isNested && { role: 'menuitem' }),
 				...(role === 'select' && { 'aria-autocomplete': 'none' }),
-				...(role === 'combobox' && { 'aria-autocomplete': 'list' })
+				...(role === 'combobox' && { 'aria-autocomplete': 'list' }),
 			},
 			floating: {
 				...floatingProps,
-				...(ariaRole === 'menu' && { 'aria-labelledby': referenceId })
+				...(ariaRole === 'menu' && { 'aria-labelledby': referenceId }),
 			},
 			item({ active, selected }) {
 				const commonProps = {
 					role: 'option',
-					...(active && { id: `${context.floatingId}-option` })
+					...(active && { id: `${context.floatingId}-option` }),
 				};
 
 				// For `menu`, we are unable to tell if the item is a `menuitemradio`
@@ -90,18 +90,18 @@ function useRole(context: FloatingContext, options: UseRoleOptions = {}): Elemen
 					case 'select':
 						return {
 							...commonProps,
-							'aria-selected': active && selected
+							'aria-selected': active && selected,
 						};
 					case 'combobox': {
 						return {
 							...commonProps,
-							...(active && { 'aria-selected': true })
+							...(active && { 'aria-selected': true }),
 						};
 					}
 				}
 
 				return {};
-			}
+			},
 		};
 	});
 

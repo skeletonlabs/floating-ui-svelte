@@ -9,7 +9,7 @@ function createDrawer() {
 			return value;
 		},
 		toggle: () => (value = !value),
-		close: () => (value = false)
+		close: () => (value = false),
 	};
 }
 

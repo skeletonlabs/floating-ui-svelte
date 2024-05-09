@@ -20,9 +20,9 @@
 				// @ts-expect-error - Shiki theme type is annoyingly strict
 				dark: MoonlightDark,
 				// @ts-expect-error - Shiki theme type is annoyingly strict
-				light: MoonlightDark
-			}
-		})
+				light: MoonlightDark,
+			},
+		}),
 	);
 
 	// Sets the language badge color

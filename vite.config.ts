@@ -10,10 +10,10 @@ export default defineConfig({
 		environment: 'jsdom',
 		coverage: {
 			reporter: ['html', 'text'],
-			include: ['./src/lib/**/*.{js,ts}']
+			include: ['./src/lib/**/*.{js,ts}'],
 		},
 		alias: {
-			'@testing-library/svelte': '@testing-library/svelte/svelte5'
-		}
-	}
+			'@testing-library/svelte': '@testing-library/svelte/svelte5',
+		},
+	},
 });

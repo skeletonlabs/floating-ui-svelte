@@ -9,7 +9,7 @@
 		FloatingArrow,
 		useHover,
 		useInteractions,
-		useRole
+		useRole,
 	} from '$lib/index.js';
 
 	// State
@@ -26,7 +26,7 @@
 		placement: 'top',
 		get middleware() {
 			return [offset(10), flip(), elemArrow && arrow({ element: elemArrow })];
-		}
+		},
 	});
 
 	// Interactions

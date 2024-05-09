@@ -8,50 +8,50 @@ export const tableOptions: TableData[] = [
 		property: `open`,
 		description: `Represents the open/close state of the floating element.`,
 		type: `boolean`,
-		default: `true`
+		default: `true`,
 	},
 	{
 		property: `onOpenChange`,
 		description: `Event handler that can be invoked whenever the open state changes.`,
 		type: `(open: boolean, event?: Event, reason?: OpenChangeReason) => void`,
-		default: ``
+		default: ``,
 	},
 	{
 		property: `placement`,
 		description: `Where to place the floating element relative to its reference element.`,
 		type: `Placement`,
-		default: `'bottom'`
+		default: `'bottom'`,
 	},
 	{
 		property: `strategy`,
 		description: `The type of CSS position property to use.`,
 		type: `Strategy`,
-		default: `'absolute'`
+		default: `'absolute'`,
 	},
 	{
 		property: `middleware`,
 		description: `Supports all Floating UI middleware`,
 		type: `Array<Middleware | undefined | null | false>`,
-		default: `undefined`
+		default: `undefined`,
 	},
 	{
 		property: `transform`,
 		description: `Whether to use transform instead of top and left styles to position the floating element.`,
 		type: `boolean`,
-		default: `true`
+		default: `true`,
 	},
 	{
 		property: `elements`,
 		description: `The reference and floating elements.`,
 		type: `FloatingElements`,
-		default: ``
+		default: ``,
 	},
 	{
 		property: `whileElementsMounted`,
 		description: `Callback to handle mounting/unmounting of the elements.`,
 		type: `(reference: ReferenceElement, floating: FloatingElement, update: () => void) => () => void`,
-		default: ``
-	}
+		default: ``,
+	},
 ];
 
 // Returns
@@ -61,41 +61,41 @@ export const tableReturns: TableData[] = [
 	{
 		property: `placement`,
 		description: `The stateful placement, which can be different from the initial placement passed as options.`,
-		type: `Placement`
+		type: `Placement`,
 	},
 	{
 		property: `strategy`,
 		description: `The stateful strategy, which can be different from the initial strategy passed as options.`,
-		type: `Strategy`
+		type: `Strategy`,
 	},
 	{
 		property: `middlewareData`,
 		description: `Additional data from middleware.`,
-		type: `MiddlewareData`
+		type: `MiddlewareData`,
 	},
 	{
 		property: `isPositioned`,
 		description: `The boolean that let you know if the floating element has been positioned.`,
-		type: `boolean`
+		type: `boolean`,
 	},
 	{
 		property: `floatingStyles`,
 		description: `CSS styles to apply to the floating element to position it.`,
-		type: `string`
+		type: `string`,
 	},
 	{
 		property: `elements`,
 		description: `The reference and floating elements.`,
-		type: `FloatingElements`
+		type: `FloatingElements`,
 	},
 	{
 		property: `update`,
 		description: `The function to update floating position manually.`,
-		type: `() => void`
+		type: `() => void`,
 	},
 	{
 		property: `context`,
 		description: `Context object containing internal logic to alter the behavior of the floating element.`,
-		type: `FloatingContext`
-	}
+		type: `FloatingContext`,
+	},
 ];
