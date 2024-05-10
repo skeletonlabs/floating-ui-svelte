@@ -48,12 +48,12 @@ Floating UI Svelte uses two primary branches. All pull requests should be create
 
 Please use the following naming convention when creating your pull request.
 
-| Branch     | Role                                  |
-| ---------- | ------------------------------------- |
-| `docs/*`   | Updates for the documentation site. |
-| `feature/*`   | When implementing a new feature.      |
-| `chore/*`  | When implementing small changes.      |
-| `bugfix/*` | When implementing feature bugfixes.   |
+| Branch | Role |
+| --- | --- |
+| `docs/*` | Updates for the documentation site. |
+| `feature/*` | When implementing a new feature. |
+| `chore/*` | When implementing small changes. |
+| `bugfix/*` | When implementing feature bugfixes. |
 
 Keep branch names short and semantic, using dashes to seperate words.
 
@@ -75,11 +75,11 @@ bugfix/fixed-use-floating-bug
 
 Changesets use semantic version. We recommend the following convention.
 
-| Version | Role                                         |
-| ------- | -------------------------------------------- |
-| `major` | Do not use. Reserved for maintainers.        |
+| Version | Role |
+| --- | --- |
+| `major` | Do not use. Reserved for maintainers. |
 | `minor` | For notable changes, such as a new features. |
-| `patch` | For small changes, such as a chore or typo.           |
+| `patch` | For small changes, such as a chore or typo. |
 
 Changeset descriptions will appear verbatim on the [Changelog](https://github.com/skeletonlabs/skeleton/blob/dev/packages/skeleton/CHANGELOG.md). Keep it short, semantic, and prefix this like branch names.
 
