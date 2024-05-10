@@ -44,13 +44,19 @@ export const tableOptions: TableData[] = [
 		property: `elements`,
 		description: `The reference and floating elements.`,
 		type: `FloatingElements`,
-		default: ``,
+		default: `{}`,
 	},
 	{
 		property: `whileElementsMounted`,
 		description: `Callback to handle mounting/unmounting of the elements.`,
-		type: `(reference: ReferenceElement, floating: FloatingElement, update: () => void) => () => void`,
-		default: ``,
+		type: `((reference: ReferenceElement, floating: FloatingElement, update: () => void) => () => void) | undefined`,
+		default: `undefined`,
+	},
+	{
+		property: 'nodeId',
+		description: 'A unique node ID for the floating element when using a `FloatingTree`.',
+		type: 'string | undefined',
+		default: 'undefined',
 	},
 ];
 
