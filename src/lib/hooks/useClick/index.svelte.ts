@@ -124,7 +124,6 @@ function useClick(context: FloatingContext, options: UseClickOptions = {}): Elem
 					if (event.defaultPrevented || !keyboardHandlers || isButtonTarget(event)) {
 						return;
 					}
-
 					// @ts-expect-error - Fix types
 					if (event.key === ' ' && !isSpaceIgnored(reference)) {
 						// Prevent scrolling

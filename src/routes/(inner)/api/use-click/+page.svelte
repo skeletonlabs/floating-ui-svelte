@@ -1,5 +1,6 @@
 <script lang="ts">
 	import CodeBlock from '$docs/components/CodeBlock/CodeBlock.svelte';
+	import ExampleRaw from './Example.svelte?raw';
 	import Table from '$docs/components/Table/Table.svelte';
 	import { tableOptions } from './data.js';
 </script>
@@ -14,37 +15,7 @@
 	<!-- Usage -->
 	<section class="space-y-8">
 		<h2 class="h2">Usage</h2>
-		<CodeBlock
-			lang="ts"
-			code={`
-import { useFloating, useInteractions, useClick } from '@skeletonlabs/floating-ui-svelte';
-
-const floating = useFloating();
-const click = useClick(floating.context);
-const interactions = useInteractions([hover]);
-`}
-		/>
-		<CodeBlock
-			lang="svelte"
-			code={`
-<!-- Reference Element -->
-<button
-	bind:this="{floating.elements.reference}"
-	{...interactions.getReferenceProps()}
->
-	Reference
-</button>
-
-<!-- Floating Element -->
-<div
-	bind:this="{floating.elements.floating}"
-	style="{floating.floatingStyles}"
-	{...interactions.getFloatingProps()}
->
-	Tooltip
-</div>
-		`}
-		/>
+		<CodeBlock code={ExampleRaw} lang="svelte" />
 	</section>
 	<!-- Table: Options -->
 	<section class="space-y-8">
