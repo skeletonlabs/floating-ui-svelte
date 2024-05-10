@@ -3,6 +3,7 @@
 	import { drawer } from '$docs/stores.svelte';
 	// Icons (Docs)
 	import IconGetStarted from 'lucide-svelte/icons/rocket';
+	import IconContributing from 'lucide-svelte/icons/handshake';
 	// Icons (Examples)
 	import IconTooltips from 'lucide-svelte/icons/message-square';
 	import IconPopovers from 'lucide-svelte/icons/square-chevron-down';
@@ -26,7 +27,10 @@
 	const navigation = [
 		{
 			label: 'Docs',
-			links: [{ icon: IconGetStarted, href: '/docs/getting-started', label: 'Getting Started' }],
+			links: [
+				{ icon: IconGetStarted, href: '/docs/getting-started', label: 'Getting Started' },
+				{ icon: IconContributing, href: '/docs/contributing', label: 'Contributing' },
+			],
 		},
 		{
 			label: 'Examples',
