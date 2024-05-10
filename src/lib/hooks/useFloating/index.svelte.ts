@@ -197,16 +197,16 @@ interface UseFloatingReturn extends UseFloatingData {
  * Hook for managing floating elements.
  */
 function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
+	const elements = $state(options.elements ?? {});
 	const {
 		placement = 'bottom',
 		strategy = 'absolute',
 		middleware = [],
 		transform = true,
 		open = true,
-		onOpenChange = noop,
+		onOpenChange: unstableOnOpenChange = noop,
 		whileElementsMounted,
 	} = $derived(options);
-	const elements = $state(options.elements ?? {});
 	const floatingStyles = $derived.by(() => {
 		const initialStyles = {
 			position: strategy,
@@ -235,6 +235,15 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 			top: `${y}px`,
 		});
 	});
+
+	const events = createPubSub();
+	const data: ContextData = $state({});
+
+	const onOpenChange = (open: boolean, event?: Event, reason?: OpenChangeReason) => {
+		data.openEvent = open ? event : undefined;
+		events.emit('openchange', { open, event, reason });
+		unstableOnOpenChange(open, event, reason);
+	};
 
 	const state: UseFloatingData = $state({
 		x: 0,
@@ -270,8 +279,8 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		get onOpenChange() {
 			return onOpenChange;
 		},
-		events: createPubSub(),
-		data: {},
+		events,
+		data,
 		// TODO: Ensure nodeId works the same way as in @floating-ui/react
 		nodeId: undefined,
 		floatingId: useId(),
