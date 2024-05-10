@@ -1,11 +1,13 @@
-import { describe, expect, it } from 'vitest';
-import { render } from '@testing-library/svelte';
+import { afterEach, describe, expect, it } from 'vitest';
+import { cleanup, render } from '@testing-library/svelte';
 import { withEffect } from '$lib/utils/test.svelte.js';
 
 import FloatingArrow from './FloatingArrow.svelte';
 import { useFloating } from '$lib/hooks/useFloating/index.svelte.js';
 
 describe('FloatingArrow', () => {
+	afterEach(() => cleanup());
+
 	it(
 		'renders the component to default props',
 		withEffect(() => {
