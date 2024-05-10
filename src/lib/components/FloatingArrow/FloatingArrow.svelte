@@ -60,8 +60,8 @@
 		return alignment === 'end' ? 'right' : 'left';
 	});
 
-	const arrowX = $derived(arrow?.x != null ? staticOffset || arrow.x : '');
-	const arrowY = $derived(arrow?.y != null ? staticOffset || arrow.y : '');
+	const arrowX = $derived(arrow?.x != null ? staticOffset || `${arrow.x}px` : '');
+	const arrowY = $derived(arrow?.y != null ? staticOffset || `${arrow.y}px` : '');
 
 	const dValue = $derived(
 		d ||
@@ -95,7 +95,7 @@
 	aria-hidden="true"
 	style={styleObjectToString({
 		position: 'absolute',
-		pointerEvents: 'none',
+		'pointer-events': 'none',
 		[xOffsetProp]: `${arrowX}`,
 		[yOffsetProp]: `${arrowY}`,
 		[side]: isVerticalSide || isCustomShape ? '100%' : `calc(100% - ${computedStrokeWidth / 2}px)`,
