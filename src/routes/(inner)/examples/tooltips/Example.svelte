@@ -11,7 +11,6 @@
 		useInteractions,
 		useRole,
 	} from '$lib/index.js';
-	import { useClick } from '$lib/hooks/useClick/index.svelte.js';
 
 	// State
 	let open = $state(false);
