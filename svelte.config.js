@@ -9,6 +9,7 @@ const config = {
 		adapter: adapter(),
 		alias: {
 			$docs: './src/docs',
+			'@skeletonlabs/floating-ui-svelte': './src/lib/index.js',
 		},
 		version: {
 			name: JSON.parse(readFileSync('./package.json')).version ?? '0.0.0',
