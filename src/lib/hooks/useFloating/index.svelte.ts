@@ -79,6 +79,12 @@ interface UseFloatingOptions {
 		floating: FloatingElement,
 		update: () => void,
 	) => () => void;
+
+	/**
+	 * Unique node id when using `FloatingTree`.
+	 * @default undefined
+	 */
+	nodeId?: string;
 }
 
 interface UseFloatingData {
@@ -197,16 +203,17 @@ interface UseFloatingReturn extends UseFloatingData {
  * Hook for managing floating elements.
  */
 function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
+	const elements = $state(options.elements ?? {});
 	const {
 		placement = 'bottom',
 		strategy = 'absolute',
 		middleware = [],
 		transform = true,
 		open = true,
-		onOpenChange = noop,
+		onOpenChange: unstableOnOpenChange = noop,
 		whileElementsMounted,
+		nodeId,
 	} = $derived(options);
-	const elements = $state(options.elements ?? {});
 	const floatingStyles = $derived.by(() => {
 		const initialStyles = {
 			position: strategy,
@@ -236,6 +243,15 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		});
 	});
 
+	const events = createPubSub();
+	const data: ContextData = $state({});
+
+	const onOpenChange = (open: boolean, event?: Event, reason?: OpenChangeReason) => {
+		data.openEvent = open ? event : undefined;
+		events.emit('openchange', { open, event, reason });
+		unstableOnOpenChange(open, event, reason);
+	};
+
 	const state: UseFloatingData = $state({
 		x: 0,
 		y: 0,
@@ -246,6 +262,14 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 	});
 
 	const context: FloatingContext = $state({
+		data,
+		events,
+		elements,
+		onOpenChange,
+		floatingId: useId(),
+		get nodeId() {
+			return nodeId;
+		},
 		get x() {
 			return state.x;
 		},
@@ -267,15 +291,6 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		get open() {
 			return open;
 		},
-		get onOpenChange() {
-			return onOpenChange;
-		},
-		events: createPubSub(),
-		data: {},
-		// TODO: Ensure nodeId works the same way as in @floating-ui/react
-		nodeId: undefined,
-		floatingId: useId(),
-		elements,
 	});
 
 	const update = async () => {
@@ -329,6 +344,9 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 	});
 
 	return {
+		update,
+		context,
+		elements,
 		get x() {
 			return state.x;
 		},
@@ -353,9 +371,6 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		get floatingStyles() {
 			return floatingStyles;
 		},
-		elements,
-		update,
-		context,
 	};
 }
 

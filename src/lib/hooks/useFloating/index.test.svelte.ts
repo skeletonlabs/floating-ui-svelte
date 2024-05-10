@@ -873,5 +873,24 @@ describe('useFloating', () => {
 				});
 			}),
 		);
+		it(
+			'updates nodeId reactively',
+			withEffect(async () => {
+				let nodeId = $state(useId());
+				const floating = useFloating({
+					get nodeId() {
+						return nodeId;
+					},
+				});
+
+				expect(floating.context.nodeId).toBe(nodeId);
+
+				nodeId = useId();
+
+				await vi.waitFor(() => {
+					expect(floating.context.nodeId).toBe(nodeId);
+				});
+			}),
+		);
 	});
 });
