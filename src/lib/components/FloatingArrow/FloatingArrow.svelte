@@ -95,7 +95,7 @@
 	aria-hidden="true"
 	style={styleObjectToString({
 		position: 'absolute',
-		pointerEvents: 'none',
+		'pointer-events': 'none',
 		[xOffsetProp]: `${arrowX}`,
 		[yOffsetProp]: `${arrowY}`,
 		[side]: isVerticalSide || isCustomShape ? '100%' : `calc(100% - ${computedStrokeWidth / 2}px)`,
