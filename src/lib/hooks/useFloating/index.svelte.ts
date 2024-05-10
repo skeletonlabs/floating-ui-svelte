@@ -79,6 +79,12 @@ interface UseFloatingOptions {
 		floating: FloatingElement,
 		update: () => void,
 	) => () => void;
+
+	/**
+	 * Unique node id when using `FloatingTree`.
+	 * @default undefined
+	 */
+	nodeId?: string;
 }
 
 interface UseFloatingData {
@@ -206,6 +212,7 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		open = true,
 		onOpenChange: unstableOnOpenChange = noop,
 		whileElementsMounted,
+		nodeId,
 	} = $derived(options);
 	const floatingStyles = $derived.by(() => {
 		const initialStyles = {
@@ -255,6 +262,14 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 	});
 
 	const context: FloatingContext = $state({
+		data,
+		events,
+		elements,
+		onOpenChange,
+		floatingId: useId(),
+		get nodeId() {
+			return nodeId;
+		},
 		get x() {
 			return state.x;
 		},
@@ -276,15 +291,6 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		get open() {
 			return open;
 		},
-		get onOpenChange() {
-			return onOpenChange;
-		},
-		events,
-		data,
-		// TODO: Ensure nodeId works the same way as in @floating-ui/react
-		nodeId: undefined,
-		floatingId: useId(),
-		elements,
 	});
 
 	const update = async () => {
@@ -338,6 +344,9 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 	});
 
 	return {
+		update,
+		context,
+		elements,
 		get x() {
 			return state.x;
 		},
@@ -362,9 +371,6 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		get floatingStyles() {
 			return floatingStyles;
 		},
-		elements,
-		update,
-		context,
 	};
 }
 
