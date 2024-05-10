@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { cleanup, render } from '@testing-library/svelte';
+import { screen, cleanup, render } from '@testing-library/svelte';
 import { withEffect } from '$lib/utils/test.svelte.js';
 
 import FloatingArrow from './FloatingArrow.svelte';
@@ -13,10 +13,10 @@ describe('FloatingArrow', () => {
 		withEffect(() => {
 			const arrowRef = document.createElement('div');
 			const floating = useFloating();
-			const { getByTestId } = render(FloatingArrow, {
+			render(FloatingArrow, {
 				props: { ref: arrowRef, context: floating.context },
 			});
-			const component = getByTestId('floating-arrow');
+			const component = screen.getByTestId('floating-arrow');
 			expect(component).toBeInTheDocument();
 		}),
 	);
@@ -26,10 +26,10 @@ describe('FloatingArrow', () => {
 		withEffect(() => {
 			const arrowRef = document.createElement('div');
 			const floating = useFloating({ placement: 'left' });
-			const { getByTestId } = render(FloatingArrow, {
+			render(FloatingArrow, {
 				props: { ref: arrowRef, context: floating.context, width: 20, height: 20 },
 			});
-			const component = getByTestId('floating-arrow');
+			const component = screen.getByTestId('floating-arrow');
 			expect(component.style.left).toBe('calc(100% - 0px)');
 		}),
 	);
@@ -39,10 +39,10 @@ describe('FloatingArrow', () => {
 		withEffect(() => {
 			const arrowRef = document.createElement('div');
 			const floating = useFloating();
-			const { getByTestId } = render(FloatingArrow, {
+			render(FloatingArrow, {
 				props: { ref: arrowRef, context: floating.context, width: 20, height: 20 },
 			});
-			const component = getByTestId('floating-arrow');
+			const component = screen.getByTestId('floating-arrow');
 			expect(component.getAttribute('width')).equals('20');
 			expect(component.getAttribute('height')).equals('20');
 		}),
@@ -53,10 +53,10 @@ describe('FloatingArrow', () => {
 		withEffect(() => {
 			const arrowRef = document.createElement('div');
 			const floating = useFloating();
-			const { getByTestId } = render(FloatingArrow, {
+			render(FloatingArrow, {
 				props: { ref: arrowRef, context: floating.context, transform: '123px' },
 			});
-			const component = getByTestId('floating-arrow');
+			const component = screen.getByTestId('floating-arrow');
 			expect(component.style.transform).toContain('123px');
 		}),
 	);
@@ -67,10 +67,10 @@ describe('FloatingArrow', () => {
 			const arrowRef = document.createElement('div');
 			const floating = useFloating();
 			const testFillColor = 'green';
-			const { getByTestId } = render(FloatingArrow, {
+			render(FloatingArrow, {
 				props: { ref: arrowRef, context: floating.context, fill: testFillColor },
 			});
-			const component = getByTestId('floating-arrow');
+			const component = screen.getByTestId('floating-arrow');
 			expect(component.style.fill).toContain(testFillColor);
 		}),
 	);
