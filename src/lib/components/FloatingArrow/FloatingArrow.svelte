@@ -87,6 +87,7 @@
 </script>
 
 <!-- FIXME: extend styleObjectToString type to accept `rest.styles` -->
+
 <svg
 	bind:this={ref}
 	width={isCustomShape ? width : width + computedStrokeWidth}
@@ -100,6 +101,7 @@
 		[yOffsetProp]: `${arrowY}`,
 		[side]: isVerticalSide || isCustomShape ? '100%' : `calc(100% - ${computedStrokeWidth / 2}px)`,
 		transform: `${rotation} ${transform ?? ''}`,
+		fill,
 	})}
 	data-testid="floating-arrow"
 	{...rest}

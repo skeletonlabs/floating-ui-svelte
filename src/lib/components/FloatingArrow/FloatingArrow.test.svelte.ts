@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { prettyDOM, render } from '@testing-library/svelte';
+import { render } from '@testing-library/svelte';
 import { withEffect } from '$lib/utils/test.svelte.js';
 
 import FloatingArrow from './FloatingArrow.svelte';
@@ -56,6 +56,20 @@ describe('FloatingArrow', () => {
 			});
 			const component = getByTestId('floating-arrow');
 			expect(component.style.transform).toContain('123px');
+		}),
+	);
+
+	it(
+		'renders with a custom fill',
+		withEffect(() => {
+			const arrowRef = document.createElement('div');
+			const floating = useFloating();
+			const testFillColor = 'green';
+			const { getByTestId } = render(FloatingArrow, {
+				props: { ref: arrowRef, context: floating.context, fill: testFillColor },
+			});
+			const component = getByTestId('floating-arrow');
+			expect(component.style.fill).toContain(testFillColor);
 		}),
 	);
 });
