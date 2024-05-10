@@ -1,3 +1,4 @@
+<!-- Component used to test `useClick` -->
 <script lang="ts">
 	import { autoUpdate } from '@floating-ui/dom';
 	import { useClick, type UseClickOptions } from './index.svelte.js';

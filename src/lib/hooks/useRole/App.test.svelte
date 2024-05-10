@@ -1,3 +1,4 @@
+<!-- Component used to test `useRole` -->
 <script lang="ts">
 	import { autoUpdate } from '@floating-ui/dom';
 	import { useFloating } from '../useFloating/index.svelte.js';

@@ -1,3 +1,4 @@
+<!-- Component used to test `useHover` -->
 <script lang="ts">
 	import { autoUpdate } from '@floating-ui/dom';
 	import { useFloating } from '../useFloating/index.svelte.js';
