@@ -220,9 +220,7 @@ describe('useClick', () => {
 			cleanup();
 		});
 	});
-
-	// FIXME: This is skipped, the test fails because of bad implementation of `useHover`
-	it.skip('does not change `open` state to `false` on mouseleave when paired with `useHover`', async () => {
+	it('does not change `open` state to `false` on mouseleave when paired with `useHover`', async () => {
 		render(App, { enableHover: true });
 
 		await fireEvent.mouseEnter(screen.getByRole('button'));
