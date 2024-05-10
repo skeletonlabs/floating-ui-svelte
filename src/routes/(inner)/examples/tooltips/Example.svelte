@@ -32,9 +32,8 @@
 
 	// Interactions
 	const hover = useHover(floating.context);
-	const click = useClick(floating.context);
 	const role = useRole(floating.context, { role: 'tooltip' });
-	const interactions = useInteractions([click, hover, role]);
+	const interactions = useInteractions([hover, role]);
 </script>
 
 <div>
