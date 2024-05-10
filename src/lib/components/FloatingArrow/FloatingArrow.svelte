@@ -60,8 +60,8 @@
 		return alignment === 'end' ? 'right' : 'left';
 	});
 
-	const arrowX = $derived(arrow?.x != null ? staticOffset || arrow.x : '');
-	const arrowY = $derived(arrow?.y != null ? staticOffset || arrow.y : '');
+	const arrowX = $derived(arrow?.x != null ? staticOffset || `${arrow.x}px` : '');
+	const arrowY = $derived(arrow?.y != null ? staticOffset || `${arrow.y}px` : '');
 
 	const dValue = $derived(
 		d ||
