@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen, fireEvent, cleanup, act } from '@testing-library/svelte';
+import { render, screen, fireEvent, act } from '@testing-library/svelte/svelte5';
 import App from './App.test.svelte';
 
 vi.useFakeTimers();
@@ -10,8 +10,6 @@ describe('useHover', () => {
 
 		await fireEvent.mouseEnter(screen.getByRole('button'));
 		expect(screen.queryByRole('tooltip')).toBeInTheDocument();
-
-		cleanup();
 	});
 
 	it('closes on mouseleave', async () => {
@@ -20,8 +18,6 @@ describe('useHover', () => {
 		await fireEvent.mouseEnter(screen.getByRole('button'));
 		await fireEvent.mouseLeave(screen.getByRole('button'));
 		expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
-
-		cleanup();
 	});
 
 	describe('delay', () => {
@@ -41,8 +37,6 @@ describe('useHover', () => {
 			});
 
 			expect(screen.queryByRole('tooltip')).toBeInTheDocument();
-
-			cleanup();
 		});
 		it('delays only open when only open is provided a value', async () => {
 			render(App, { delay: { open: 100 } });
@@ -60,8 +54,6 @@ describe('useHover', () => {
 			});
 
 			expect(screen.queryByRole('tooltip')).toBeInTheDocument();
-
-			cleanup();
 		});
 		it('delays only close when only close is provided a value', async () => {
 			render(App, { delay: { close: 100 } });
@@ -80,8 +72,6 @@ describe('useHover', () => {
 			});
 
 			expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
-
-			cleanup();
 		});
 	});
 
@@ -110,8 +100,6 @@ describe('useHover', () => {
 			});
 
 			expect(screen.queryByRole('tooltip')).toBeInTheDocument();
-
-			cleanup();
 		});
 
 		it('restMs + nullish open delay should respect restMs', async () => {
@@ -128,8 +116,6 @@ describe('useHover', () => {
 			await act(async () => {
 				vi.advanceTimersByTime(1);
 			});
-
-			cleanup();
 		});
 
 		it.skip('ignores restMs on touch pointers', async () => {
@@ -141,8 +127,6 @@ describe('useHover', () => {
 			await act(async () => {});
 
 			expect(screen.queryByRole('tooltip')).toBeInTheDocument();
-
-			cleanup();
 		});
 
 		it('ignores restMs on touch pointers when mouseOnly is true ', async () => {
@@ -154,8 +138,6 @@ describe('useHover', () => {
 			await act(async () => {});
 
 			expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
-
-			cleanup();
 		});
 	});
 
@@ -174,7 +156,5 @@ describe('useHover', () => {
 		});
 
 		expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
-
-		cleanup();
 	});
 });
