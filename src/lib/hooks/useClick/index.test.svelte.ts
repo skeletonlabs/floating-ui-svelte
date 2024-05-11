@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/svelte';
+import { fireEvent, render, screen } from '@testing-library/svelte/svelte5';
 import App from './App.test.svelte';
 
 describe('useClick', () => {
@@ -26,8 +26,6 @@ describe('useClick', () => {
 			await vi.waitFor(() => {
 				expect(screen.queryByRole('tooltip')).toBeInTheDocument();
 			});
-
-			cleanup();
 		});
 		it('disables the hook when `enabled` is `false`', async () => {
 			render(App, { enabled: false });
@@ -39,8 +37,6 @@ describe('useClick', () => {
 			await vi.waitFor(() => {
 				expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
 			});
-
-			cleanup();
 		});
 	});
 
@@ -55,8 +51,6 @@ describe('useClick', () => {
 			await vi.waitFor(() => {
 				expect(screen.queryByRole('tooltip')).toBeInTheDocument();
 			});
-
-			cleanup();
 		});
 
 		it('opens on click when `event` is set to `click`', async () => {
@@ -69,8 +63,6 @@ describe('useClick', () => {
 			await vi.waitFor(() => {
 				expect(screen.queryByRole('tooltip')).toBeInTheDocument();
 			});
-
-			cleanup();
 		});
 
 		it('opens on mousedown when `event` is set to `mousedown`', async () => {
@@ -83,8 +75,6 @@ describe('useClick', () => {
 			await vi.waitFor(() => {
 				expect(screen.queryByRole('tooltip')).toBeInTheDocument();
 			});
-
-			cleanup();
 		});
 	});
 
@@ -105,8 +95,6 @@ describe('useClick', () => {
 			await vi.waitFor(() => {
 				expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
 			});
-
-			cleanup();
 		});
 
 		it('when set to `true` changes `open` state to both `true` and `false`', async () => {
@@ -125,8 +113,6 @@ describe('useClick', () => {
 			await vi.waitFor(() => {
 				expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
 			});
-
-			cleanup();
 		});
 
 		it('when set to `true` changes `open` state to `false` when `open` is initially set to `true`', async () => {
@@ -139,8 +125,6 @@ describe('useClick', () => {
 			await vi.waitFor(() => {
 				expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
 			});
-
-			cleanup();
 		});
 
 		it('when set to `false` changes `open` state to `true` and not back to `false`', async () => {
@@ -159,8 +143,6 @@ describe('useClick', () => {
 			await vi.waitFor(() => {
 				expect(screen.queryByRole('tooltip')).toBeInTheDocument();
 			});
-
-			cleanup();
 		});
 		it('when set to `false` does not change `open` state back to `false` when `open` is initially set to `true`', async () => {
 			render(App, { toggle: false, open: true });
@@ -172,8 +154,6 @@ describe('useClick', () => {
 			await vi.waitFor(() => {
 				expect(screen.queryByRole('tooltip')).toBeInTheDocument();
 			});
-
-			cleanup();
 		});
 	});
 
@@ -184,8 +164,6 @@ describe('useClick', () => {
 			await fireEvent.keyDown(screen.getByRole('button'), { key: 'Enter' });
 
 			expect(screen.queryByRole('tooltip')).toBeInTheDocument();
-
-			cleanup();
 		});
 
 		it('when set to `true` returns a `Space` keyup event handler', async () => {
@@ -195,8 +173,6 @@ describe('useClick', () => {
 			await fireEvent.keyUp(screen.getByRole('button'), { key: ' ' });
 
 			expect(screen.queryByRole('tooltip')).toBeInTheDocument();
-
-			cleanup();
 		});
 
 		it('when applied to a typable reference does not return a `Space` key event handler', async () => {
@@ -206,8 +182,6 @@ describe('useClick', () => {
 			await fireEvent.keyUp(screen.getByRole('button'), { key: ' ' });
 
 			expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
-
-			cleanup();
 		});
 
 		it('when applied to a typable reference does not return a `Enter` key event handler', async () => {
@@ -216,8 +190,6 @@ describe('useClick', () => {
 			await fireEvent.keyDown(screen.getByRole('button'), { key: 'Enter' });
 
 			expect(screen.queryByRole('tooltip')).toBeInTheDocument();
-
-			cleanup();
 		});
 	});
 	it('does not change `open` state to `false` on mouseleave when paired with `useHover`', async () => {
@@ -228,7 +200,5 @@ describe('useClick', () => {
 		await fireEvent.mouseLeave(screen.getByRole('button'));
 
 		expect(screen.queryByRole('tooltip')).toBeInTheDocument();
-
-		cleanup();
 	});
 });
