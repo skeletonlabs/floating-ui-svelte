@@ -1,10 +1,10 @@
 {
 	"$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
-	"changelog": "@changesets/cli/changelog",
+	"changelog": ["@changesets/cli/changelog", { "repo": "skeletonlabs/floating-ui-svelte" }],
 	"commit": false,
 	"fixed": [],
 	"linked": [],
-	"access": "restricted",
+	"access": "public",
 	"baseBranch": "dev",
 	"updateInternalDependencies": "patch",
 	"ignore": []
