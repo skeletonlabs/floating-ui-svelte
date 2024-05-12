@@ -11,17 +11,18 @@ import {
 import type { FloatingContext } from '../useFloating/index.svelte.js';
 import { isRootElement } from '$lib/utils/is-root-element.js';
 import { contains } from '$lib/utils/contains.js';
+import { isEventTargetWithin } from '$lib/utils/is-event-target-within.js';
 
 const bubbleHandlerKeys = {
-	pointerdown: 'onPointerDown',
-	mousedown: 'onMouseDown',
-	click: 'onClick',
+	pointerdown: 'onpointerdown',
+	mousedown: 'onmousedown',
+	click: 'onclick',
 };
 
 const captureHandlerKeys = {
-	pointerdown: 'onPointerDownCapture',
-	mousedown: 'onMouseDownCapture',
-	click: 'onClickCapture',
+	pointerdown: 'onpointerdowncapture',
+	mousedown: 'onmousedowncapture',
+	click: 'onclickcapture',
 };
 
 const normalizeProp = (
@@ -255,13 +256,14 @@ function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
 		// 		isEventTargetWithin(event, node.context?.elements.floating),
 		// 	);
 
-		// if (
-		// 	isEventTargetWithin(event, floating) ||
-		// 	isEventTargetWithin(event, domReference) ||
-		// 	targetIsInsideChildren
-		// ) {
-		// 	return;
-		// }
+		if (
+			isEventTargetWithin(event, floating) ||
+			// @ts-expect-error - FIXME
+			isEventTargetWithin(event, reference)
+			// targetIsInsideChildren
+		) {
+			return;
+		}
 
 		// const children = tree ? getChildren(tree.nodesRef.current, nodeId) : [];
 		// if (children.length > 0) {
