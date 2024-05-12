@@ -126,8 +126,9 @@ function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
 	const outsidePressFn = $derived(
 		typeof unstable_outsidePress === 'function' ? unstable_outsidePress : () => false,
 	);
-	const outsidePress =
-		typeof unstable_outsidePress === 'function' ? outsidePressFn : unstable_outsidePress;
+	const outsidePress = $derived(
+		typeof unstable_outsidePress === 'function' ? outsidePressFn : unstable_outsidePress,
+	);
 	let insideReactTree = false;
 	let endedOrStartedInside = false;
 	const { escapeKey: escapeKeyBubbles, outsidePress: outsidePressBubbles } = normalizeProp(bubbles);
@@ -374,9 +375,7 @@ function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
 			reference: {
 				onKeyDown: closeOnEscapeKeyDown,
 				[bubbleHandlerKeys[referencePressEvent]]: (event: Event) => {
-					console.log(referencePress);
 					if (referencePress) {
-						console.log('reference-press');
 						onOpenChange(false, event, 'reference-press');
 					}
 				},
