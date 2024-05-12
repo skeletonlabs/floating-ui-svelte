@@ -33,18 +33,13 @@
 </script>
 
 {#if showReference}
-	<div
-		role="button"
-		data-testid="reference"
-		bind:this={elements.reference}
-		{...interactions.getReferenceProps()}
-	>
+	<div data-testid="reference" bind:this={elements.reference} {...interactions.getReferenceProps()}>
 		Reference
 	</div>
 {/if}
 {#if open}
 	<div
-		role="tooltip"
+		data-testid="floating"
 		bind:this={elements.floating}
 		style={floating.floatingStyles}
 		{...interactions.getFloatingProps()}

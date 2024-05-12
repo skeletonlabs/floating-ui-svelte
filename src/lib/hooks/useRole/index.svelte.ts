@@ -1,6 +1,7 @@
 import { Map as ReactiveMap } from 'svelte/reactivity';
 import type { FloatingContext } from '../useFloating/index.svelte.js';
 import type { ElementProps } from '../useInteractions/index.svelte.js';
+import { useId } from '../useId/index.js';
 
 type AriaRole = 'tooltip' | 'dialog' | 'alertdialog' | 'menu' | 'listbox' | 'grid' | 'tree';
 type ComponentRole = 'select' | 'label' | 'combobox';
@@ -26,17 +27,17 @@ const componentRoleToAriaRoleMap = new ReactiveMap<AriaRole | ComponentRole, Ari
 ]);
 
 function useRole(context: FloatingContext, options: UseRoleOptions = {}): ElementProps {
-	const enabled = $derived(options.enabled ?? true);
-	const role = $derived(options.role ?? 'dialog');
+	const { open, floatingId } = $derived(context);
+
+	const { enabled = true, role = 'dialog' } = $derived(options);
 
 	const ariaRole = $derived(
 		(componentRoleToAriaRoleMap.get(role) ?? role) as AriaRole | false | undefined,
 	);
 
 	// FIXME: Uncomment the commented code once useId and useFloatingParentNodeId are implemented.
-	const referenceId = '123abc';
+	const referenceId = useId();
 	const parentId = undefined;
-	// const referenceId = useId();
 	// const parentId = useFloatingParentNodeId();
 
 	const isNested = parentId != null;
@@ -47,15 +48,15 @@ function useRole(context: FloatingContext, options: UseRoleOptions = {}): Elemen
 		}
 
 		const floatingProps = {
-			id: context.floatingId,
+			id: floatingId,
 			...(ariaRole && { role: ariaRole }),
 		};
 
 		if (ariaRole === 'tooltip' || role === 'label') {
 			return {
 				reference: {
-					[`aria-${role === 'label' ? 'labelledby' : 'describedby'}`]: context.open
-						? context.floatingId
+					[`aria-${role === 'label' ? 'labelledby' : 'describedby'}`]: open
+						? floatingId
 						: undefined,
 				},
 				floating: floatingProps,
@@ -64,9 +65,9 @@ function useRole(context: FloatingContext, options: UseRoleOptions = {}): Elemen
 
 		return {
 			reference: {
-				'aria-expanded': context.open ? 'true' : 'false',
+				'aria-expanded': open ? 'true' : 'false',
 				'aria-haspopup': ariaRole === 'alertdialog' ? 'dialog' : ariaRole,
-				'aria-controls': context.open ? context.floatingId : undefined,
+				'aria-controls': open ? floatingId : undefined,
 				...(ariaRole === 'listbox' && { role: 'combobox' }),
 				...(ariaRole === 'menu' && { id: referenceId }),
 				...(ariaRole === 'menu' && isNested && { role: 'menuitem' }),

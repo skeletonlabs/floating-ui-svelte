@@ -54,19 +54,19 @@ function isSpaceIgnored(element: Element | null) {
 
 function useClick(context: FloatingContext, options: UseClickOptions = {}): ElementProps {
 	const {
+		open,
+		onOpenChange,
+		data,
+		elements: { reference },
+	} = $derived(context);
+
+	const {
 		enabled = true,
 		event: eventOption = 'click',
 		toggle = true,
 		ignoreMouse = false,
 		keyboardHandlers = true,
 	} = $derived(options);
-
-	const {
-		open,
-		onOpenChange,
-		data,
-		elements: { reference },
-	} = $derived(context);
 
 	let pointerType: PointerEvent['pointerType'] | undefined = undefined;
 	let didKeyDown = false;
