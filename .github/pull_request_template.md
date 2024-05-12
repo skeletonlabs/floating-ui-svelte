@@ -25,6 +25,6 @@ Please read and apply all [contribution requirements](https://github.com/skeleto
 - [ ] PR targets the `dev` branch (NEVER `master`)
 - [ ] All website documentation is current with your changes
 - [ ] Ensure Prettier formatting is current - run `pnpm format`
-- [ ] Ensure Prettier linting is current - run `pnpm format`
+- [ ] Ensure Prettier linting is current - run `pnpm lint`
 - [ ] All test cases are passing - run `pnpm test`
 - [ ] Includes a changeset (if relevant; see above)
