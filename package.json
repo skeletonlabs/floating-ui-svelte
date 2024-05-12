@@ -13,7 +13,8 @@
 		"test:watch": "vitest run --coverage --watch",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"before-commit": "pnpm format && pnpm lint && pnpm check && pnpm test && pnpm build"
 	},
 	"exports": {
 		".": {

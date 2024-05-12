@@ -9,12 +9,11 @@
 		FloatingArrow,
 		useInteractions,
 		useRole,
-		useClick,
+		useDismiss,
 	} from '$lib/index.js';
-	import { useDismiss } from '$lib/hooks/useDismiss/index.svelte.js';
 
 	// State
-	let open = $state(false);
+	let open = $state(true);
 	let elemArrow: HTMLElement | null = $state(null);
 
 	// Use Floating
@@ -31,10 +30,9 @@
 	});
 
 	// Interactions
-	const click = useClick(floating.context);
 	const dismiss = useDismiss(floating.context);
 	const role = useRole(floating.context, { role: 'menu' });
-	const interactions = useInteractions([click, role, dismiss]);
+	const interactions = useInteractions([role, dismiss]);
 </script>
 
 <div>

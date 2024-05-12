@@ -374,7 +374,9 @@ function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
 			reference: {
 				onKeyDown: closeOnEscapeKeyDown,
 				[bubbleHandlerKeys[referencePressEvent]]: (event: Event) => {
+					console.log(referencePress);
 					if (referencePress) {
+						console.log('reference-press');
 						onOpenChange(false, event, 'reference-press');
 					}
 				},
