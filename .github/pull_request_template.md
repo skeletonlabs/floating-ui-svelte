@@ -14,7 +14,7 @@ We use [Changesets](https://github.com/changesets/changesets) to automatically c
 3. Run `pnpm changeset` to trigger the Changeset CLI.
 4. Follow the instructions when prompted.
     - Changesets should be either `minor` or `patch`. Never `major`.
-    - Prefix your Changeset description using: `docs:`, `feature:`, `chore:` or `bugfix:`.
+    - Prefix your Changeset description using: `feature:`, `chore:` or `bugfix:`.
 5. Changeset `.md` files are added to the `/.changeset` directory.
 6. Commit and push the the new changeset file.
 
