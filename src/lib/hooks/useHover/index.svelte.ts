@@ -92,6 +92,14 @@ function getDelay(
 
 function useHover(context: FloatingContext, options: UseHoverOptions = {}): ElementProps {
 	const {
+		open,
+		onOpenChange,
+		data,
+		events,
+		elements: { reference, floating },
+	} = $derived(context);
+
+	const {
 		enabled = true,
 		mouseOnly = false,
 		delay = 0,
@@ -99,14 +107,6 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 		move = true,
 		handleClose = null,
 	} = $derived(options);
-
-	const {
-		open,
-		onOpenChange,
-		data,
-		events,
-		elements: { reference, floating },
-	} = $derived(context);
 
 	// const tree = useFloatingTree();
 	// const parentId = useFloatingParentNodeId();
