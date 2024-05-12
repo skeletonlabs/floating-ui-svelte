@@ -1,0 +1,12 @@
+name: 🛠️ Request New Feature
+description: Let us know what you would like to see added.
+labels: ['feature request']
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the feature in detail (code, mocks, or screenshots encouraged)
+  - type: textarea
+    id: references
+    attributes:
+      label: Provide relevant links or additional information.
