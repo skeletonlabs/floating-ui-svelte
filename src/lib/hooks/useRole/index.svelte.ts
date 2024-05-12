@@ -78,7 +78,7 @@ function useRole(context: FloatingContext, options: UseRoleOptions = {}): Elemen
 				...floatingProps,
 				...(ariaRole === 'menu' && { 'aria-labelledby': referenceId }),
 			},
-			item({ active, selected }) {
+			item: ({ active, selected }) => {
 				const commonProps = {
 					role: 'option',
 					...(active && { id: `${context.floatingId}-option` }),
