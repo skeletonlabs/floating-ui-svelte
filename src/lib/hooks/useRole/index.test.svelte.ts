@@ -43,7 +43,7 @@ describe('useRole', () => {
 
 			await rerender({ role: 'tooltip', open: false });
 
-			expect(screen.getByRole('buton')).not.toHaveAttribute('aria-labelledby');
+			expect(screen.getByRole('button')).not.toHaveAttribute('aria-labelledby');
 		});
 	});
 
