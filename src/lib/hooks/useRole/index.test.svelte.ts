@@ -6,7 +6,7 @@ const ARIA_ROLES = ['grid', 'listbox', 'menu', 'tree', 'tooltip', 'alertdialog',
 
 describe('useRole', () => {
 	it('by default applies the "dialog" role to the floating element', () => {
-		render(App, { role: undefined, open: true });
+		render(App, { open: true });
 		expect(screen.queryByRole('dialog')).toBeInTheDocument();
 	});
 
@@ -21,14 +21,14 @@ describe('useRole', () => {
 		it.skip('sets correct aria attributes based on the open state', async () => {
 			const { rerender } = render(App, { role: 'tooltip', open: true });
 
-			expect(screen.getByRole('button')).toHaveAttribute(
+			expect(screen.getByTestId('reference')).toHaveAttribute(
 				'aria-describedby',
 				screen.getByRole('tooltip').getAttribute('id'),
 			);
 
 			await rerender({ role: 'tooltip', open: false });
 
-			expect(screen.getByRole('buton')).not.toHaveAttribute('aria-describedby');
+			expect(screen.getByTestId('reference')).not.toHaveAttribute('aria-describedby');
 		});
 	});
 
@@ -36,7 +36,7 @@ describe('useRole', () => {
 		it.skip('sets correct aria attributes based on the open state', async () => {
 			const { rerender } = render(App, { role: 'label', open: true });
 
-			expect(screen.getByRole('button')).toHaveAttribute(
+			expect(screen.getByTestId('reference')).toHaveAttribute(
 				'aria-labelledby',
 				screen.getByRole('tooltip').getAttribute('id'),
 			);
@@ -51,13 +51,13 @@ describe('useRole', () => {
 		it.skip('sets correct aria attributes based on the open state', async () => {
 			const { rerender } = render(App, { role: 'dialog', open: false });
 
-			expect(screen.getByRole('button')).toHaveAttribute('aria-haspopup', 'dialog');
-			expect(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
+			expect(screen.getByTestId('reference')).toHaveAttribute('aria-haspopup', 'dialog');
+			expect(screen.getByTestId('reference')).toHaveAttribute('aria-expanded', 'false');
 
 			await rerender({ role: 'dialog', open: true });
 
 			expect(screen.getByRole('dialog')).toBeInTheDocument();
-			expect(screen.getByRole('button')).toHaveAttribute(
+			expect(screen.getByTestId('reference')).toHaveAttribute(
 				'aria-controls',
 				screen.getByRole('dialog').getAttribute('id'),
 			);
