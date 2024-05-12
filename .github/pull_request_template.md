@@ -26,5 +26,5 @@ Please read and apply all [contribution requirements](https://github.com/skeleto
 - [ ] All website documentation is current with your changes
 - [ ] Ensure Prettier formatting is current - run `pnpm format`
 - [ ] Ensure Prettier linting is current - run `pnpm format`
-- [ ] All test cases are passing - run `pnpm vitest`
+- [ ] All test cases are passing - run `pnpm test`
 - [ ] Includes a changeset (if relevant; see above)
