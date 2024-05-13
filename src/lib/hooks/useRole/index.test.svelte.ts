@@ -55,7 +55,6 @@ describe('useRole', () => {
 
 				await rerender({ open: true });
 
-				expect(screen.getByTestId('reference')).toHaveAttribute('aria-controls');
 				expect(screen.getByTestId('reference')).toHaveAttribute(
 					'aria-controls',
 					screen.getByTestId('floating').id,
