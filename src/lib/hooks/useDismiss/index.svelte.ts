@@ -366,21 +366,26 @@ function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
 		insideReactTree = false;
 	});
 
-	const elementProps = $derived.by(() => {
-		if (!enabled) {
-			return {};
-		}
-
-		return {
-			reference: {
+	return {
+		get reference() {
+			if (!enabled) {
+				return {};
+			}
+			return {
 				onKeyDown: closeOnEscapeKeyDown,
 				[bubbleHandlerKeys[referencePressEvent]]: (event: Event) => {
 					if (referencePress) {
 						onOpenChange(false, event, 'reference-press');
 					}
 				},
-			},
-			floating: {
+			};
+		},
+
+		get floating() {
+			if (!enabled) {
+				return {};
+			}
+			return {
 				onKeyDown: closeOnEscapeKeyDown,
 				onMouseDown() {
 					endedOrStartedInside = true;
@@ -391,11 +396,9 @@ function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
 				[captureHandlerKeys[outsidePressEvent]]: () => {
 					insideReactTree = true;
 				},
-			},
-		};
-	});
-
-	return elementProps;
+			};
+		},
+	};
 }
 
 export { useDismiss, type UseDismissOptions };
