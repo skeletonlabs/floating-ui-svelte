@@ -28,8 +28,8 @@
 				when the reference element receives keyboard focus, the tooltip opens. When the mouse
 				leaves, or the reference is blurred, the tooltip closes.
 			</li>
-			<li class="opacity-50 line-through">
-				COMING SOON: <span class="highlight">Dismissal</span>: When the user presses the
+			<li>
+				<span class="highlight">Dismissal</span>: When the user presses the
 				<kbd class="kbd">esc</kbd> key while the tooltip is open, it closes.
 			</li>
 			<li>
@@ -97,30 +97,32 @@
 		</p>
 		<CodeBlock
 			code={`
-const hover = useHover(floating.context);
 const role = useRole(floating.context, { role: 'tooltip' });
-const interactions = useInteractions([hover, role]);
+const hover = useHover(floating.context, { move: false });
+const dismiss = useDismiss(floating.context);
+const interactions = useInteractions([role, hover, dismiss]);
 		`}
 			lang="ts"
 		/>
 		<ul class="ul">
+			<li>
+				<code class="code">useRole()</code>: adds the correct ARIA attributes for a
+				<code class="code">tooltip</code> to the tooltip and reference elements.
+			</li>
 			<li>
 				<code class="code">useHover()</code>: adds the ability to toggle the tooltip open or closed
 				when the reference element is hovered over. The <code class="code">move</code> option is set
 				to false so that
 				<code class="code">mousemove</code> events are ignored.
 			</li>
+			<li>
+				<code class="code">useDismiss()</code>: adds the ability to dismiss the tooltip when the
+				user presses the <kbd class="kbd">esc</kbd> key.
+			</li>
+
 			<li class="opacity-50 line-through">
 				COMING SOON: <code class="code">useFocus()</code>: adds the ability to toggle the tooltip
 				open or closed when the reference element is focused.
-			</li>
-			<li class="opacity-50 line-through">
-				COMING SOON: <code class="code">useDismiss()</code>: adds the ability to dismiss the tooltip
-				when the user presses the <kbd class="kbd">esc</kbd> key.
-			</li>
-			<li>
-				<code class="code">useRole()</code>: adds the correct ARIA attributes for a
-				<code class="code">tooltip</code> to the tooltip and reference elements.
 			</li>
 		</ul>
 	</section>
