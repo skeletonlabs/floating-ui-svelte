@@ -25,6 +25,36 @@
 		<h2 class="h2">Options</h2>
 		<Table data={tableOptions} />
 	</section>
+	<!-- Reacting to dismissal -->
+	<section class="space-y-8">
+		<h2 class="h2">Reacting to dismissal</h2>
+		<p>
+			To react to the dismissal event, you can check for the <kbd class="kbd">reason</kbd> string in
+			the <kbd class="kbd">onOpenChange</kbd> callback:
+		</p>
+		<CodeBlock
+			lang="ts"
+			code={`
+const floating = useFloating({
+	get open() {
+		return open;
+	},
+	onOpenChange: (value, event, reason) => {
+		open = value;
+		if (reason === 'escape-key' || reason === 'outside-press') {
+			console.log('dismissed');
+		}
+	},
+});   	
+		`}
+		/>
+	</section>
+	<!-- Troubleshooting -->
+	<!-- <section class="space-y-8">
+		<h2 class="h2">Troubleshooting</h2>
+		<h3 class="h3">Does not close when clicking in an iframe</h3>
+		<p>You can use the <a class="anchor" href="/api/floatingoverlay">FloatingOverlay component</a> which will “cover” iframes to ensure clicks are captured in the same document as the floating element, as the click occurs on the overlay backdrop. This guarantees “outside press” detection will work.</p>
+	</section> -->
 	<!-- Compare -->
 	<section class="space-y-8">
 		<h2 class="h2">Compare</h2>
