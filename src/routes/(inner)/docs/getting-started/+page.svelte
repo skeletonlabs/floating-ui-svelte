@@ -1,6 +1,5 @@
 <script lang="ts">
 	import CodeBlock from '$docs/components/CodeBlock/CodeBlock.svelte';
-	import Ssr from './ssr.svelte';
 	import SsrRaw from './ssr.svelte?raw';
 </script>
 
@@ -44,7 +43,6 @@ npm install @skeletonlabs/floating-ui-svelte
 			class as shown below. Note that Floating UI does not take an opinionated stance on z-index
 			stacking.
 		</p>
-		<Ssr />
 		<CodeBlock
 			lang="css"
 			code={`
