@@ -43,9 +43,17 @@ describe('useRole', () => {
 
 				expect(screen.getByTestId('reference')).toHaveAttribute('aria-expanded', 'false');
 
-				await rerender({ role: 'dialog', open: true });
+				await rerender({ open: true });
 
 				expect(screen.getByTestId('reference')).toHaveAttribute('aria-expanded', 'true');
+			});
+		});
+
+		describe('label', () => {
+			it('applies the `aria-labelledby` attribute to the reference element', () => {
+				render(App, { role: 'label', open: true });
+
+				expect(screen.getByTestId('reference')).toHaveAttribute('aria-labelledby');
 			});
 		});
 	});
