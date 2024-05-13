@@ -9,15 +9,13 @@
 	<!-- Header -->
 	<header class="card card-gradient space-y-8">
 		<h1 class="h1"><span>Popovers</span></h1>
-		<p>Coming Soon!</p>
-	</header>
-
-	<section class="space-y-8">
-		<h2 class="h2">Example</h2>
 		<p>
 			This is a functional Popover that uses a combination of hooks and components, each of which is
 			described in the sections below.
 		</p>
+	</header>
+	<!-- Example -->
+	<section class="space-y-8">
 		<Preview>
 			{#snippet preview()}<Example />{/snippet}
 			{#snippet code()}<CodeBlock code={ExampleRaw} lang="svelte" />{/snippet}

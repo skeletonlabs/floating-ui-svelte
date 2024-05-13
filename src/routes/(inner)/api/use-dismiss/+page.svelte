@@ -49,6 +49,7 @@ const floating = useFloating({
 		`}
 		/>
 	</section>
+	<!-- FIXME: consider enabling this when FloatingOverlay is ready. -->
 	<!-- Troubleshooting -->
 	<!-- <section class="space-y-8">
 		<h2 class="h2">Troubleshooting</h2>
