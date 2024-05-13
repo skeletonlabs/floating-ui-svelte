@@ -47,6 +47,20 @@ describe('useRole', () => {
 
 				expect(screen.getByTestId('reference')).toHaveAttribute('aria-expanded', 'true');
 			});
+
+			it('applies the `aria-controls` attribute with the correct id to the reference element based on the `open` state', async () => {
+				const { rerender } = render(App, { role: 'dialog', open: false });
+
+				expect(screen.getByTestId('reference')).not.toHaveAttribute('aria-controls');
+
+				await rerender({ open: true });
+
+				expect(screen.getByTestId('reference')).toHaveAttribute('aria-controls');
+				expect(screen.getByTestId('reference')).toHaveAttribute(
+					'aria-controls',
+					screen.getByTestId('floating').id,
+				);
+			});
 		});
 
 		describe('label', () => {
