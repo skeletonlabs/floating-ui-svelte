@@ -87,5 +87,7 @@ describe('useRole', () => {
 				expect(screen.getByTestId('reference')).toHaveAttribute('aria-describedby');
 			});
 		});
+
+		// Continue here: https://github.com/floating-ui/floating-ui/blob/master/packages/react/test/unit/useRole.test.tsx#L163
 	});
 });

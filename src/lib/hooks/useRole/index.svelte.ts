@@ -48,6 +48,7 @@ function useRole(context: FloatingContext, options: UseRoleOptions = {}): Elemen
 	});
 
 	return {
+		// @ts-expect-error - variable prop is not specific enough
 		get reference() {
 			if (!enabled) {
 				return {};
