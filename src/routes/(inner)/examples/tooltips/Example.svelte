@@ -10,6 +10,7 @@
 		useHover,
 		useInteractions,
 		useRole,
+		useDismiss,
 	} from '$lib/index.js';
 
 	// State
@@ -30,9 +31,10 @@
 	});
 
 	// Interactions
-	const hover = useHover(floating.context);
 	const role = useRole(floating.context, { role: 'tooltip' });
-	const interactions = useInteractions([hover, role]);
+	const hover = useHover(floating.context, { move: false });
+	const dismiss = useDismiss(floating.context);
+	const interactions = useInteractions([role, hover, dismiss]);
 </script>
 
 <div>
