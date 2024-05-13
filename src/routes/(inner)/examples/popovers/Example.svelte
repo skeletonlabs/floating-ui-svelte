@@ -10,10 +10,11 @@
 		useInteractions,
 		useRole,
 		useDismiss,
+		useClick,
 	} from '$lib/index.js';
 
 	// State
-	let open = $state(true);
+	let open = $state(false);
 	let elemArrow: HTMLElement | null = $state(null);
 
 	// Use Floating
@@ -30,9 +31,10 @@
 	});
 
 	// Interactions
+	const role = useRole(floating.context);
+	const click = useClick(floating.context);
 	const dismiss = useDismiss(floating.context);
-	const role = useRole(floating.context, { role: 'menu' });
-	const interactions = useInteractions([role, dismiss]);
+	const interactions = useInteractions([role, click, dismiss]);
 </script>
 
 <div>

@@ -2,8 +2,8 @@
 	import { useFloating, useInteractions, useDismiss } from '@skeletonlabs/floating-ui-svelte';
 
 	const floating = useFloating();
-	const click = useDismiss(floating.context);
-	const interactions = useInteractions([click]);
+	const dismiss = useDismiss(floating.context);
+	const interactions = useInteractions([dismiss]);
 </script>
 
 <!-- Reference Element -->
