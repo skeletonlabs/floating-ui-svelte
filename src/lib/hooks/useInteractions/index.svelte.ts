@@ -84,21 +84,21 @@ function mergeProps<Key extends keyof ElementProps>(
 }
 
 function useInteractions(propsList: Array<ElementProps | void> = []): UseInteractionsReturn {
-	const getReferenceProps = (userProps?: HTMLAttributes<Element>) => {
+	const getReferenceProps = $derived((userProps?: HTMLAttributes<Element>) => {
 		return mergeProps(userProps, propsList, 'reference');
-	};
+	});
 
-	const getFloatingProps = (userProps?: HTMLAttributes<Element>) => {
+	const getFloatingProps = $derived((userProps?: HTMLAttributes<Element>) => {
 		return mergeProps(userProps, propsList, 'floating');
-	};
+	});
 
-	const getItemProps = (
-		userProps?: Omit<HTMLAttributes<Element>, 'selected' | 'active'> & ExtendedUserProps,
-	) => {
-		return mergeProps(userProps, propsList, 'item');
-	};
+	const getItemProps = $derived(
+		(userProps?: Omit<HTMLAttributes<Element>, 'selected' | 'active'> & ExtendedUserProps) => {
+			return mergeProps(userProps, propsList, 'item');
+		},
+	);
 
 	return { getReferenceProps, getFloatingProps, getItemProps };
 }
 
-export { useInteractions, type UseInteractionsReturn, type ElementProps };
+export { useInteractions, type UseInteractionsReturn, type ElementProps, type ExtendedUserProps };
