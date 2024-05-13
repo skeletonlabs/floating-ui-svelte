@@ -33,6 +33,6 @@ body:
     attributes:
       label: More Information
       description: |
-        Provide relevant links or additionl information.
+        Provide relevant links or additional information.
     validations:
       required: false

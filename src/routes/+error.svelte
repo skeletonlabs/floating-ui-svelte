@@ -5,7 +5,7 @@
 	// FIXME: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
 	// eslint-disable-next-line svelte/valid-compile
 	const status = $derived($page.status);
-	// elint-disable-next-line svelte/valid-compile
+	// eslint-disable-next-line svelte/valid-compile
 	const message = $derived($page.error ? $page.error.message : 'Unknown error');
 </script>
 

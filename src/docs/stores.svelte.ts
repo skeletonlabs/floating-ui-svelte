@@ -1,4 +1,4 @@
-// Resuable State Stores
+// Reusable State Stores
 
 // Navigation Drawer ---
 

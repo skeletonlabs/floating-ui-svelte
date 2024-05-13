@@ -5,7 +5,7 @@ import App from './App.test.svelte';
 vi.useFakeTimers();
 
 describe('useHover', () => {
-	it('opens on mousenter', async () => {
+	it('opens on mouseEnter', async () => {
 		render(App);
 
 		await fireEvent.mouseEnter(screen.getByTestId('reference'));
@@ -76,7 +76,7 @@ describe('useHover', () => {
 	});
 
 	describe('restMs', () => {
-		it('opens on mousenter once restMs has passed', async () => {
+		it('opens on mouseEnter once restMs has passed', async () => {
 			render(App, { restMs: 100 });
 
 			await fireEvent.mouseMove(screen.getByTestId('reference'));
