@@ -248,35 +248,34 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 		};
 	});
 
-	const elementProps = $derived.by(() => {
-		if (!enabled) {
-			return {};
-		}
-
-		const onmouseenter = (event: MouseEvent) => {
-			clearTimeout(timeout);
-			blockMouseMove = false;
-
-			if (
-				(mouseOnly && !isMouseLikePointerType(pointerType)) ||
-				(restMs > 0 && !getDelay(delay, 'open'))
-			) {
-				return;
+	return {
+		get reference() {
+			if (!enabled) {
+				return {};
 			}
 
-			const openDelay = getDelay(delay, 'open', pointerType);
+			const onmouseenter = (event: MouseEvent) => {
+				clearTimeout(timeout);
+				blockMouseMove = false;
 
-			if (openDelay) {
-				timeout = window.setTimeout(() => {
+				if (
+					(mouseOnly && !isMouseLikePointerType(pointerType)) ||
+					(restMs > 0 && !getDelay(delay, 'open'))
+				) {
+					return;
+				}
+
+				const openDelay = getDelay(delay, 'open', pointerType);
+
+				if (openDelay) {
+					timeout = window.setTimeout(() => {
+						onOpenChange(true, event, 'hover');
+					}, openDelay);
+				} else {
 					onOpenChange(true, event, 'hover');
-				}, openDelay);
-			} else {
-				onOpenChange(true, event, 'hover');
-			}
-		};
-
-		return {
-			reference: {
+				}
+			};
+			return {
 				onpointerdown: (event: PointerEvent) => (pointerType = event.pointerType),
 				onpointerenter: (event: PointerEvent) => (pointerType = event.pointerType),
 				onmouseenter,
@@ -367,8 +366,14 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 						})(event);
 					}
 				},
-			},
-			floating: {
+			};
+		},
+
+		get floating() {
+			if (!enabled) {
+				return {};
+			}
+			return {
 				onmouseenter() {
 					clearTimeout(timeout);
 				},
@@ -388,11 +393,9 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 					}
 					closeWithDelay(event, false);
 				},
-			},
-		};
-	});
-
-	return elementProps;
+			};
+		},
+	};
 }
 
 export { useHover, type UseHoverOptions };
