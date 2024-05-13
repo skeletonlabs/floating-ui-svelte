@@ -1,6 +1,6 @@
 import { Map as ReactiveMap } from 'svelte/reactivity';
 import type { FloatingContext } from '../useFloating/index.svelte.js';
-import type { ElementProps } from '../useInteractions/index.svelte.js';
+import type { ElementProps, ExtendedUserProps } from '../useInteractions/index.svelte.js';
 import { useId } from '../useId/index.js';
 
 type AriaRole = 'tooltip' | 'dialog' | 'alertdialog' | 'menu' | 'listbox' | 'grid' | 'tree';
@@ -42,29 +42,12 @@ function useRole(context: FloatingContext, options: UseRoleOptions = {}): Elemen
 
 	const isNested = parentId != null;
 
-	const elementProps: ElementProps = $derived.by(() => {
-		if (!enabled) {
-			return {};
-		}
-
-		const floatingProps = {
-			id: floatingId,
-			...(ariaRole && { role: ariaRole }),
-		};
-
-		if (ariaRole === 'tooltip' || role === 'label') {
+	return {
+		get reference() {
+			if (!enabled) {
+				return {};
+			}
 			return {
-				reference: {
-					[`aria-${role === 'label' ? 'labelledby' : 'describedby'}`]: open
-						? floatingId
-						: undefined,
-				},
-				floating: floatingProps,
-			};
-		}
-
-		return {
-			reference: {
 				'aria-expanded': open ? 'true' : 'false',
 				'aria-haspopup': ariaRole === 'alertdialog' ? 'dialog' : ariaRole,
 				'aria-controls': open ? floatingId : undefined,
@@ -73,12 +56,22 @@ function useRole(context: FloatingContext, options: UseRoleOptions = {}): Elemen
 				...(ariaRole === 'menu' && isNested && { role: 'menuitem' }),
 				...(role === 'select' && { 'aria-autocomplete': 'none' }),
 				...(role === 'combobox' && { 'aria-autocomplete': 'list' }),
-			},
-			floating: {
-				...floatingProps,
-				...(ariaRole === 'menu' && { 'aria-labelledby': referenceId }),
-			},
-			item({ active, selected }) {
+			};
+		},
+		get floating() {
+			if (!enabled) {
+				return {};
+			}
+			return {
+				id: floatingId,
+				...(ariaRole && { role: ariaRole }),
+			};
+		},
+		get item() {
+			if (!enabled) {
+				return {};
+			}
+			return ({ active, selected }: ExtendedUserProps) => {
 				const commonProps = {
 					role: 'option',
 					...(active && { id: `${context.floatingId}-option` }),
@@ -102,11 +95,9 @@ function useRole(context: FloatingContext, options: UseRoleOptions = {}): Elemen
 				}
 
 				return {};
-			},
-		};
-	});
-
-	return elementProps;
+			};
+		},
+	};
 }
 
 export { useRole, type UseRoleOptions };

@@ -71,13 +71,12 @@ function useClick(context: FloatingContext, options: UseClickOptions = {}): Elem
 	let pointerType: PointerEvent['pointerType'] | undefined = undefined;
 	let didKeyDown = false;
 
-	const elementProps = $derived.by(() => {
-		if (!enabled) {
-			return {};
-		}
-
-		return {
-			reference: {
+	return {
+		get reference() {
+			if (!enabled) {
+				return {};
+			}
+			return {
 				onpointerdown: (event: PointerEvent) => {
 					pointerType = event.pointerType;
 				},
@@ -159,11 +158,9 @@ function useClick(context: FloatingContext, options: UseClickOptions = {}): Elem
 						}
 					}
 				},
-			},
-		};
-	});
-
-	return elementProps;
+			};
+		},
+	};
 }
 
 export { useClick, type UseClickOptions };
