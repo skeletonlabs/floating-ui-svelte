@@ -26,16 +26,16 @@ describe('useRole', () => {
 
 	describe('role', () => {
 		describe('dialog', () => {
-			it('applies the `aria-haspopup` attribute to the reference element', () => {
-				render(App, { role: 'dialog' });
-
-				expect(screen.getByTestId('reference')).toHaveAttribute('aria-haspopup', 'dialog');
-			});
-
 			it('applies the `dialog` role to the floating element', () => {
 				render(App, { role: 'dialog', open: true });
 
 				expect(screen.getByTestId('floating')).toHaveAttribute('role', 'dialog');
+			});
+
+			it('applies the `aria-haspopup` attribute to the reference element', () => {
+				render(App, { role: 'dialog' });
+
+				expect(screen.getByTestId('reference')).toHaveAttribute('aria-haspopup', 'dialog');
 			});
 
 			it('applies the `aria-expanded` attribute to the reference element based on `open` state', async () => {
@@ -54,6 +54,24 @@ describe('useRole', () => {
 				render(App, { role: 'label', open: true });
 
 				expect(screen.getByTestId('reference')).toHaveAttribute('aria-labelledby');
+			});
+		});
+
+		describe('tooltip', () => {
+			it('applies the `tooltip` role to the floating element', () => {
+				render(App, { role: 'tooltip', open: true });
+
+				expect(screen.getByTestId('floating')).toHaveAttribute('role', 'tooltip');
+			});
+
+			it('applies the `aria-describedby` attribute to the reference element based on the `open` state', async () => {
+				const { rerender } = render(App, { role: 'tooltip', open: false });
+
+				expect(screen.getByTestId('reference')).not.toHaveAttribute('aria-describedby');
+
+				await rerender({ open: true });
+
+				expect(screen.getByTestId('reference')).toHaveAttribute('aria-describedby');
 			});
 		});
 	});
