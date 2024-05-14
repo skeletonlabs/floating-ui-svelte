@@ -42,10 +42,23 @@ function useRole(context: FloatingContext, options: UseRoleOptions = {}): Elemen
 
 	const isNested = parentId != null;
 
+	const floatingProps = $derived({
+		id: floatingId,
+		...(ariaRole && { role: ariaRole }),
+	});
+
 	return {
+		// @ts-expect-error - variable prop is not specific enough
 		get reference() {
 			if (!enabled) {
 				return {};
+			}
+			if (ariaRole === 'tooltip' || role === 'label') {
+				return {
+					[`aria-${role === 'label' ? 'labelledby' : 'describedby'}` as const]: open
+						? floatingId
+						: undefined,
+				};
 			}
 			return {
 				'aria-expanded': open ? 'true' : 'false',
@@ -62,9 +75,12 @@ function useRole(context: FloatingContext, options: UseRoleOptions = {}): Elemen
 			if (!enabled) {
 				return {};
 			}
+			if (ariaRole === 'tooltip' || role === 'label') {
+				return floatingProps;
+			}
 			return {
-				id: floatingId,
-				...(ariaRole && { role: ariaRole }),
+				...floatingProps,
+				...(ariaRole === 'menu' && { 'aria-labelledby': referenceId }),
 			};
 		},
 		get item() {

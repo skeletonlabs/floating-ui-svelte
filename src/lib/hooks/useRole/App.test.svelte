@@ -34,6 +34,11 @@
 		style={floating.floatingStyles}
 		{...interactions.getFloatingProps()}
 	>
-		Floating
+		{#each [1, 2, 3] as i}
+			<div
+				data-testid="item-{i}"
+				{...interactions.getItemProps({ active: i === 2, selected: i === 2 })}
+			></div>
+		{/each}
 	</div>
 {/if}
