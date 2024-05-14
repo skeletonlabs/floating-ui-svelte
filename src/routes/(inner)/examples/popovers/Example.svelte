@@ -47,23 +47,19 @@
 		Click Me
 	</button>
 	<!-- Floating Element -->
-	<div
-		bind:this={floating.elements.floating}
-		style={floating.floatingStyles}
-		{...interactions.getFloatingProps()}
-		class="floating"
-	>
-		{#if open}
-			<div
-				class="bg-surface-500 text-white p-8 max-w-sm rounded shadow-xl"
-				transition:fade={{ duration: 200 }}
-			>
-				<p>
-					You can press the <kbd class="kbd">esc</kbd> key or click outside to
-					<strong>*dismiss*</strong> this floating element.
-				</p>
-				<FloatingArrow bind:ref={elemArrow} context={floating.context} class="fill-surface-500" />
-			</div>
-		{/if}
-	</div>
+	{#if open}
+		<div
+			bind:this={floating.elements.floating}
+			style={floating.floatingStyles}
+			{...interactions.getFloatingProps()}
+			class="floating bg-surface-500 text-white p-8 max-w-sm rounded shadow-xl"
+			transition:fade={{ duration: 200 }}
+		>
+			<p>
+				You can press the <kbd class="kbd">esc</kbd> key or click outside to
+				<strong>*dismiss*</strong> this floating element.
+			</p>
+			<FloatingArrow bind:ref={elemArrow} context={floating.context} class="fill-surface-500" />
+		</div>
+	{/if}
 </div>

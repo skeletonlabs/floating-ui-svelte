@@ -47,23 +47,19 @@
 		Hover Me
 	</button>
 	<!-- Floating Element -->
-	<div
-		bind:this={floating.elements.floating}
-		style={floating.floatingStyles}
-		{...interactions.getFloatingProps()}
-		class="floating"
-	>
-		{#if open}
-			<div
-				class="bg-surface-500 text-white p-8 max-w-sm rounded shadow-xl"
-				transition:fade={{ duration: 200 }}
-			>
-				<p>
-					A <strong>floating element</strong> is one that floats on top of the UI without disrupting
-					the flow, like this one!
-				</p>
-				<FloatingArrow bind:ref={elemArrow} context={floating.context} class="fill-surface-500" />
-			</div>
-		{/if}
-	</div>
+	{#if open}
+		<div
+			bind:this={floating.elements.floating}
+			style={floating.floatingStyles}
+			{...interactions.getFloatingProps()}
+			class="floating bg-surface-500 text-white p-8 max-w-sm rounded shadow-xl"
+			transition:fade={{ duration: 200 }}
+		>
+			<p>
+				A <strong>floating element</strong> is one that floats on top of the UI without disrupting the
+				flow, like this one!
+			</p>
+			<FloatingArrow bind:ref={elemArrow} context={floating.context} class="fill-surface-500" />
+		</div>
+	{/if}
 </div>
