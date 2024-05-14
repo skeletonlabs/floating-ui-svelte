@@ -6,10 +6,11 @@
 	interface Props {
 		code: string;
 		lang: BuiltinLanguage | SpecialLanguage;
+		highlight?: number | Array<number>;
 	}
 
 	// Props
-	let { code, lang = 'text' }: Props = $props();
+	let { code, lang = 'text', highlight = [] }: Props = $props();
 
 	// Process Language
 	const renderedCode = $derived(
@@ -23,6 +24,19 @@
 				// @ts-expect-error - Shiki theme type is annoyingly strict
 				light: MoonlightDark,
 			},
+			transformers: [
+				/**
+				 * This transformer adds the `highlighted` class to lines that are to be highlighted.
+				 */
+				{
+					line(node, line) {
+						if (!(Array.isArray(highlight) ? highlight : [highlight]).includes(line)) {
+							return;
+						}
+						this.addClassToHast(node, 'highlighted');
+					},
+				},
+			],
 		}),
 	);
 
@@ -46,13 +60,28 @@
 		{lang}
 	</span>
 	<!-- Rendered Code -->
-	<div>{@html renderedCode}</div>
+	<div class="codeblock">{@html renderedCode}</div>
 </figure>
 
 <!-- eslint-enable svelte/no-at-html-tags -->
 
 <style lang="postcss">
-	:global(pre.shiki) {
-		@apply p-6 text-sm rounded-md whitespace-pre-wrap;
+	.codeblock :global {
+		.shiki {
+			@apply py-6 text-sm rounded-md whitespace-pre-wrap;
+		}
+		.line {
+			/** 
+			* Horizontal padding is added per line instead of the container
+			* so that highlights extend fully to the end of the codeblock
+			*/
+			@apply px-6 inline-block w-full;
+		}
+		.highlighted {
+			@apply !bg-surface-500/25;
+		}
+		.highlighted > span {
+			@apply !bg-transparent;
+		}
 	}
 </style>

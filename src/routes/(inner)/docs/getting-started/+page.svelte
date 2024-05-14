@@ -1,5 +1,6 @@
 <script lang="ts">
 	import CodeBlock from '$docs/components/CodeBlock/CodeBlock.svelte';
+	import SsrRaw from './ssr.svelte?raw';
 </script>
 
 <div class="space-y-10">
@@ -31,6 +32,7 @@ npm install @skeletonlabs/floating-ui-svelte
 # yarn install @skeletonlabs/floating-ui-svelte
 # bun install @skeletonlabs/floating-ui-svelte
 		`}
+			highlight={1}
 		/>
 	</section>
 	<!-- Usage -->
@@ -54,5 +56,18 @@ npm install @skeletonlabs/floating-ui-svelte
 		`}
 		/>
 		<CodeBlock lang="html" code={`<div class="floating">Some floating element.</div>`} />
+	</section>
+	<!-- Ceveats -->
+	<section class="space-y-8">
+		<h2 class="h2">Caveats</h2>
+		<h3 class="h3">SSR</h3>
+		<p>
+			When SSR is enabled and the floating element is visible upon pageload it will first be
+			positioned in the top left of your screen until the position is calculated. This is usually
+			not desirable. To prevent this, you can utilize the <kbd class="kbd">isPositioned</kbd> prop
+			returned from the
+			<kbd class="kbd"><a class="anchor" href="/api/use-floating">useFloating</a></kbd> hook:
+		</p>
+		<CodeBlock lang="svelte" code={SsrRaw} />
 	</section>
 </div>
