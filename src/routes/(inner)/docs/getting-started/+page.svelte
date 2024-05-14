@@ -32,6 +32,7 @@ npm install @skeletonlabs/floating-ui-svelte
 # yarn install @skeletonlabs/floating-ui-svelte
 # bun install @skeletonlabs/floating-ui-svelte
 		`}
+			highlight={1}
 		/>
 	</section>
 	<!-- Usage -->
@@ -63,11 +64,9 @@ npm install @skeletonlabs/floating-ui-svelte
 		<p>
 			When SSR is enabled and the floating element is visible upon pageload it will first be
 			positioned in the top left of your screen until the position is calculated. This is usually
-			not desirable.
-		</p>
-		<p>
-			To prevent this, you can utilize the <kbd class="kbd">isPositioned</kbd> prop returned from
-			the <kbd class="kbd"><a class="anchor" href="/api/use-floating">useFloating</a></kbd> hook:
+			not desirable. To prevent this, you can utilize the <kbd class="kbd">isPositioned</kbd> prop
+			returned from the
+			<kbd class="kbd"><a class="anchor" href="/api/use-floating">useFloating</a></kbd> hook:
 		</p>
 		<CodeBlock lang="svelte" code={SsrRaw} />
 	</section>
