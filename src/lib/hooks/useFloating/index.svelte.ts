@@ -133,6 +133,11 @@ interface ContextData {
 	 * The latest even that caused the open state to change.
 	 */
 	openEvent?: Event;
+
+	/**
+	 * Arbitrary data produced and consumed by other hooks.
+	 */
+	[key: string]: unknown;
 }
 
 interface FloatingContext extends UseFloatingData {

@@ -17,13 +17,13 @@ Take care to read all contributions guidelines before you begin!
 
 ## Using PNPM
 
-Floating UI Sveltes makes use of [PNPM](https://pnpm.io/).
+Floating UI Svelte makes use of [PNPM](https://pnpm.io/).
 
 1. [Install PNPM](https://pnpm.io/installation) on your local computer.
 2. [Fork the repository](https://github.com/skeletonlabs/floating-ui-svelte) via your preferred option.
 3. Use Git to clone the forked project to your local machine.
 4. Point your terminal at the project.
-5. Run `pnpm i` to install the required depedencies.
+5. Run `pnpm i` to install the required dependencies.
 6. Run `pnpm dev` to start a local dev server.
 
 ## Project Structure
@@ -41,7 +41,7 @@ Floating UI Svelte uses two primary branches. All pull requests should be create
 
 | Branch | Description | Pull Requests |
 | --- | --- | --- |
-| `dev` | The developement branch. | Allowed |
+| `dev` | The development branch. | Allowed |
 | `main` | The release branch. | Never |
 
 ### PR Branch Conventions
@@ -55,7 +55,7 @@ Please use the following naming convention when creating your pull request.
 | `chore/*` | When implementing small changes. |
 | `bugfix/*` | When implementing feature bugfixes. |
 
-Keep branch names short and semantic, using dashes to seperate words.
+Keep branch names short and semantic, using dashes to separate words.
 
 ```
 docs/getting-started-typo-fix

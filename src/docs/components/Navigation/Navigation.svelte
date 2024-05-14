@@ -14,6 +14,7 @@
 	import IconUseHover from 'lucide-svelte/icons/square-mouse-pointer';
 	import IconUseClick from 'lucide-svelte/icons/mouse-pointer-2';
 	import IconUseRole from 'lucide-svelte/icons/person-standing';
+	import IconUseDismiss from 'lucide-svelte/icons/circle-x';
 	import IconFloatingArrow from 'lucide-svelte/icons/triangle';
 	import IconUtils from 'lucide-svelte/icons/wand-sparkles';
 	// Components
@@ -45,6 +46,7 @@
 				{ icon: IconUseHover, href: '/api/use-hover', label: 'useHover' },
 				{ icon: IconUseClick, href: '/api/use-click', label: 'useClick' },
 				{ icon: IconUseRole, href: '/api/use-role', label: 'useRole' },
+				{ icon: IconUseDismiss, href: '/api/use-dismiss', label: 'useDismiss' },
 				{ icon: IconFloatingArrow, href: '/api/floating-arrow', label: 'Floating Arrow' },
 				{ icon: IconUtils, href: '/api/utilities', label: 'Utilities' },
 			],

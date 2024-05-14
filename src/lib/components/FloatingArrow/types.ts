@@ -2,7 +2,7 @@ import type { FloatingContext } from '$lib/hooks/useFloating/index.svelte.js';
 import type { SVGAttributes } from 'svelte/elements';
 
 export interface FloatingArrowProps extends SVGAttributes<SVGElement> {
-	/** The binded HTML element reference. */
+	/** The bound HTML element reference. */
 	ref: Element | null;
 	/** The floating context. */
 	context: FloatingContext;

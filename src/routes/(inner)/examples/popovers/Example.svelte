@@ -7,10 +7,10 @@
 		arrow,
 		useFloating,
 		FloatingArrow,
-		useHover,
 		useInteractions,
 		useRole,
 		useDismiss,
+		useClick,
 	} from '$lib/index.js';
 
 	// State
@@ -31,10 +31,10 @@
 	});
 
 	// Interactions
-	const role = useRole(floating.context, { role: 'tooltip' });
-	const hover = useHover(floating.context, { move: false });
+	const role = useRole(floating.context);
+	const click = useClick(floating.context);
 	const dismiss = useDismiss(floating.context);
-	const interactions = useInteractions([role, hover, dismiss]);
+	const interactions = useInteractions([role, click, dismiss]);
 </script>
 
 <div>
@@ -44,7 +44,7 @@
 		{...interactions.getReferenceProps()}
 		class="btn-cta"
 	>
-		Hover Me
+		Click Me
 	</button>
 	<!-- Floating Element -->
 	<div
@@ -59,8 +59,8 @@
 				transition:fade={{ duration: 200 }}
 			>
 				<p>
-					A <strong>floating element</strong> is one that floats on top of the UI without disrupting
-					the flow, like this one!
+					You can press the <kbd class="kbd">esc</kbd> key or click outside to
+					<strong>*dismiss*</strong> this floating element.
 				</p>
 				<FloatingArrow bind:ref={elemArrow} context={floating.context} class="fill-surface-500" />
 			</div>
