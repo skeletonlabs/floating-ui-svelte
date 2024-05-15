@@ -1,5 +1,6 @@
 <script lang="ts">
 	import CodeBlock from '$docs/components/CodeBlock/CodeBlock.svelte';
+	import App from '$lib/hooks/useFocus/App.test.svelte';
 	import SsrRaw from './ssr.svelte?raw';
 </script>
 
@@ -18,6 +19,7 @@
 		<!-- prettier-ignore -->
 		<p>
 			Supports <u>Svelte v5</u> projects created with <a class="anchor" href="https://kit.svelte.dev/" target="_blank">SvelteKit</a>, <a class="anchor" href="https://vitejs.dev/" target="_blank">Vite/Svelte</a>, or <a class="anchor" href="https://astro.build/" target="_blank">Astro</a>.
+				<App />
 		</p>
 	</section>
 	<!-- Install -->

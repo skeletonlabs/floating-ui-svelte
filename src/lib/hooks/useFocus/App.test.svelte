@@ -3,13 +3,13 @@
 	import { autoUpdate } from '@floating-ui/dom';
 	import { useFloating } from '../useFloating/index.svelte.js';
 	import { useInteractions } from '../useInteractions/index.svelte.js';
-	import { useDismiss, type UseDismissOptions } from './index.svelte.js';
+	import { useFocus, type UseFocusOptions } from './index.svelte.js';
 
-	interface Props extends UseDismissOptions {
+	interface Props extends UseFocusOptions {
 		open?: boolean;
 	}
 
-	let { open = false, ...useDismissOptions }: Props = $props();
+	let { open = false, ...useFocusOptions }: Props = $props();
 
 	const floating = useFloating({
 		whileElementsMounted: autoUpdate,
@@ -21,8 +21,8 @@
 		},
 	});
 
-	const dismiss = useDismiss(floating.context, useDismissOptions);
-	const interactions = useInteractions([dismiss]);
+	const focus = useFocus(floating.context, useFocusOptions);
+	const interactions = useInteractions([focus]);
 </script>
 
 <button

@@ -5,21 +5,20 @@
 	import { useFloating } from '../useFloating/index.svelte.js';
 	import { useInteractions } from '../useInteractions/index.svelte.js';
 	import { useHover } from '../useHover/index.svelte.js';
+
 	interface Props extends UseClickOptions {
 		open?: boolean;
 		element?: string;
 		enableHover?: boolean;
 	}
+
 	let {
 		open = false,
 		element = 'button',
 		enableHover = false,
 		...useClickOptions
 	}: Props = $props();
-	const elements: { reference: HTMLElement | null; floating: HTMLElement | null } = $state({
-		reference: null,
-		floating: null,
-	});
+
 	const floating = useFloating({
 		whileElementsMounted: autoUpdate,
 		get open() {
@@ -28,8 +27,8 @@
 		onOpenChange(v) {
 			open = v;
 		},
-		elements,
 	});
+
 	const click = useClick(floating.context, useClickOptions);
 	const hover = useHover(floating.context, { enabled: enableHover });
 	const interactions = useInteractions([click, hover]);
@@ -38,7 +37,7 @@
 <svelte:element
 	this={element}
 	data-testid="reference"
-	bind:this={elements.reference}
+	bind:this={floating.elements.reference}
 	{...interactions.getReferenceProps()}
 >
 	Reference
@@ -47,7 +46,7 @@
 {#if open}
 	<div
 		data-testid="floating"
-		bind:this={elements.floating}
+		bind:this={floating.elements.floating}
 		style={floating.floatingStyles}
 		{...interactions.getFloatingProps()}
 	>
