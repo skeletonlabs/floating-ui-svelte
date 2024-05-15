@@ -98,7 +98,7 @@ function useFocus(context: FloatingContext, options: UseFocusOptions = {}) {
 	return {
 		get reference() {
 			if (!enabled) {
-				return undefined;
+				return {};
 			}
 			return {
 				onpointerdown: (event: PointerEvent) => {
