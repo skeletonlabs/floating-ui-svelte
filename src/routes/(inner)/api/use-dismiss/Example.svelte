@@ -17,5 +17,5 @@
 	style={floating.floatingStyles}
 	{...interactions.getFloatingProps()}
 >
-	Tooltip
+	Floating
 </div>
