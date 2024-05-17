@@ -4,9 +4,9 @@ import { svelteTesting } from '@testing-library/svelte/vite';
 import { pagefind, type PagefindConfig } from 'vite-plugin-pagefind';
 
 const pagefindConfig: PagefindConfig = {
-	buildDir: 'build',
+	buildDir: './build',
 	buildScript: 'build:docs',
-	publicDir: 'static',
+	publicDir: './static',
 };
 
 export default defineConfig({
