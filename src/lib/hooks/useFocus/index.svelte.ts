@@ -1,15 +1,16 @@
 import { getWindow, isElement, isHTMLElement } from '@floating-ui/utils/dom';
 import type { FloatingContext } from '../useFloating/index.svelte.js';
-import { getDocument } from '$lib/utils/get-document.js';
-import { activeElement } from '$lib/utils/active-element.js';
 import type { OpenChangeReason } from '$lib/types.js';
-import { isVirtualPointerEvent } from '$lib/utils/is-virtual-pointer-event.js';
-import { getTarget } from '$lib/utils/get-target.js';
-import { isSafari } from '$lib/utils/is-safari.js';
-import { isMac } from '$lib/utils/is-mac.js';
 import { isTypeableElement } from '$lib/utils/is-typable-element.js';
-import { createAttribute } from '$lib/utils/create-attribute.js';
-import { contains } from '$lib/utils/contains.js';
+import {
+	activeElement,
+	getDocument,
+	isVirtualPointerEvent,
+	getTarget,
+	createAttribute,
+	contains,
+} from '$lib/utils/dom.js';
+import { isSafari, isMac } from '$lib/utils/environment.js';
 
 interface UseFocusOptions {
 	/**

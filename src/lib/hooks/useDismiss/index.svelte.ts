@@ -1,6 +1,3 @@
-import { createAttribute } from '$lib/utils/create-attribute.js';
-import { getDocument } from '$lib/utils/get-document.js';
-import { getTarget } from '$lib/utils/get-target.js';
 import {
 	getOverflowAncestors,
 	getParentNode,
@@ -9,9 +6,14 @@ import {
 	isLastTraversableNode,
 } from '@floating-ui/utils/dom';
 import type { FloatingContext } from '../useFloating/index.svelte.js';
-import { isRootElement } from '$lib/utils/is-root-element.js';
-import { contains } from '$lib/utils/contains.js';
-import { isEventTargetWithin } from '$lib/utils/is-event-target-within.js';
+import {
+	getTarget,
+	createAttribute,
+	getDocument,
+	isRootElement,
+	contains,
+	isEventTargetWithin,
+} from '$lib/utils/dom.js';
 
 const bubbleHandlerKeys = {
 	pointerdown: 'onpointerdown',

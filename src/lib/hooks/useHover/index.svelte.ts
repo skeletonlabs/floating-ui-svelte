@@ -2,11 +2,8 @@ import type { OpenChangeReason } from '$lib/types.js';
 import { isElement } from '@floating-ui/utils/dom';
 import type { FloatingContext } from '../useFloating/index.svelte.js';
 import type { ElementProps } from '../useInteractions/index.svelte.js';
-import { createAttribute } from '$lib/utils/create-attribute.js';
-import { isMouseLikePointerType } from '$lib/utils/is-mouse-like-pointer-type.js';
 import { noop } from '$lib/utils/noop.js';
-import { getDocument } from '$lib/utils/get-document.js';
-import { contains } from '$lib/utils/contains.js';
+import { createAttribute, isMouseLikePointerType, getDocument, contains } from '$lib/utils/dom.js';
 
 interface DelayOptions {
 	/**
