@@ -31,9 +31,7 @@
 		data-testid="reference"
 		bind:this={floating.elements.reference}
 		{...interactions.getReferenceProps()}
-	>
-		Reference
-	</button>
+	></button>
 {/if}
 
 {#if open}
@@ -42,7 +40,5 @@
 		bind:this={floating.elements.floating}
 		style={floating.floatingStyles}
 		{...interactions.getFloatingProps()}
-	>
-		Floating
-	</div>
+	></div>
 {/if}
