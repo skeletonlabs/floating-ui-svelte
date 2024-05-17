@@ -4,7 +4,7 @@ import { svelteTesting } from '@testing-library/svelte/vite';
 import { pagefind, type PagefindConfig } from 'vite-plugin-pagefind';
 
 const pagefindConfig: PagefindConfig = {
-	buildDir: process.env.VERCEL ? '.vercel/output/static' : 'build',
+	buildDir: 'build',
 	buildScript: 'build:docs',
 	publicDir: './static',
 };
