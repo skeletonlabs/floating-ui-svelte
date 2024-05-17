@@ -41,7 +41,7 @@
 	<!-- Navigation -->
 	<Navigation classes="hidden lg:block " />
 	<!-- Main -->
-	<main class="ml-0 lg:ml-72">
+	<main class="ml-0 lg:ml-72" data-pagefind-body>
 		<!-- Page Header -->
 		<PageHeader />
 		<!-- Page Content -->
