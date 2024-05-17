@@ -9,7 +9,6 @@
 		"build:docs": "svelte-kit sync && vite build",
 		"build:package": "svelte-kit sync && svelte-package && publint",
 		"ci:publish": "pnpm build:package && changeset publish",
-		"publish": "pnpm build:package && changeset publish",
 		"test": "vitest run --coverage",
 		"test:watch": "vitest run --coverage --watch",
 		"format": "prettier --write .",
