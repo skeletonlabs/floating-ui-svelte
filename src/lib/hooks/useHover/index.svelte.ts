@@ -398,4 +398,4 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 	};
 }
 
-export { useHover, type UseHoverOptions };
+export { useHover, type UseHoverOptions, type HandleCloseFn };
