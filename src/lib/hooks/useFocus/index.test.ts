@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/svelte/svelte5';
 import { userEvent } from '@testing-library/user-event';
 import App from './App.test.svelte';
@@ -12,7 +12,9 @@ describe('useFocus', () => {
 
 			await fireEvent.focus(screen.getByTestId('reference'));
 
-			expect(screen.queryByTestId('floating')).toBeInTheDocument();
+			await vi.waitFor(() => {
+				expect(screen.queryByTestId('floating')).toBeInTheDocument();
+			});
 		});
 
 		it('changes the open state to `false` on blur', async () => {
@@ -22,7 +24,9 @@ describe('useFocus', () => {
 
 			await fireEvent.focus(screen.getByTestId('reference'));
 
-			expect(screen.queryByTestId('floating')).toBeInTheDocument();
+			await waitFor(() => {
+				expect(screen.queryByTestId('floating')).toBeInTheDocument();
+			});
 
 			await fireEvent.blur(screen.getByTestId('reference'));
 
@@ -40,7 +44,9 @@ describe('useFocus', () => {
 
 			await fireEvent.focus(screen.getByTestId('reference'));
 
-			expect(screen.queryByTestId('floating')).toBeInTheDocument();
+			await vi.waitFor(() => {
+				expect(screen.queryByTestId('floating')).toBeInTheDocument();
+			});
 		});
 
 		it('does not enable the hook when set to `false`', async () => {
@@ -64,7 +70,9 @@ describe('useFocus', () => {
 
 			await fireEvent.focus(screen.getByTestId('reference'));
 
-			expect(screen.queryByTestId('floating')).toBeInTheDocument();
+			await vi.waitFor(() => {
+				expect(screen.queryByTestId('floating')).toBeInTheDocument();
+			});
 		});
 
 		it('does not change the open state to `true` on click (focus, but not focus-within) when set to `true`', async () => {
@@ -75,7 +83,9 @@ describe('useFocus', () => {
 
 			await user.click(screen.getByTestId('reference'));
 
-			expect(screen.queryByTestId('floating')).not.toBeInTheDocument();
+			await vi.waitFor(() => {
+				expect(screen.queryByTestId('floating')).not.toBeInTheDocument();
+			});
 		});
 
 		it('does change the open state to `true` on focus when set to `false`', async () => {
@@ -85,7 +95,9 @@ describe('useFocus', () => {
 
 			await fireEvent.focus(screen.getByTestId('reference'));
 
-			expect(screen.queryByTestId('floating')).toBeInTheDocument();
+			await vi.waitFor(() => {
+				expect(screen.queryByTestId('floating')).toBeInTheDocument();
+			});
 		});
 
 		it('does change the open state to `true` on click (focus, but not focus-within) when set to `false`', async () => {
@@ -96,7 +108,9 @@ describe('useFocus', () => {
 
 			await user.click(screen.getByTestId('reference'));
 
-			expect(screen.queryByTestId('floating')).toBeInTheDocument();
+			await vi.waitFor(() => {
+				expect(screen.queryByTestId('floating')).toBeInTheDocument();
+			});
 		});
 	});
 });
