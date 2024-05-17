@@ -1,6 +1,7 @@
 import { Map as ReactiveMap } from 'svelte/reactivity';
 import type { FloatingContext } from '../useFloating/index.svelte.js';
-import type { ElementProps } from '../useInteractions/index.svelte.js';
+import type { ElementProps, ExtendedUserProps } from '../useInteractions/index.svelte.js';
+import { useId } from '../useId/index.js';
 
 type AriaRole = 'tooltip' | 'dialog' | 'alertdialog' | 'menu' | 'listbox' | 'grid' | 'tree';
 type ComponentRole = 'select' | 'label' | 'combobox';
@@ -22,65 +23,74 @@ interface UseRoleOptions {
 const componentRoleToAriaRoleMap = new ReactiveMap<AriaRole | ComponentRole, AriaRole | false>([
 	['select', 'listbox'],
 	['combobox', 'listbox'],
-	['label', false]
+	['label', false],
 ]);
 
 function useRole(context: FloatingContext, options: UseRoleOptions = {}): ElementProps {
-	const enabled = $derived(options.enabled ?? true);
-	const role = $derived(options.role ?? 'dialog');
+	const { open, floatingId } = $derived(context);
+
+	const { enabled = true, role = 'dialog' } = $derived(options);
 
 	const ariaRole = $derived(
-		(componentRoleToAriaRoleMap.get(role) ?? role) as AriaRole | false | undefined
+		(componentRoleToAriaRoleMap.get(role) ?? role) as AriaRole | false | undefined,
 	);
 
 	// FIXME: Uncomment the commented code once useId and useFloatingParentNodeId are implemented.
-	const referenceId = '123abc';
+	const referenceId = useId();
 	const parentId = undefined;
-	// const referenceId = useId();
 	// const parentId = useFloatingParentNodeId();
 
 	const isNested = parentId != null;
 
-	const elementProps: ElementProps = $derived.by(() => {
-		if (!enabled) {
-			return {};
-		}
+	const floatingProps = $derived({
+		id: floatingId,
+		...(ariaRole && { role: ariaRole }),
+	});
 
-		const floatingProps = {
-			id: context.floatingId,
-			...(ariaRole && { role: ariaRole })
-		};
-
-		if (ariaRole === 'tooltip' || role === 'label') {
+	return {
+		// @ts-expect-error - variable prop is not specific enough
+		get reference() {
+			if (!enabled) {
+				return {};
+			}
+			if (ariaRole === 'tooltip' || role === 'label') {
+				return {
+					[`aria-${role === 'label' ? 'labelledby' : 'describedby'}` as const]: open
+						? floatingId
+						: undefined,
+				};
+			}
 			return {
-				reference: {
-					[`aria-${role === 'label' ? 'labelledby' : 'describedby'}`]: context.open
-						? context.floatingId
-						: undefined
-				},
-				floating: floatingProps
-			};
-		}
-
-		return {
-			reference: {
-				'aria-expanded': context.open ? 'true' : 'false',
+				'aria-expanded': open ? 'true' : 'false',
 				'aria-haspopup': ariaRole === 'alertdialog' ? 'dialog' : ariaRole,
-				'aria-controls': context.open ? context.floatingId : undefined,
+				'aria-controls': open ? floatingId : undefined,
 				...(ariaRole === 'listbox' && { role: 'combobox' }),
 				...(ariaRole === 'menu' && { id: referenceId }),
 				...(ariaRole === 'menu' && isNested && { role: 'menuitem' }),
 				...(role === 'select' && { 'aria-autocomplete': 'none' }),
-				...(role === 'combobox' && { 'aria-autocomplete': 'list' })
-			},
-			floating: {
+				...(role === 'combobox' && { 'aria-autocomplete': 'list' }),
+			};
+		},
+		get floating() {
+			if (!enabled) {
+				return {};
+			}
+			if (ariaRole === 'tooltip' || role === 'label') {
+				return floatingProps;
+			}
+			return {
 				...floatingProps,
-				...(ariaRole === 'menu' && { 'aria-labelledby': referenceId })
-			},
-			item({ active, selected }) {
+				...(ariaRole === 'menu' && { 'aria-labelledby': referenceId }),
+			};
+		},
+		get item() {
+			if (!enabled) {
+				return {};
+			}
+			return ({ active, selected }: ExtendedUserProps) => {
 				const commonProps = {
 					role: 'option',
-					...(active && { id: `${context.floatingId}-option` })
+					...(active && { id: `${context.floatingId}-option` }),
 				};
 
 				// For `menu`, we are unable to tell if the item is a `menuitemradio`
@@ -90,22 +100,20 @@ function useRole(context: FloatingContext, options: UseRoleOptions = {}): Elemen
 					case 'select':
 						return {
 							...commonProps,
-							'aria-selected': active && selected
+							'aria-selected': active && selected,
 						};
 					case 'combobox': {
 						return {
 							...commonProps,
-							...(active && { 'aria-selected': true })
+							...(active && { 'aria-selected': true }),
 						};
 					}
 				}
 
 				return {};
-			}
-		};
-	});
-
-	return elementProps;
+			};
+		},
+	};
 }
 
 export { useRole, type UseRoleOptions };

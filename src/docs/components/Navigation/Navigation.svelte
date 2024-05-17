@@ -1,12 +1,22 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { drawer } from '$docs/stores.svelte';
-	// Icons
-	import IconApi from 'lucide-svelte/icons/cog';
+	// Icons (Docs)
+	import IconGetStarted from 'lucide-svelte/icons/rocket';
+	// Icons (Examples)
 	import IconTooltips from 'lucide-svelte/icons/message-square';
-	import IconPopovers from 'lucide-svelte/icons/square-mouse-pointer';
+	import IconPopovers from 'lucide-svelte/icons/square-chevron-down';
 	import IconModals from 'lucide-svelte/icons/layers-2';
 	import IconContextMenus from 'lucide-svelte/icons/square-menu';
+	// Icons (API)
+	import IconUseFloating from 'lucide-svelte/icons/cloud';
+	import IconUseInteractions from 'lucide-svelte/icons/pointer';
+	import IconUseHover from 'lucide-svelte/icons/square-mouse-pointer';
+	import IconUseClick from 'lucide-svelte/icons/mouse-pointer-2';
+	import IconUseRole from 'lucide-svelte/icons/person-standing';
+	import IconUseDismiss from 'lucide-svelte/icons/circle-x';
+	import IconFloatingArrow from 'lucide-svelte/icons/triangle';
+	import IconUtils from 'lucide-svelte/icons/wand-sparkles';
 	// Components
 	import Logo from '$docs/components/Logo/Logo.svelte';
 
@@ -14,23 +24,38 @@
 	let { classes = '' } = $props();
 
 	// Navigation
-	const navHooks = [
-		{ icon: IconTooltips, href: '/tooltips', label: 'Tooltips' },
-		{ icon: IconPopovers, href: '/popovers', label: 'Popovers' },
-		{ icon: IconModals, href: '/modals', label: 'Modals' },
-		{ icon: IconContextMenus, href: '/context-menus', label: 'Context Menus' }
-	];
-	const navExternal = [
+	const navigation = [
 		{
-			icon: IconApi,
-			href: 'https://github.com/skeletonlabs/floating-ui-svelte?tab=readme-ov-file#floating-ui-svelte',
-			label: 'API Reference'
-		}
+			label: 'Docs',
+			links: [{ icon: IconGetStarted, href: '/docs/getting-started', label: 'Getting Started' }],
+		},
+		{
+			label: 'Examples',
+			links: [
+				{ icon: IconTooltips, href: '/examples/tooltips', label: 'Tooltips' },
+				{ icon: IconPopovers, href: '/examples/popovers', label: 'Popovers' },
+				{ icon: IconModals, href: '/examples/modals', label: 'Modals' },
+				{ icon: IconContextMenus, href: '/examples/context-menus', label: 'Context Menus' },
+			],
+		},
+		{
+			label: 'API Reference',
+			links: [
+				{ icon: IconUseFloating, href: '/api/use-floating', label: 'useFloating' },
+				{ icon: IconUseInteractions, href: '/api/use-interactions', label: 'useInteractions' },
+				{ icon: IconUseHover, href: '/api/use-hover', label: 'useHover' },
+				{ icon: IconUseClick, href: '/api/use-click', label: 'useClick' },
+				{ icon: IconUseRole, href: '/api/use-role', label: 'useRole' },
+				{ icon: IconUseDismiss, href: '/api/use-dismiss', label: 'useDismiss' },
+				{ icon: IconFloatingArrow, href: '/api/floating-arrow', label: 'Floating Arrow' },
+				{ icon: IconUtils, href: '/api/utilities', label: 'Utilities' },
+			],
+		},
 	];
 
 	// FIXME: Remove when Svelte 5 supports $page, see: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
 	// eslint-disable-next-line svelte/valid-compile
-	const navActive = (href: string) => $page.route.id == href;
+	const navActive = (href: string) => $page.route.id?.replace('/(inner)', '') == href;
 </script>
 
 <div
@@ -45,47 +70,31 @@
 		</a>
 	</header>
 	<!-- Nav List -->
-	<nav class="space-y-8 p-4 py-8 pb-32">
-		<!-- Hooks -->
-		<ul>
-			{#each navHooks as link}
-				<li>
-					<a
-						href={link.href}
-						class="nav-link"
-						class:nav-active={$page.route.id === link.href}
-						onclick={() => drawer.close()}
-					>
-						<svelte:component this={link.icon} size={24} />
-						<span>{link.label}</span>
-					</a>
-				</li>
-			{/each}
-		</ul>
-		<!-- External Links -->
-		<ul>
-			{#each navExternal as link}
-				<li>
-					<a
-						href={link.href}
-						target="_blank"
-						class="nav-link"
-						class:nav-active={navActive(link.href)}
-						onclick={() => drawer.close()}
-					>
-						<svelte:component this={link.icon} size={24} />
-						<span>{link.label}</span>
-					</a>
-				</li>
-			{/each}
-		</ul>
-	</nav>
+	<div class="p-4 py-8 pb-32">
+		{#each navigation as section}
+			<nav>
+				<span class="block font-bold text-white p-4">{section.label}</span>
+				<ul class="border-l border-surface-500/50 ml-4">
+					{#each section.links as link}
+						<li>
+							<a
+								href={link.href}
+								class="grid grid-cols-[24px_1fr] items-center gap-4 rounded-tr-xl rounded-br-xl px-4 py-3 text-left hover:bg-surface-500/20"
+								class:nav-active={navActive(link.href)}
+								onclick={() => drawer.close()}
+							>
+								<svelte:component this={link.icon} size={24} />
+								<span>{link.label}</span>
+							</a>
+						</li>
+					{/each}
+				</ul>
+			</nav>
+		{/each}
+	</div>
 </div>
 
 <style lang="postcss">
-	.nav-link {
-		@apply grid grid-cols-[24px_1fr] items-center gap-4 rounded-xl px-4 py-3 text-left hover:bg-surface-500/20;
-	}
 	.nav-active {
 		@apply bg-pink-400/10 text-pink-400 hover:bg-pink-400/20;
 	}

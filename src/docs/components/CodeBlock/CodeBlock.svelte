@@ -1,17 +1,20 @@
 <script lang="ts">
 	import MoonlightDark from '$docs/themes/moonlight-dark.json';
-	import MoonlightLight from '$docs/themes/moonlight-light.json';
 	import { page } from '$app/stores';
 	import type { BuiltinLanguage, SpecialLanguage } from 'shiki';
 
 	interface Props {
 		code: string;
 		lang: BuiltinLanguage | SpecialLanguage;
+		highlight?: number | Array<number>;
 	}
 
-	let { code, lang = 'text' }: Props = $props();
+	// Props
+	let { code, lang = 'text', highlight = [] }: Props = $props();
 
-	const html = $derived(
+	// Process Language
+	const renderedCode = $derived(
+		// FIXME: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
 		// eslint-disable-next-line svelte/valid-compile
 		$page.data.highlighter.codeToHtml(code.trim(), {
 			lang,
@@ -19,19 +22,66 @@
 				// @ts-expect-error - Shiki theme type is annoyingly strict
 				dark: MoonlightDark,
 				// @ts-expect-error - Shiki theme type is annoyingly strict
-				light: MoonlightLight
-			}
-		})
+				light: MoonlightDark,
+			},
+			transformers: [
+				/**
+				 * This transformer adds the `highlighted` class to lines that are to be highlighted.
+				 */
+				{
+					line(node, line) {
+						if (!(Array.isArray(highlight) ? highlight : [highlight]).includes(line)) {
+							return;
+						}
+						this.addClassToHast(node, 'highlighted');
+					},
+				},
+			],
+		}),
 	);
+
+	// Sets the language badge color
+	function setLangCss() {
+		let color = 'bg-surface-500 text-white';
+		if (lang === 'html') color = 'bg-orange-700 text-white';
+		if (lang === 'css') color = 'bg-blue-700 text-white';
+		if (['ts', 'js'].includes(lang)) color = 'bg-yellow-400 text-black';
+		if (lang === 'svelte') color = 'bg-orange-700 text-white';
+		return color;
+	}
 </script>
 
 <!-- eslint-disable svelte/no-at-html-tags -->
-{@html html}
+<figure class="relative rounded-md overflow-hidden">
+	<!-- Language -->
+	<span
+		class="absolute top-0 right-0 text-[10px] leading-none font-bold px-1 py-0.5 rounded-bl shadow {setLangCss()}"
+	>
+		{lang}
+	</span>
+	<!-- Rendered Code -->
+	<div class="codeblock">{@html renderedCode}</div>
+</figure>
 
 <!-- eslint-enable svelte/no-at-html-tags -->
 
 <style lang="postcss">
-	:global(pre.shiki) {
-		@apply p-4 text-sm rounded-md whitespace-pre-wrap;
+	.codeblock :global {
+		.shiki {
+			@apply py-6 text-sm rounded-md whitespace-pre-wrap;
+		}
+		.line {
+			/** 
+			* Horizontal padding is added per line instead of the container
+			* so that highlights extend fully to the end of the codeblock
+			*/
+			@apply px-6 inline-block w-full;
+		}
+		.highlighted {
+			@apply !bg-surface-500/25;
+		}
+		.highlighted > span {
+			@apply !bg-transparent;
+		}
 	}
 </style>

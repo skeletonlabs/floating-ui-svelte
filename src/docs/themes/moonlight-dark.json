@@ -19,7 +19,7 @@
 		"editorBracketMatch.border": "#82aaffbb",
 		"editorBracketMatch.background": "#222436",
 		"editorWhitespace.foreground": "#c8d3f540",
-		"editor.background": "#222436",
+		"editor.background": "rgba(var(--color-surface-700))",
 		"editor.foreground": "#c8d3f5",
 		"editor.lineHighlightBackground": "#2f334d",
 		"editor.selectionBackground": "#828bb850",
@@ -597,7 +597,7 @@
 			}
 		},
 		{
-			"name": "CSS psuedo selectors",
+			"name": "CSS pseudo selectors",
 			"scope": [
 				"entity.other.attribute-name.pseudo-class",
 				"entity.other.attribute-name.pseudo-element"

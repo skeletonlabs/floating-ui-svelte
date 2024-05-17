@@ -1,11 +1,19 @@
 <script lang="ts">
-	import IconArrowRight from 'lucide-svelte/icons/arrow-right';
+	// Components
+	import PageHeader from '$docs/components/PageHeader/PageHeader.svelte';
 	import Logo from '$docs/components/Logo/Logo.svelte';
+	import PageFooter from '$docs/components/PageFooter/PageFooter.svelte';
+	// Icons
+	import IconArrowRight from 'lucide-svelte/icons/arrow-right';
 </script>
 
-<div class="space-y-10">
-	<header
-		class="h-[75vh] flex flex-col justify-center items-center space-y-8 text-center text-balance"
+<div class="h-screen space-y-10">
+	<!-- Header -->
+	<PageHeader />
+	<!-- Content -->
+	<main
+		id="page-container"
+		class="h-[calc(100%-275px)] flex flex-col justify-center items-center space-y-8 text-center text-balance"
 	>
 		<Logo />
 		<h1 class="h1 text-black dark:text-white">Floating UI Svelte</h1>
@@ -14,10 +22,10 @@
 				class="anchor"
 				href="https://floating-ui.com/"
 				target="_blank">Floating UI</a
-			>
+			>.
 		</p>
 		<div class="flex gap-4">
-			<a href="/tooltips" class="btn-cta">
+			<a href="/docs/getting-started" class="btn-cta">
 				<span>Get Started</span>
 				<IconArrowRight />
 			</a>
@@ -29,5 +37,7 @@
 				GitHub
 			</a>
 		</div>
-	</header>
+	</main>
+	<!-- Footer -->
+	<PageFooter />
 </div>

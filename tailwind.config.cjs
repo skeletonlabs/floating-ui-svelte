@@ -16,12 +16,12 @@ const config = {
 					700: 'rgb(var(--color-surface-700) / <alpha-value>)',
 					800: 'rgb(var(--color-surface-800) / <alpha-value>)',
 					900: 'rgb(var(--color-surface-900) / <alpha-value>)',
-					950: 'rgb(var(--color-surface-950) / <alpha-value>)'
-				}
-			}
-		}
+					950: 'rgb(var(--color-surface-950) / <alpha-value>)',
+				},
+			},
+		},
 	},
-	plugins: []
+	plugins: [],
 };
 
 module.exports = config;

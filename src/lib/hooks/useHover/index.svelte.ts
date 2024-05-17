@@ -1,14 +1,12 @@
 import type { OpenChangeReason } from '$lib/types.js';
-import {
-	contains,
-	createAttribute,
-	getDocument,
-	isMouseLikePointerType,
-	noop
-} from '$lib/utils.js';
 import { isElement } from '@floating-ui/utils/dom';
 import type { FloatingContext } from '../useFloating/index.svelte.js';
 import type { ElementProps } from '../useInteractions/index.svelte.js';
+import { createAttribute } from '$lib/utils/create-attribute.js';
+import { isMouseLikePointerType } from '$lib/utils/is-mouse-like-pointer-type.js';
+import { noop } from '$lib/utils/noop.js';
+import { getDocument } from '$lib/utils/get-document.js';
+import { contains } from '$lib/utils/contains.js';
 
 interface DelayOptions {
 	/**
@@ -29,7 +27,7 @@ interface HandleCloseFn {
 		context: FloatingContext & {
 			onClose: () => void;
 			leave?: boolean;
-		}
+		},
 	): (event: MouseEvent) => void;
 	__options: {
 		blockPointerEvents: boolean;
@@ -79,7 +77,7 @@ const safePolygonIdentifier = createAttribute('safe-polygon');
 function getDelay(
 	value: UseHoverOptions['delay'],
 	prop: 'open' | 'close',
-	pointerType?: PointerEvent['pointerType']
+	pointerType?: PointerEvent['pointerType'],
 ) {
 	if (pointerType && !isMouseLikePointerType(pointerType)) {
 		return 0;
@@ -98,15 +96,17 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 		onOpenChange,
 		data,
 		events,
-		elements: { reference, floating }
+		elements: { reference, floating },
 	} = $derived(context);
 
-	const enabled = $derived(options.enabled ?? true);
-	const mouseOnly = $derived(options.mouseOnly ?? false);
-	const delay = $derived(options.delay ?? 0);
-	const restMs = $derived(options.restMs ?? 0);
-	const move = $derived(options.move ?? true);
-	const handleClose = $derived(options.handleClose ?? null);
+	const {
+		enabled = true,
+		mouseOnly = false,
+		delay = 0,
+		restMs = 0,
+		move = true,
+		handleClose = null,
+	} = $derived(options);
 
 	// const tree = useFloatingTree();
 	// const parentId = useFloatingParentNodeId();
@@ -124,7 +124,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 	});
 
 	const isClickLikeOpenEvent = $derived(
-		data.openEvent ? ['click', 'mousedown'].includes(data.openEvent.type) : false
+		data.openEvent ? ['click', 'mousedown'].includes(data.openEvent.type) : false,
 	);
 
 	$effect(() => {
@@ -168,7 +168,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 	const closeWithDelay = (
 		event: Event,
 		runElseBranch = true,
-		reason: OpenChangeReason = 'hover'
+		reason: OpenChangeReason = 'hover',
 	) => {
 		const closeDelay = getDelay(delay, 'close', pointerType);
 		if (closeDelay && !handler) {
@@ -248,35 +248,34 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 		};
 	});
 
-	const elementProps = $derived.by(() => {
-		if (!enabled) {
-			return {};
-		}
-
-		const onmouseenter = (event: MouseEvent) => {
-			clearTimeout(timeout);
-			blockMouseMove = false;
-
-			if (
-				(mouseOnly && !isMouseLikePointerType(pointerType)) ||
-				(restMs > 0 && !getDelay(delay, 'open'))
-			) {
-				return;
+	return {
+		get reference() {
+			if (!enabled) {
+				return {};
 			}
 
-			const openDelay = getDelay(delay, 'open', pointerType);
+			const onmouseenter = (event: MouseEvent) => {
+				clearTimeout(timeout);
+				blockMouseMove = false;
 
-			if (openDelay) {
-				timeout = window.setTimeout(() => {
+				if (
+					(mouseOnly && !isMouseLikePointerType(pointerType)) ||
+					(restMs > 0 && !getDelay(delay, 'open'))
+				) {
+					return;
+				}
+
+				const openDelay = getDelay(delay, 'open', pointerType);
+
+				if (openDelay) {
+					timeout = window.setTimeout(() => {
+						onOpenChange(true, event, 'hover');
+					}, openDelay);
+				} else {
 					onOpenChange(true, event, 'hover');
-				}, openDelay);
-			} else {
-				onOpenChange(true, event, 'hover');
-			}
-		};
-
-		return {
-			reference: {
+				}
+			};
+			return {
 				onpointerdown: (event: PointerEvent) => (pointerType = event.pointerType),
 				onpointerenter: (event: PointerEvent) => (pointerType = event.pointerType),
 				onmouseenter,
@@ -328,7 +327,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 									clearPointerEvents();
 									cleanupMouseMoveHandler();
 									closeWithDelay(event, true, 'safe-polygon');
-								}
+								},
 							});
 
 							const localHandler = handler;
@@ -363,12 +362,18 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 								clearPointerEvents();
 								cleanupMouseMoveHandler();
 								closeWithDelay(event);
-							}
+							},
 						})(event);
 					}
-				}
-			},
-			floating: {
+				},
+			};
+		},
+
+		get floating() {
+			if (!enabled) {
+				return {};
+			}
+			return {
 				onmouseenter() {
 					clearTimeout(timeout);
 				},
@@ -383,16 +388,14 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}): Elem
 								clearPointerEvents();
 								cleanupMouseMoveHandler();
 								closeWithDelay(event);
-							}
+							},
 						})(event);
 					}
 					closeWithDelay(event, false);
-				}
-			}
-		};
-	});
-
-	return elementProps;
+				},
+			};
+		},
+	};
 }
 
 export { useHover, type UseHoverOptions };

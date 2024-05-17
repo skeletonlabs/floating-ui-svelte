@@ -6,8 +6,9 @@
 
 <script lang="ts">
 	import { platform, type Alignment, type Side } from '@floating-ui/dom';
-	import { styleObjectToString } from '$lib/utils.js';
 	import type { FloatingArrowProps } from './types.js';
+	import { useId } from '$lib/hooks/useId/index.js';
+	import { styleObjectToString } from '$lib/utils/style-object-to-string.js';
 
 	let {
 		ref = $bindable(null),
@@ -30,11 +31,10 @@
 	const {
 		placement,
 		elements: { floating },
-		middlewareData: { arrow }
+		middlewareData: { arrow },
 	} = $derived(context);
 
-	// FIXME: migrate to useId();
-	const clipPathId = 'abc123';
+	const clipPathId = useId();
 
 	// Strokes must be double the border width, this ensures the stroke's width
 	// works as you'd expect.
@@ -60,8 +60,8 @@
 		return alignment === 'end' ? 'right' : 'left';
 	});
 
-	const arrowX = $derived(arrow?.x != null ? staticOffset || arrow.x : '');
-	const arrowY = $derived(arrow?.y != null ? staticOffset || arrow.y : '');
+	const arrowX = $derived(arrow?.x != null ? staticOffset || `${arrow.x}px` : '');
+	const arrowY = $derived(arrow?.y != null ? staticOffset || `${arrow.y}px` : '');
 
 	const dValue = $derived(
 		d ||
@@ -69,7 +69,7 @@
 				` H${width}` +
 				` L${width - svgX},${height - svgY}` +
 				` Q${width / 2},${height} ${svgX},${height - svgY}` +
-				' Z'
+				' Z',
 	);
 
 	const rotation = $derived.by(() => {
@@ -87,19 +87,21 @@
 </script>
 
 <!-- FIXME: extend styleObjectToString type to accept `rest.styles` -->
+
 <svg
 	bind:this={ref}
 	width={isCustomShape ? width : width + computedStrokeWidth}
 	height={width}
 	viewBox={`0 0 ${width} ${height > width ? height : width}`}
-	aria-hidden
+	aria-hidden="true"
 	style={styleObjectToString({
 		position: 'absolute',
-		pointerEvents: 'none',
+		'pointer-events': 'none',
 		[xOffsetProp]: `${arrowX}`,
 		[yOffsetProp]: `${arrowY}`,
 		[side]: isVerticalSide || isCustomShape ? '100%' : `calc(100% - ${computedStrokeWidth / 2}px)`,
-		transform: `${rotation} ${transform ?? ''}`
+		transform: `${rotation} ${transform ?? ''}`,
+		fill,
 	})}
 	data-testid="floating-arrow"
 	{...rest}

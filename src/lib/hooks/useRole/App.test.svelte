@@ -1,3 +1,4 @@
+<!-- Component used to test `useRole` -->
 <script lang="ts">
 	import { autoUpdate } from '@floating-ui/dom';
 	import { useFloating } from '../useFloating/index.svelte.js';
@@ -6,33 +7,38 @@
 	interface Props extends UseRoleOptions {
 		open?: boolean;
 	}
-	let { open = false, ...rest }: Props = $props();
-	const elements: { reference: HTMLElement | null; floating: HTMLElement | null } = $state({
-		reference: null,
-		floating: null
-	});
+	let { open = false, ...useRoleOptions }: Props = $props();
 	const floating = useFloating({
 		whileElementsMounted: autoUpdate,
 		get open() {
 			return open;
 		},
-		onOpenChange(v) {
-			open = v;
-		},
-		elements
+		onOpenChange: (v) => (open = v),
 	});
-	const role = useRole(floating.context, { ...rest });
+	const role = useRole(floating.context, useRoleOptions);
 	const interactions = useInteractions([role]);
 </script>
 
-<p>{open}</p>
-<button bind:this={elements.reference} {...interactions.getReferenceProps()}> Reference </button>
+<div
+	data-testid="reference"
+	bind:this={floating.elements.reference}
+	{...interactions.getReferenceProps()}
+>
+	Reference
+</div>
+
 {#if open}
 	<div
-		bind:this={elements.floating}
+		data-testid="floating"
+		bind:this={floating.elements.floating}
 		style={floating.floatingStyles}
 		{...interactions.getFloatingProps()}
 	>
-		Floating
+		{#each [1, 2, 3] as i}
+			<div
+				data-testid="item-{i}"
+				{...interactions.getItemProps({ active: i === 2, selected: i === 2 })}
+			></div>
+		{/each}
 	</div>
 {/if}

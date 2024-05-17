@@ -8,12 +8,13 @@ const config = {
 	kit: {
 		adapter: adapter(),
 		alias: {
-			$docs: './src/docs'
+			$docs: './src/docs',
+			'@skeletonlabs/floating-ui-svelte': './src/lib/index.js',
 		},
 		version: {
-			name: JSON.parse(readFileSync('./package.json')).version ?? '0.0.0'
-		}
-	}
+			name: JSON.parse(readFileSync('./package.json')).version ?? '0.0.0',
+		},
+	},
 };
 
 export default config;
