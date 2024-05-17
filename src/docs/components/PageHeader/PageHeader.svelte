@@ -4,7 +4,7 @@
 
 	// Icons
 	import IconMenu from 'lucide-svelte/icons/menu';
-	import Search from './Search.svelte';
+	import SearchDialog from './SearchDialog.svelte';
 </script>
 
 <header
@@ -17,7 +17,7 @@
 			</button>
 			<a href="/" class="font-bold">Floating UI Svelte</a>
 		</div>
-		<Search />
+		<SearchDialog />
 		<div class="flex items-center gap-4">
 			<a
 				href="https://github.com/skeletonlabs/floating-ui-svelte"

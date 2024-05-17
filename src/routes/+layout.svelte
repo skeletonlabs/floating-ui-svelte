@@ -2,6 +2,7 @@
 	// Stylesheets
 	import '../app.pcss';
 	import { page } from '$app/stores';
+	import Overlay from '$docs/components/Overlay/Overlay.svelte';
 
 	// Props
 	let { children } = $props();
@@ -19,4 +20,6 @@
 	<title>{title} | Floating UI Svelte</title>
 </svelte:head>
 
-{@render children()}
+<Overlay>
+	{@render children()}
+</Overlay>
