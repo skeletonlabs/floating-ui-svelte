@@ -1,5 +1,12 @@
 # @skeletonlabs/floating-ui-svelte
 
+## 0.2.0
+
+### Minor Changes
+
+- 94b84f5: Added `useId` hook
+- eba3989: Added the `useClick` hook
+
 ## 0.1.0
 
 ### Minor Changes
