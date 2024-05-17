@@ -8,7 +8,7 @@ const config = {
 	kit: {
 		adapter: adapter({
 			pages: 'build',
-			assets: 'build'
+			assets: 'build',
 		}),
 		alias: {
 			$docs: './src/docs',
