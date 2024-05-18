@@ -41,11 +41,15 @@
 	<!-- Navigation -->
 	<Navigation classes="hidden lg:block " />
 	<!-- Main -->
-	<main class="ml-0 lg:ml-72" data-pagefind-body>
+	<main class="ml-0 lg:ml-72">
 		<!-- Page Header -->
 		<PageHeader />
 		<!-- Page Content -->
-		<article id="page-container" class="container p-10 text-lg mx-auto lg:ml-auto lg:px-32">
+		<article
+			id="page-container"
+			class="container p-10 text-lg mx-auto lg:ml-auto lg:px-32"
+			data-pagefind-body
+		>
 			{@render children()}
 		</article>
 		<!-- Page Footer -->

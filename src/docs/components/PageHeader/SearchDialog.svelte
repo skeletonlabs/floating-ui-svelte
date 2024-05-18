@@ -55,7 +55,7 @@
 </button>
 
 <Dialog bind:open>
-	<div class="bg-surface-700 rounded-md divide-y-4 divide-surface-600">
+	<div class="divide-y-4 divide-surface-600">
 		<div class="relative p-4">
 			<input
 				class="bg-transparent text-2xl outline-none pl-10 w-full"
@@ -65,7 +65,7 @@
 			/>
 			<SearchIcon class="absolute left-4 top-1/2 -translate-y-1/2" />
 		</div>
-		<div class="p-4 flex flex-col gap-1 max-h-[400px] overflow-auto min-h-[100px]" tabindex="-1">
+		<div class="p-4 flex flex-col gap-1 max-h-[600px] overflow-auto min-h-[100px]" tabindex="-1">
 			{#await searchPromise then results}
 				{#if results.length > 0}
 					<p class="text-lg text-center">

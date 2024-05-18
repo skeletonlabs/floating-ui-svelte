@@ -51,11 +51,13 @@
 		></button>
 		<div
 			in:fly={{ y: 50, easing: cubicOut, duration: 250 }}
-			class="fixed left-1/2 -translate-x-1/2 top-[15%] z-50 max-w-[500px]"
+			class="fixed left-1/2 -translate-x-1/2 top-4 md:top-[15%] z-50 w-[calc(100%-2rem)] max-w-[500px] bg-surface-700 rounded-md"
 			role="dialog"
 			aria-modal="true"
 		>
-			{@render children()}
+			<div class="">
+				{@render children()}
+			</div>
 		</div>
 	{/if}
 </Portal>
