@@ -1,16 +1,11 @@
+import { getContext, setContext } from 'svelte';
+
 // Reusable State Stores
 
 // Navigation Drawer ---
+type Drawer = { open: boolean };
 
-function createDrawer() {
-	let value = $state(false);
-	return {
-		get value() {
-			return value;
-		},
-		toggle: () => (value = !value),
-		close: () => (value = false),
-	};
-}
+const drawerKey = Symbol('drawer');
 
-export const drawer = createDrawer();
+export const getDrawer = () => getContext<Drawer>(drawerKey);
+export const setDrawer = (drawer: Drawer) => setContext(drawerKey, drawer);
