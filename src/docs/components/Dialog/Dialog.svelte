@@ -2,7 +2,7 @@
 	import { type Snippet } from 'svelte';
 	import { createFocusTrap } from 'focus-trap';
 	import Portal from '../Portal/Portal.svelte';
-	import { fly } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { beforeNavigate } from '$app/navigation';
 
@@ -12,7 +12,7 @@
 		open?: boolean;
 	}
 
-	let { children, type = 'drawer', open = $bindable(false) }: Props = $props();
+	let { children, type = 'modal', open = $bindable(false) }: Props = $props();
 
 	$effect(() => {
 		if (open) {
@@ -62,7 +62,7 @@
 
 	const flyParams = $derived(
 		{
-			drawer: { x: -200, duration: 200 },
+			drawer: { x: -500, easing: cubicOut, duration: 250 },
 			modal: { y: 50, easing: cubicOut, duration: 250 },
 		}[type],
 	);
@@ -70,7 +70,7 @@
 
 <Portal>
 	{#if open}
-		<div class="fixed inset-0 z-50 bg-black bg-opacity-50"></div>
+		<div in:fade={{ duration: 250 }} class="fixed inset-0 z-50 bg-black bg-opacity-50"></div>
 		<div in:fly={flyParams} class={classes} role="dialog" aria-modal="true" use:focus_trap>
 			{@render children()}
 		</div>

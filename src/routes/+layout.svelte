@@ -39,7 +39,7 @@
 
 <Overlay>
 	<!-- Overlay: Drawer -->
-	<Dialog bind:open={drawer.open}>
+	<Dialog bind:open={drawer.open} type="drawer">
 		<Navigation />
 	</Dialog>
 
