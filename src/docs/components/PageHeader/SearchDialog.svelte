@@ -11,7 +11,7 @@
 		if (pagefind === null || query === '') {
 			return [];
 		}
-		const result = await pagefind.debouncedSearch(query);
+		const result = await pagefind.search(query);
 
 		if (result === null) {
 			return [];
