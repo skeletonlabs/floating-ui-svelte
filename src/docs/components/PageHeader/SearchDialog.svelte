@@ -1,31 +1,25 @@
 <script lang="ts">
 	import Dialog from '../Dialog/Dialog.svelte';
 	import SearchIcon from 'lucide-svelte/icons/search';
-	import type { Pagefind } from '$docs/types.js';
+	import { page } from '$app/stores';
 
 	let open = $state(false);
-	let pagefind: Pagefind | null = $state(null);
 	let query = $state('');
 
 	const searchPromise = $derived.by(async () => {
-		if (pagefind === null || query === '') {
+		if (query === '') {
 			return [];
 		}
-		const result = await pagefind.search(query);
+
+		// FIXME: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
+		// eslint-disable-next-line svelte/valid-compile
+		const result = await $page.data.pagefind.search(query);
 
 		if (result === null) {
 			return [];
 		}
 
 		return await Promise.all(result.results.map((result) => result.data()));
-	});
-
-	$effect(() => {
-		// @ts-expect-error - Pagefind will be present at runtime
-		import('/pagefind/pagefind.js').then((module: Pagefind) => {
-			pagefind = module;
-			pagefind.init();
-		});
 	});
 
 	$effect(() => {
