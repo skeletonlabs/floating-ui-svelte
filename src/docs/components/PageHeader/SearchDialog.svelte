@@ -36,8 +36,6 @@
 			document.removeEventListener('keydown', onKeydown);
 		};
 	});
-
-	const focus = (node: HTMLElement) => node.focus();
 </script>
 
 <button
@@ -55,7 +53,6 @@
 				class="bg-transparent text-2xl outline-none pl-10 w-full"
 				placeholder="Search the docs..."
 				bind:value={query}
-				use:focus
 			/>
 			<SearchIcon class="absolute left-4 top-1/2 -translate-y-1/2" />
 		</div>
