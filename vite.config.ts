@@ -1,12 +1,12 @@
 import { defineConfig } from 'vitest/config';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { svelteTesting } from '@testing-library/svelte/vite';
-import { pagefind, type PagefindConfig } from 'vite-plugin-pagefind';
+import { pagefind, type Config } from 'vite-plugin-pagefind';
 
-const pagefindConfig: PagefindConfig = {
+const pagefindConfig: Config = {
 	buildDir: 'build',
 	buildScript: 'build:docs',
-	publicDir: './static',
+	assetsDir: 'static',
 };
 
 export default defineConfig({

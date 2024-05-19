@@ -6,7 +6,7 @@ declare global {
 		// interface Locals {}
 		interface PageData {
 			highlighter: import('shiki').Highlighter;
-			pagefind: import('$docs/types.ts').Pagefind;
+			pagefind: import('vite-plugin-pagefind').Pagefind;
 		}
 		// interface PageState {}
 		// interface Platform {}
