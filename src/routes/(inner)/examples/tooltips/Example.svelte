@@ -11,7 +11,7 @@
 		useInteractions,
 		useRole,
 		useDismiss,
-	} from '$lib/index.js';
+	} from '@skeletonlabs/floating-ui-svelte';
 
 	// State
 	let open = $state(false);
