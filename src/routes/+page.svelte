@@ -15,8 +15,8 @@
 		<div class="bg-blue-500 text-white p-4 flex justify-center items-start gap-4">
 			<span><IconAlert size="24px" /></span>
 			<p>
-				Floating UI Svelte is in early access. Expect bugs, missing features, and incomplete
-				documentation.
+				Floating UI Svelte is available in early access. Expect bugs, missing features, and
+				incomplete documentation.
 			</p>
 		</div>
 	</div>

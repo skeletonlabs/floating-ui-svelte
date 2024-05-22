@@ -36,15 +36,19 @@ npm install @skeletonlabs/floating-ui-svelte
 # bun install @skeletonlabs/floating-ui-svelte
 		`}
 		/>
-		<p>
-			Both <code class="code">@floating-ui/dom</code> and
-			<code class="code">@floating-ui/utils</code>
-			will be automatically installed as dependencies.
-		</p>
 	</section>
-	<!-- CSS Styles -->
+	<!-- Usage -->
 	<section class="space-y-8">
-		<h2 class="h2">CSS Styles</h2>
+		<h2 class="h2">Usage</h2>
+		<h3 class="h3">Floating UI Features</h3>
+		<!-- prettier-ignore -->
+		<p>
+			Floating UI Svelte exposes all Floating UI <a href="https://floating-ui.com/docs/middleware" target="_blank" class="anchor">middleware</a>, types, etc. You do not need to install <code class="code">@floating-ui/dom</code> seperately.
+		</p>
+		<CodeBlock
+			lang="ts"
+			code={`import { flip, type Strategy } from '@skeletonlabs/floating-ui-svelte';`}
+		/>
 		<h3 class="h3">Making elements "float"</h3>
 		<p>
 			At minimum, the following styles must be applied to ensure floating elements do not disrupt
@@ -71,7 +75,7 @@ npm install @skeletonlabs/floating-ui-svelte
 			>.
 		</p>
 	</section>
-	<!-- Ceveats -->
+	<!-- Caveats -->
 	<section class="space-y-8">
 		<h2 class="h2">Caveats</h2>
 		<h3 class="h3">Server-Side Rendering (SSR)</h3>
