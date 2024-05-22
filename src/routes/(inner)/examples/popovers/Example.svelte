@@ -52,7 +52,7 @@
 			bind:this={floating.elements.floating}
 			style={floating.floatingStyles}
 			{...interactions.getFloatingProps()}
-			class="floating tooltip-neutral"
+			class="floating popover-neutral"
 			transition:fade={{ duration: 200 }}
 		>
 			<p>

@@ -24,7 +24,9 @@
 	<!-- Install -->
 	<section class="space-y-8">
 		<h2 class="h2">Install</h2>
-		<p>To install Floating UI, use your package manager of choice.</p>
+		<p>
+			Install <strong class="highlight">Floating UI Svelte</strong> using your package manager of choice.
+		</p>
 		<CodeBlock
 			lang="bash"
 			code={`
@@ -34,27 +36,40 @@ npm install @skeletonlabs/floating-ui-svelte
 # bun install @skeletonlabs/floating-ui-svelte
 		`}
 		/>
-	</section>
-	<!-- Usage -->
-	<section class="space-y-8">
-		<h2 class="h2">Usage</h2>
-		<h3 class="h3">Making elements "float"</h3>
-		<!-- prettier-ignore -->
 		<p>
-			At minimum, the following styles must be applied to all floating elements. This can be handled using a
-			reusable CSS class. Note that Floating UI does not take an opinionated stance on <a href="https://floating-ui.com/docs/misc#z-index-stacking" target="_blank" class="anchor">z-index stacking</a>.
+			Both <code class="code">@floating-ui/dom</code> and
+			<code class="code">@floating-ui/utils</code>
+			will be automatically installed as dependencies.
+		</p>
+	</section>
+	<!-- CSS Styles -->
+	<section class="space-y-8">
+		<h2 class="h2">CSS Styles</h2>
+		<h3 class="h3">Making elements "float"</h3>
+		<p>
+			At minimum, the following styles must be applied to ensure floating elements do not disrupt
+			the flow of the document. This can be handled using a single reusable CSS class.
 		</p>
 		<CodeBlock
 			lang="css"
 			code={`
 .floating {
 	width: max-content;
-	position: absolute; top: 0; left: 0;
-	/* Your custom styles here */
+	position: absolute;
+	top: 0;
+	left: 0;
 }
 		`}
 		/>
 		<CodeBlock lang="html" code={`<div class="floating">Some floating element.</div>`} />
+		<h3 class="h3">Z-Index Stacking</h3>
+		<p>
+			Please be aware that Floating UI does not take an opinionated stance on <a
+				href="https://floating-ui.com/docs/misc#z-index-stacking"
+				target="_blank"
+				class="anchor">z-index stacking</a
+			>.
+		</p>
 	</section>
 	<!-- Ceveats -->
 	<section class="space-y-8">
