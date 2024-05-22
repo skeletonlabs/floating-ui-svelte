@@ -41,10 +41,6 @@
 	<!-- Preview -->
 	<section class="space-y-8">
 		<h2 class="h2">Example</h2>
-		<p>
-			This is a functional Tooltip that uses a combination of hooks and components, each of which is
-			described in the sections below.
-		</p>
 		<Preview>
 			{#snippet preview()}<Example />{/snippet}
 			{#snippet code()}<CodeBlock code={exampleCode} lang="html" />{/snippet}
@@ -63,8 +59,8 @@
 	<section class="space-y-8">
 		<h2 class="h2">useFloating Hook</h2>
 		<p>
-			The <code class="code">useFloating()</code> Hook provides positioning and context for our tooltip.
-			We need to pass it some information:
+			The <a class="anchor" href="/api/use-floating">useFloating</a> hook provides positioning and context
+			for our tooltip. We need to pass it some information:
 		</p>
 		<CodeBlock code={`const floating = useFloating({ /* ...settings... */ });`} lang="ts" />
 		<ul class="ul">
@@ -91,8 +87,9 @@
 	<section class="space-y-8">
 		<h2 class="h2">Interaction Hooks</h2>
 		<p>
-			The <code class="code">useInteractions()</code> hooks returns an object containing keys of
-			props that enable the tooltip to be opened, closed, or accessible to screen readers. Using the
+			The <a class="anchor" href="/api/use-interactions">useInteractions</a> hooks returns an object
+			containing keys of props that enable the tooltip to be opened, closed, or accessible to screen
+			readers. Using the
 			<code class="code">context</code> that was returned from the Hook, call the interaction Hooks.
 		</p>
 		<CodeBlock
@@ -119,7 +116,7 @@ const interactions = useInteractions([role, hover, dismiss]);
 				<code class="code">useDismiss()</code>: adds the ability to dismiss the tooltip when the
 				user presses the <kbd class="kbd">esc</kbd> key.
 			</li>
-
+			<!-- TODO: update when useFocus is ready -->
 			<li class="opacity-50 line-through">
 				COMING SOON: <code class="code">useFocus()</code>: adds the ability to toggle the tooltip
 				open or closed when the reference element is focused.
@@ -134,21 +131,30 @@ const interactions = useInteractions([role, hover, dismiss]);
 			lang="html"
 			code={`
 <!-- Reference Element -->
-<button bind:this={elemReference} {...interactions.getReferenceProps()}>Hover Me</button>\n
-<!-- Floating Element -->
-<div
-	bind:this={elemFloating}
-	style={floating.floatingStyles}
-	{...interactions.getFloatingProps()}
-	class="floating"
+<button
+	bind:this={floating.elements.reference}
+	{...interactions.getReferenceProps()}
+	class="btn-gradient"
 >
-	{#if open}
-		<div>
-			<p>This is the floating element</p>
-			<FloatingArrow bind:ref={elemArrow} context={floating.context} />
-		</div>
-	{/if}
-</div>
+	Hover Me
+</button>
+
+<!-- Floating Element -->
+{#if open}
+	<div
+		bind:this={floating.elements.floating}
+		style={floating.floatingStyles}
+		{...interactions.getFloatingProps()}
+		class="floating popover-neutral"
+		transition:fade={{ duration: 200 }}
+	>
+		<p>
+			A <strong>floating element</strong> is one that floats on top of the UI without disrupting the
+			flow, like this one!
+		</p>
+		<FloatingArrow bind:ref={elemArrow} context={floating.context} fill="#575969" />
+	</div>
+{/if}
 		`}
 		/>
 		<p>

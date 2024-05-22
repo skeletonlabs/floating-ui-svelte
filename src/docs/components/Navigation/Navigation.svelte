@@ -70,11 +70,11 @@
 		</a>
 	</header>
 	<!-- Nav List -->
-	<div class="p-4 py-8 pb-32">
+	<div class="p-8 pt-0 pb-32">
 		{#each navigation as section}
 			<nav>
-				<span class="block font-bold text-white p-4">{section.label}</span>
-				<ul class="border-l border-surface-500/50 ml-4">
+				<span class="block font-bold text-white py-4">{section.label}</span>
+				<ul class="border-l border-surface-500/50">
 					{#each section.links as link}
 						<li>
 							<a
