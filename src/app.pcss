@@ -125,7 +125,7 @@ footer .anchor {
 
 /* Preview Examples */
 .preview {
-	@apply border-2 border-dashed border-surface-500/30 p-10 flex justify-center items-center rounded-3xl;
+	@apply bg-surface-100 dark:bg-surface-900 ring-inset p-10 flex justify-center items-center rounded-lg;
 }
 
 /* Floating (required) */
@@ -133,8 +133,12 @@ footer .anchor {
 	@apply w-max absolute top-0 left-0 z-10;
 }
 
+.tooltip-neutral {
+	@apply bg-surface-500 text-white p-8 max-w-sm rounded shadow-xl;
+}
+
 /* Buttons */
-.btn-cta {
+.btn-gradient {
 	@apply flex items-center gap-2;
 	@apply py-3 px-6 rounded shadow-lg;
 	@apply bg-gradient-to-br from-red-300 via-violet-300 to-cyan-400;

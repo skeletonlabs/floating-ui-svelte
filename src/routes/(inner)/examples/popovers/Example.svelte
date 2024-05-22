@@ -42,7 +42,7 @@
 	<button
 		bind:this={floating.elements.reference}
 		{...interactions.getReferenceProps()}
-		class="btn-cta"
+		class="btn-gradient"
 	>
 		Click Me
 	</button>
@@ -52,14 +52,14 @@
 			bind:this={floating.elements.floating}
 			style={floating.floatingStyles}
 			{...interactions.getFloatingProps()}
-			class="floating bg-surface-500 text-white p-8 max-w-sm rounded shadow-xl"
+			class="floating tooltip-neutral"
 			transition:fade={{ duration: 200 }}
 		>
 			<p>
 				You can press the <kbd class="kbd">esc</kbd> key or click outside to
 				<strong>*dismiss*</strong> this floating element.
 			</p>
-			<FloatingArrow bind:ref={elemArrow} context={floating.context} class="fill-surface-500" />
+			<FloatingArrow bind:ref={elemArrow} context={floating.context} fill="#575969" />
 		</div>
 	{/if}
 </div>
