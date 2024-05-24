@@ -6,11 +6,23 @@
 	interface Props {
 		code: string;
 		lang: BuiltinLanguage | SpecialLanguage;
-		highlight?: number | Array<number>;
+		mark?: Array<number | [number, number]>;
 	}
 
 	// Props
-	let { code, lang = 'text', highlight = [] }: Props = $props();
+	let { code, lang = 'text', mark = [] }: Props = $props();
+
+	const highlightedLineNumbers = $derived(
+		mark
+			.map((mark) => {
+				if (Array.isArray(mark)) {
+					const [start, end] = mark;
+					return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+				}
+				return mark;
+			})
+			.flat(),
+	);
 
 	// Process Language
 	const renderedCode = $derived(
@@ -29,8 +41,8 @@
 				 * This transformer adds the `highlighted` class to lines that are to be highlighted.
 				 */
 				{
-					line(node, line) {
-						if (!(Array.isArray(highlight) ? highlight : [highlight]).includes(line)) {
+					line(node, lineNumber) {
+						if (!highlightedLineNumbers.includes(lineNumber)) {
 							return;
 						}
 						this.addClassToHast(node, 'highlighted');
