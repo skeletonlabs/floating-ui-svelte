@@ -11,14 +11,22 @@
 		<h1 class="h1"><span>useFocus</span></h1>
 		<p>
 			Opens the floating element while the reference element has focus, like CSS
-			<kbd class="kdb">:focus</kbd>.
+			<code class="code">:focus</code>.
 		</p>
 		<CodeBlock lang="ts" code={`import { useFocus } from '@skeletonlabs/floating-ui-svelte';`} />
+		<!-- TODO: add when FloatingFocusManager is ready -->
+		<!-- <p>To manage focus within the floating element itself, use <a class="anchor" href="/api/floating-focus-manager">FloatingFocusManager</a>.</p> -->
 	</header>
 	<!-- Usage -->
 	<section class="space-y-8">
 		<h2 class="h2">Usage</h2>
-		<CodeBlock code={ExampleRaw} lang="svelte" />
+		<p>
+			This Hook returns event handler props. To use it, pass it the context object returned from <code
+				class="code">useFloating()</code
+			>, and then feed its result into the <code class="code">useInteractions()</code> array. The returned
+			prop getters are then spread onto the elements for rendering.
+		</p>
+		<CodeBlock code={ExampleRaw} lang="svelte" highlight={[2, 5, 6]} />
 	</section>
 	<!-- Table: Options -->
 	<section class="space-y-8">
