@@ -22,7 +22,7 @@ describe('useFocus', () => {
 
 			await fireEvent.focus(screen.getByTestId('reference'));
 
-			expect(screen.queryByTestId('floating')).toBeInTheDocument();
+			expect(screen.getByTestId('floating')).toBeInTheDocument();
 
 			await fireEvent.blur(screen.getByTestId('reference'));
 
@@ -40,7 +40,7 @@ describe('useFocus', () => {
 
 			await fireEvent.focus(screen.getByTestId('reference'));
 
-			expect(screen.queryByTestId('floating')).toBeInTheDocument();
+			expect(screen.getByTestId('floating')).toBeInTheDocument();
 		});
 
 		it('does not enable the hook when set to `false`', async () => {
@@ -64,7 +64,7 @@ describe('useFocus', () => {
 
 			await fireEvent.focus(screen.getByTestId('reference'));
 
-			expect(screen.queryByTestId('floating')).toBeInTheDocument();
+			expect(screen.getByTestId('floating')).toBeInTheDocument();
 		});
 
 		it('does not change the open state to `true` on click (focus, but not focus-within) when set to `true`', async () => {
