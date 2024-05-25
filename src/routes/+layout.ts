@@ -1,7 +1,7 @@
 import { getHighlighter } from 'shiki';
 import MoonlightDark from '$docs/themes/moonlight-dark.json';
 import { browser } from '$app/environment';
-import type { Pagefind } from 'vite-plugin-pagefind';
+import type { Pagefind } from 'vite-plugin-pagefind/types';
 
 export async function load() {
 	const highlighter = await getHighlighter({

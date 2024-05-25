@@ -1,16 +1,10 @@
 import { defineConfig } from 'vitest/config';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { svelteTesting } from '@testing-library/svelte/vite';
-import { pagefind, type Config } from 'vite-plugin-pagefind';
-
-const pagefindConfig: Config = {
-	buildDir: 'build',
-	buildScript: 'build:docs',
-	assetsDir: 'static',
-};
+import pagefind from 'vite-plugin-pagefind';
 
 export default defineConfig({
-	plugins: [sveltekit(), svelteTesting(), pagefind(pagefindConfig)],
+	plugins: [sveltekit(), svelteTesting(), pagefind()],
 	experimental: {
 		// Remove when https://github.com/sveltejs/vite-plugin-svelte/issues/909 is fixed
 		hmrPartialAccept: false,
