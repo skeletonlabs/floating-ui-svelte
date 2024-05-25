@@ -112,8 +112,8 @@ importers:
         specifier: ^5.0.11
         version: 5.2.11
       vite-plugin-pagefind:
-        specifier: ^0.2.3
-        version: 0.2.3
+        specifier: ^0.2.6
+        version: 0.2.6
       vitest:
         specifier: ^1.2.0
         version: 1.6.0(jsdom@24.0.0)
@@ -2752,8 +2752,8 @@ packages:
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
 
-  vite-plugin-pagefind@0.2.3:
-    resolution: {integrity: sha512-CfNVhR3BTNUE46PFZgyAATJ6CMVRTjH/rUk6RcK1R9GXfHOssYR7x91x9uzIgsM45NtkPpXOer59eGxQmvXHQw==}
+  vite-plugin-pagefind@0.2.6:
+    resolution: {integrity: sha512-EufB02LIj93vUpcObxZWB/T6D2wDs6d+z0tzn2BfAurahWBKCid5CMQVoU8P0C4zGkMxIaA/J2maO8S7Prl6zw==}
 
   vite@5.2.11:
     resolution: {integrity: sha512-HndV31LWW05i1BLPMUCE1B9E9GFbOu1MbenhS58FuK6owSO5qHm7GiCotrNY1YE5rMeQSFBGmT5ZaLEjFizgiQ==}
@@ -5819,7 +5819,7 @@ snapshots:
       - supports-color
       - terser
 
-  vite-plugin-pagefind@0.2.3:
+  vite-plugin-pagefind@0.2.6:
     dependencies:
       colorette: 2.0.20
       valibot: 0.31.0-rc.4
