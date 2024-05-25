@@ -12,7 +12,7 @@ describe('useFocus', () => {
 
 			await fireEvent.focus(screen.getByTestId('reference'));
 
-			expect(screen.queryByTestId('floating')).toBeInTheDocument();
+			expect(screen.getByTestId('floating')).toBeInTheDocument();
 		});
 
 		it('changes the open state to `false` on blur', async () => {
