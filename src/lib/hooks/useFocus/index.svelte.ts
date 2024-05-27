@@ -117,18 +117,22 @@ function useFocus(context: FloatingContext, options: UseFocusOptions = {}) {
 					const target = getTarget(event);
 
 					if (visibleOnly && isElement(target)) {
-						try {
-							// Mac Safari unreliably matches `:focus-visible` on the reference
-							// if focus was outside the page initially - use the fallback
-							// instead.
-							// if (isSafari() && isMac()) throw Error();
-							if (!target.matches(':focus-visible')) return;
-						} catch {
-							// Old browsers will throw an error when using `:focus-visible`.
-							if (!keyboardModality && !isTypeableElement(target)) {
-								return;
-							}
+						if (!target.matches(':focus-visible')) {
+							return;
 						}
+
+						// try {
+						// 	// Mac Safari unreliably matches `:focus-visible` on the reference
+						// 	// if focus was outside the page initially - use the fallback
+						// 	// instead.
+						// 	if (isSafari() && isMac()) throw Error();
+						// 	if (!target.matches(':focus-visible')) return;
+						// } catch {
+						// 	// Old browsers will throw an error when using `:focus-visible`.
+						// 	if (!keyboardModality && !isTypeableElement(target)) {
+						// 		return;
+						// 	}
+						// }
 					}
 
 					onOpenChange(true, event, 'focus');
