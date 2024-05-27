@@ -121,7 +121,7 @@ function useFocus(context: FloatingContext, options: UseFocusOptions = {}) {
 							// Mac Safari unreliably matches `:focus-visible` on the reference
 							// if focus was outside the page initially - use the fallback
 							// instead.
-							if (isSafari() && isMac()) throw Error();
+							// if (isSafari() && isMac()) throw Error();
 							if (!target.matches(':focus-visible')) return;
 						} catch {
 							// Old browsers will throw an error when using `:focus-visible`.
