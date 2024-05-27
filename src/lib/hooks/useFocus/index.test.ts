@@ -1,7 +1,8 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, test, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import App from './App.test.svelte';
+import { isAndroid, isJSDOM, isMac, isSafari } from '$lib/utils/environment.js';
 
 describe('useFocus', () => {
 	describe('default', () => {
@@ -97,4 +98,11 @@ describe('useFocus', () => {
 			expect(screen.queryByTestId('floating')).toBeInTheDocument();
 		});
 	});
+});
+
+test('env', () => {
+	expect(isSafari()).toBe(false);
+	expect(isAndroid()).toBe(false);
+	expect(isMac()).toBe(false);
+	expect(isJSDOM()).toBe(true);
 });
