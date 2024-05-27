@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/svelte';
+import { render, screen } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import App from './App.test.svelte';
 
@@ -78,7 +78,7 @@ describe('useFocus', () => {
 
 			expect(screen.queryByTestId('floating')).not.toBeInTheDocument();
 
-			await user.tab();
+			await user.click(screen.getByTestId('reference'));
 
 			expect(screen.queryByTestId('floating')).not.toBeInTheDocument();
 		});
