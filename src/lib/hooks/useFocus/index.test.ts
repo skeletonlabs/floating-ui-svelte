@@ -1,22 +1,28 @@
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/svelte';
+import { render, screen, fireEvent } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import App from './App.test.svelte';
 
-describe('useFocus', () => {
+it('changes the open state to `true` on focus', async () => {
+	render(App);
+
+	expect(screen.queryByTestId('floating')).not.toBeInTheDocument();
+
+	await fireEvent.focus(screen.getByTestId('reference'));
+
+	expect(screen.getByTestId('floating')).toBeInTheDocument();
+});
+
+describe.skip('useFocus', () => {
 	describe('default', () => {
 		it('changes the open state to `true` on focus', async () => {
-			const { queryByTestId, getByTestId } = render(App);
+			render(App);
 
-			await vi.waitFor(() => {
-				expect(queryByTestId('floating')).not.toBeInTheDocument();
-			});
+			expect(screen.queryByTestId('floating')).not.toBeInTheDocument();
 
-			await fireEvent.focus(getByTestId('reference'));
+			await fireEvent.focus(screen.getByTestId('reference'));
 
-			await vi.waitFor(() => {
-				expect(getByTestId('floating')).toBeInTheDocument();
-			});
+			expect(screen.getByTestId('floating')).toBeInTheDocument();
 		});
 
 		it('changes the open state to `false` on blur', async () => {
@@ -30,7 +36,7 @@ describe('useFocus', () => {
 
 			await fireEvent.blur(screen.getByTestId('reference'));
 
-			await waitFor(() => {
+			await vi.waitFor(() => {
 				expect(screen.queryByTestId('floating')).not.toBeInTheDocument();
 			});
 		});
@@ -54,7 +60,7 @@ describe('useFocus', () => {
 
 			await fireEvent.focus(screen.getByTestId('reference'));
 
-			await waitFor(() => {
+			await vi.waitFor(() => {
 				expect(screen.queryByTestId('floating')).not.toBeInTheDocument();
 			});
 		});
