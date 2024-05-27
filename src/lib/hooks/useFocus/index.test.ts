@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import App from './App.test.svelte';
@@ -7,12 +7,16 @@ describe('useFocus', () => {
 	describe('default', () => {
 		it('changes the open state to `true` on focus', async () => {
 			const { queryByTestId, getByTestId } = render(App);
-			
-			expect(queryByTestId('floating')).not.toBeInTheDocument();
+
+			await vi.waitFor(() => {
+				expect(queryByTestId('floating')).not.toBeInTheDocument();
+			});
 
 			await fireEvent.focus(getByTestId('reference'));
 
-			expect(getByTestId('floating')).toBeInTheDocument();
+			await vi.waitFor(() => {
+				expect(queryByTestId('floating')).toBeInTheDocument();
+			});
 		});
 
 		it('changes the open state to `false` on blur', async () => {
