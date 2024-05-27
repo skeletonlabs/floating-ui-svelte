@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/svelte/svelte5';
+import { render, screen, fireEvent, waitFor } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import App from './App.test.svelte';
 
