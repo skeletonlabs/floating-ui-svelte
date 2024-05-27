@@ -7,12 +7,12 @@ describe('useFocus', () => {
 	describe('default', () => {
 		it('changes the open state to `true` on focus', async () => {
 			const { queryByTestId, getByTestId } = render(App);
-
+			
 			expect(queryByTestId('floating')).not.toBeInTheDocument();
 
 			await fireEvent.focus(getByTestId('reference'));
 
-			expect(queryByTestId('floating')).toBeInTheDocument();
+			expect(getByTestId('floating')).toBeInTheDocument();
 		});
 
 		it('changes the open state to `false` on blur', async () => {
