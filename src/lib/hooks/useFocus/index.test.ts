@@ -15,7 +15,7 @@ describe('useFocus', () => {
 			await fireEvent.focus(getByTestId('reference'));
 
 			await vi.waitFor(() => {
-				expect(queryByTestId('floating')).toBeInTheDocument();
+				expect(getByTestId('floating')).toBeInTheDocument();
 			});
 		});
 
