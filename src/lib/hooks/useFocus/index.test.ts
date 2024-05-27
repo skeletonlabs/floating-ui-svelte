@@ -6,13 +6,13 @@ import App from './App.test.svelte';
 describe('useFocus', () => {
 	describe('default', () => {
 		it('changes the open state to `true` on focus', async () => {
-			render(App);
+			const { queryByTestId, getByTestId } = render(App);
 
-			expect(screen.queryByTestId('floating')).not.toBeInTheDocument();
+			expect(queryByTestId('floating')).not.toBeInTheDocument();
 
-			await fireEvent.focus(screen.getByTestId('reference'));
+			await fireEvent.focus(getByTestId('reference'));
 
-			expect(screen.getByTestId('floating')).toBeInTheDocument();
+			expect(queryByTestId('floating')).toBeInTheDocument();
 		});
 
 		it('changes the open state to `false` on blur', async () => {
