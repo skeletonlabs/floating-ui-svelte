@@ -9,7 +9,7 @@
 
 	let element: HTMLElement | null = $state(null);
 
-	$effect(() => {
+	$effect.pre(() => {
 		const target = document.querySelector('[data-portal-target]');
 		if (element === null || target === null) {
 			return;
@@ -18,10 +18,10 @@
 		target.appendChild(element);
 
 		return () => {
-			if (!element) {
+			if (element === null) {
 				return;
 			}
-			(element?.parentNode ?? target).removeChild(element);
+			element.remove();
 		};
 	});
 </script>
