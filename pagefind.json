@@ -1,0 +1,9 @@
+{
+	"site": "build",
+	"exclude_selectors": [".expressive-code"],
+	"vite_plugin_pagefind": {
+		"assets_dir": "static",
+		"build_command": "pnpm build:docs",
+		"dev_strategy": "lazy"
+	}
+}

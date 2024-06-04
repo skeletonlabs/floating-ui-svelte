@@ -11,10 +11,6 @@
 
 	let { open = false, ...useDismissOptions }: Props = $props();
 
-	const elements: { reference: HTMLElement | null; floating: HTMLElement | null } = $state({
-		reference: null,
-		floating: null,
-	});
 	const floating = useFloating({
 		whileElementsMounted: autoUpdate,
 		get open() {
@@ -23,25 +19,23 @@
 		onOpenChange(v) {
 			open = v;
 		},
-		elements,
 	});
 
 	const dismiss = useDismiss(floating.context, useDismissOptions);
-
 	const interactions = useInteractions([dismiss]);
 </script>
 
-<div data-testid="reference" bind:this={elements.reference} {...interactions.getReferenceProps()}>
-	Reference
-</div>
+<button
+	data-testid="reference"
+	bind:this={floating.elements.reference}
+	{...interactions.getReferenceProps()}
+></button>
 
 {#if open}
 	<div
 		data-testid="floating"
-		bind:this={elements.floating}
+		bind:this={floating.elements.floating}
 		style={floating.floatingStyles}
 		{...interactions.getFloatingProps()}
-	>
-		Floating
-	</div>
+	></div>
 {/if}

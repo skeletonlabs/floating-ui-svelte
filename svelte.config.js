@@ -6,7 +6,10 @@ import { readFileSync } from 'node:fs';
 const config = {
 	preprocess: [vitePreprocess()],
 	kit: {
-		adapter: adapter(),
+		adapter: adapter({
+			pages: 'build',
+			assets: 'build',
+		}),
 		alias: {
 			$docs: './src/docs',
 			'@skeletonlabs/floating-ui-svelte': './src/lib/index.js',

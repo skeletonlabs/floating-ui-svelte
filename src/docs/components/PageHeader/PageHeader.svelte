@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { version } from '$app/environment';
-	import { drawer } from '$docs/stores.svelte';
 
 	// Icons
 	import IconMenu from 'lucide-svelte/icons/menu';
+	import SearchDialog from '../Dialog/SearchDialog.svelte';
+	import { getDrawer } from '$docs/stores.svelte.js';
+
+	const drawer = getDrawer();
 </script>
 
 <header
@@ -11,11 +14,16 @@
 >
 	<div class="container mx-auto flex justify-between gap-4 p-4 lg:px-32">
 		<div class="flex items-center gap-4">
-			<button type="button" class="inline-block lg:hidden" onclick={() => drawer.toggle()}>
+			<button
+				type="button"
+				class="inline-block lg:hidden"
+				onclick={() => (drawer.open = !drawer.open)}
+			>
 				<IconMenu />
 			</button>
 			<a href="/" class="font-bold">Floating UI Svelte</a>
 		</div>
+		<SearchDialog />
 		<div class="flex items-center gap-4">
 			<a
 				href="https://github.com/skeletonlabs/floating-ui-svelte"

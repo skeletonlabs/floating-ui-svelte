@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { screen, render } from '@testing-library/svelte/svelte5';
+import { screen, render } from '@testing-library/svelte';
 import { withEffect } from '$lib/utils/test.svelte.js';
 
 import FloatingArrow from './FloatingArrow.svelte';

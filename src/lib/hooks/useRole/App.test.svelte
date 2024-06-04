@@ -19,13 +19,11 @@
 	const interactions = useInteractions([role]);
 </script>
 
-<div
+<button
 	data-testid="reference"
 	bind:this={floating.elements.reference}
 	{...interactions.getReferenceProps()}
->
-	Reference
-</div>
+></button>
 
 {#if open}
 	<div
