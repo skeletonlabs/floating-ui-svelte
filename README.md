@@ -1,10 +1,12 @@
+![github-banner](https://github.com/skeletonlabs/floating-ui-svelte/assets/1509726/46b00221-9088-4986-86c8-60a480d9213f)
+
 # Floating UI Svelte
 
-A Floating UI wrapper for Svelte.
+Svelte bindings for [Floating UI](https://github.com/floating-ui/floating-ui). Based on [Floating UI React](https://floating-ui.com/docs/react).
 
 ## Attribution
 
-Based on [Floating UI](https://github.com/floating-ui/floating-ui) and [Floating UI React](https://floating-ui.com/docs/react). Maintained by [Hugo Korte](https://github.com/Hugos68), [Skeleton Labs](https://www.skeletonlabs.co/), and the [Svelte community](https://svelte.dev/).
+Maintained by [Hugo Korte](https://github.com/Hugos68), [Skeleton Labs](https://www.skeletonlabs.co/), and the [Svelte community](https://svelte.dev/).
 
 ## License
 

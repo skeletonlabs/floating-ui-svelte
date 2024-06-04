@@ -11,7 +11,7 @@
 		useInteractions,
 		useRole,
 		useDismiss,
-	} from '$lib/index.js';
+	} from '@skeletonlabs/floating-ui-svelte';
 
 	// State
 	let open = $state(false);
@@ -42,7 +42,7 @@
 	<button
 		bind:this={floating.elements.reference}
 		{...interactions.getReferenceProps()}
-		class="btn-cta"
+		class="btn-gradient"
 	>
 		Hover Me
 	</button>
@@ -52,14 +52,14 @@
 			bind:this={floating.elements.floating}
 			style={floating.floatingStyles}
 			{...interactions.getFloatingProps()}
-			class="floating bg-surface-500 text-white p-8 max-w-sm rounded shadow-xl"
+			class="floating popover-neutral"
 			transition:fade={{ duration: 200 }}
 		>
 			<p>
 				A <strong>floating element</strong> is one that floats on top of the UI without disrupting the
 				flow, like this one!
 			</p>
-			<FloatingArrow bind:ref={elemArrow} context={floating.context} class="fill-surface-500" />
+			<FloatingArrow bind:ref={elemArrow} context={floating.context} fill="#575969" />
 		</div>
 	{/if}
 </div>

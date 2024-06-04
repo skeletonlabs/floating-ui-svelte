@@ -55,7 +55,6 @@ const floating = useFloating({
 	<FloatingArrow
 		bind:this="{arrowRef}"
 		context="{floating.context}"
-		classes="fill-surface-500"
 	/>
 </div>
 		`}
