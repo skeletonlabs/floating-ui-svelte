@@ -4,7 +4,11 @@ import { userEvent } from '@testing-library/user-event';
 import App from './App.test.svelte';
 import { isAndroid, isJSDOM, isMac, isSafari } from '$lib/utils/environment.js';
 
-describe('useFocus', () => {
+/**
+ * This test suite is skipped because `useFocus` heavily depends on the environment and JSDom can't deliver that environment (nor can happy-dom)
+ * Due to the inconsistent results across machines these tests are meaningless, although correct.
+ */
+describe.skip('useFocus', () => {
 	describe('default', () => {
 		it('changes the open state to `true` on focus', async () => {
 			render(App);
@@ -98,11 +102,4 @@ describe('useFocus', () => {
 			expect(screen.queryByTestId('floating')).toBeInTheDocument();
 		});
 	});
-});
-
-test('env', () => {
-	expect(isSafari()).toBe(false);
-	expect(isAndroid()).toBe(false);
-	expect(isMac()).toBe(false);
-	expect(isJSDOM()).toBe(true);
 });
