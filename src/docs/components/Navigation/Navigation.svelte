@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { drawer } from '$docs/stores.svelte';
+	import { getDrawer } from '$docs/stores.svelte';
 	// Icons (Docs)
 	import IconGetStarted from 'lucide-svelte/icons/rocket';
 	// Icons (Examples)
@@ -53,9 +53,19 @@
 		},
 	];
 
+	const drawer = getDrawer();
+
 	// FIXME: Remove when Svelte 5 supports $page, see: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
 	// eslint-disable-next-line svelte/valid-compile
 	const navActive = (href: string) => $page.route.id?.replace('/(inner)', '') == href;
+
+	$effect(() => {
+		const close = () => (drawer.open = false);
+		window.addEventListener('resize', close);
+		return () => {
+			window.removeEventListener('resize', close);
+		};
+	});
 </script>
 
 <div
@@ -81,7 +91,7 @@
 								href={link.href}
 								class="grid grid-cols-[24px_1fr] items-center gap-4 rounded-tr-xl rounded-br-xl px-4 py-3 text-left hover:bg-surface-500/20"
 								class:nav-active={navActive(link.href)}
-								onclick={() => drawer.close()}
+								onclick={() => (drawer.open = false)}
 							>
 								<svelte:component this={link.icon} size={24} />
 								<span>{link.label}</span>
