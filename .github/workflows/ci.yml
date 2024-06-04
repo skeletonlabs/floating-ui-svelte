@@ -53,7 +53,7 @@ jobs:
           node-version: ${{ env.node_version }}
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --force
+        run: pnpm install
       - name: Run tests
         run: pnpm test
   build-docs:
