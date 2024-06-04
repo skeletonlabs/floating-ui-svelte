@@ -1,8 +1,8 @@
 import { isHTMLElement } from '@floating-ui/utils/dom';
 import { isTypeableElement } from '$lib/utils/is-typable-element.js';
-import { isMouseLikePointerType } from '$lib/utils/is-mouse-like-pointer-type.js';
 import type { FloatingContext } from '../useFloating/index.svelte.js';
 import type { ElementProps } from '../useInteractions/index.svelte.js';
+import { isMouseLikePointerType } from '$lib/utils/dom.js';
 
 interface UseClickOptions {
 	/**

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/svelte/svelte5';
+import { render, screen, fireEvent, act } from '@testing-library/svelte';
 import App from './App.test.svelte';
 
 vi.useFakeTimers();

@@ -12,6 +12,7 @@
 	import IconUseFloating from 'lucide-svelte/icons/cloud';
 	import IconUseInteractions from 'lucide-svelte/icons/pointer';
 	import IconUseHover from 'lucide-svelte/icons/square-mouse-pointer';
+	import IconUseFocus from 'lucide-svelte/icons/keyboard';
 	import IconUseClick from 'lucide-svelte/icons/mouse-pointer-2';
 	import IconUseRole from 'lucide-svelte/icons/person-standing';
 	import IconUseDismiss from 'lucide-svelte/icons/circle-x';
@@ -44,6 +45,7 @@
 				{ icon: IconUseFloating, href: '/api/use-floating', label: 'useFloating' },
 				{ icon: IconUseInteractions, href: '/api/use-interactions', label: 'useInteractions' },
 				{ icon: IconUseHover, href: '/api/use-hover', label: 'useHover' },
+				{ icon: IconUseFocus, href: '/api/use-focus', label: 'useFocus' },
 				{ icon: IconUseClick, href: '/api/use-click', label: 'useClick' },
 				{ icon: IconUseRole, href: '/api/use-role', label: 'useRole' },
 				{ icon: IconUseDismiss, href: '/api/use-dismiss', label: 'useDismiss' },

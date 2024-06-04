@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/svelte/svelte5';
+import { render, screen } from '@testing-library/svelte';
 import App from './App.test.svelte';
 
 describe('useRole', () => {

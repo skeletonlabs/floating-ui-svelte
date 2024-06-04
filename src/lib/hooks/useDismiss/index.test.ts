@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/svelte/svelte5';
+import { fireEvent, render, screen } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 import App from './App.test.svelte';
 

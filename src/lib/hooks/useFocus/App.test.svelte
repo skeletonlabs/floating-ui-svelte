@@ -1,23 +1,15 @@
-<!-- Component used to test `useClick` -->
+<!-- Component used to test `useHover` -->
 <script lang="ts">
 	import { autoUpdate } from '@floating-ui/dom';
-	import { useClick, type UseClickOptions } from './index.svelte.js';
 	import { useFloating } from '../useFloating/index.svelte.js';
 	import { useInteractions } from '../useInteractions/index.svelte.js';
-	import { useHover } from '../useHover/index.svelte.js';
+	import { useFocus, type UseFocusOptions } from './index.svelte.js';
 
-	interface Props extends UseClickOptions {
+	interface Props extends UseFocusOptions {
 		open?: boolean;
-		element?: string;
-		enableHover?: boolean;
 	}
 
-	let {
-		open = false,
-		element = 'button',
-		enableHover = false,
-		...useClickOptions
-	}: Props = $props();
+	let { open = false, ...useFocusOptions }: Props = $props();
 
 	const floating = useFloating({
 		whileElementsMounted: autoUpdate,
@@ -29,17 +21,15 @@
 		},
 	});
 
-	const click = useClick(floating.context, useClickOptions);
-	const hover = useHover(floating.context, { enabled: enableHover });
-	const interactions = useInteractions([click, hover]);
+	const focus = useFocus(floating.context, useFocusOptions);
+	const interactions = useInteractions([focus]);
 </script>
 
-<svelte:element
-	this={element}
+<button
 	data-testid="reference"
 	bind:this={floating.elements.reference}
 	{...interactions.getReferenceProps()}
-></svelte:element>
+></button>
 
 {#if open}
 	<div
