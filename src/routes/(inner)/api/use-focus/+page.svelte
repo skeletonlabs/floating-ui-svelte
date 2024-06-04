@@ -26,7 +26,7 @@
 			>, and then feed its result into the <code class="code">useInteractions()</code> array. The returned
 			prop getters are then spread onto the elements for rendering.
 		</p>
-		<CodeBlock code={ExampleRaw} lang="svelte" highlight={[2, 5, 6]} />
+		<CodeBlock code={ExampleRaw} lang="svelte" mark={[2, 5, 6]} />
 	</section>
 	<!-- Table: Options -->
 	<section class="space-y-8">
