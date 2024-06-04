@@ -1,5 +1,11 @@
 # @skeletonlabs/floating-ui-svelte
 
+## 0.3.0
+
+### Minor Changes
+
+- 8f4c7ef: feature: Added the useFocus hook
+
 ## 0.2.0
 
 ### Minor Changes
