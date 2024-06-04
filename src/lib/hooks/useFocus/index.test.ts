@@ -1,8 +1,7 @@
-import { describe, expect, it, test, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/svelte';
 import { userEvent } from '@testing-library/user-event';
 import App from './App.test.svelte';
-import { isAndroid, isJSDOM, isMac, isSafari } from '$lib/utils/environment.js';
 
 /**
  * This test suite is skipped because `useFocus` heavily depends on the environment and JSDom can't deliver that environment (nor can happy-dom)
