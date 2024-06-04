@@ -1,6 +1,7 @@
 <script lang="ts">
-	import Dialog from '../Dialog/Dialog.svelte';
+	import Dialog from './Dialog.svelte';
 	import SearchIcon from 'lucide-svelte/icons/search';
+	import LoaderIcon from 'lucide-svelte/icons/loader';
 	import { page } from '$app/stores';
 
 	let open = $state(false);
@@ -13,7 +14,7 @@
 
 		// FIXME: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
 		// eslint-disable-next-line svelte/valid-compile
-		const result = await $page.data.pagefind.search(query);
+		const result = await $page.data.pagefind.debouncedSearch(query, {}, 250);
 
 		if (result === null) {
 			return [];
@@ -56,30 +57,38 @@
 			/>
 			<SearchIcon class="absolute left-4 top-1/2 -translate-y-1/2" />
 		</div>
-		<div class="p-4 flex flex-col gap-1 max-h-[600px] overflow-auto min-h-[100px]" tabindex="-1">
-			{#await searchPromise then results}
-				{#if results.length > 0}
-					<p class="text-lg text-center">
-						Found {results.length}
-						{results.length === 1 ? 'result' : 'results'} for "{query}":
+		<div class="flex flex-col gap-1 p-4" tabindex="-1">
+			{#if query === ''}
+				<p class="text-lg text-center py-16">What can we help you find?</p>
+			{:else}
+				{#await searchPromise}
+					<p class="text-lg text-center py-16">
+						<LoaderIcon class="inline animate-spin" size={16} />
 					</p>
-					<nav>
-						<ul class="flex flex-col gap-4">
-							{#each results as result}
-								<li>
-									<a href={result.url.replace('.html', '')} class="text-xl font-semibold"
-										>{result.meta.title}</a
-									>
-									<!-- eslint-disable-next-line svelte/no-at-html-tags-->
-									<p class="text-sm line-clamp-2">{@html result.excerpt}</p>
-								</li>
-							{/each}
-						</ul>
-					</nav>
-				{:else if query !== ''}
-					<p class="text-lg text-center">No results found for "{query}"</p>
-				{/if}
-			{/await}
+				{:then results}
+					{#if results.length > 0}
+						<nav>
+							<ul class="space-y-4">
+								{#each results as result}
+									<li>
+										<a
+											href={result.url.replace('.html', '')}
+											class="block text-xl font-semibold hover:bg-surface-500 focus:bg-surface-500 transition p-1 rounded-md"
+										>
+											{result.meta.title}
+
+											<!-- eslint-disable-next-line svelte/no-at-html-tags-->
+											<p class="text-sm line-clamp-2">{@html result.excerpt}</p>
+										</a>
+									</li>
+								{/each}
+							</ul>
+						</nav>
+					{:else if query !== ''}
+						<p class="text-lg text-center py-16">No results found for "{query}"</p>
+					{/if}
+				{/await}
+			{/if}
 		</div>
 	</div>
 </Dialog>

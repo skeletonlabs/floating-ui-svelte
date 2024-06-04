@@ -3,7 +3,7 @@
 
 	// Icons
 	import IconMenu from 'lucide-svelte/icons/menu';
-	import SearchDialog from './SearchDialog.svelte';
+	import SearchDialog from '../Dialog/SearchDialog.svelte';
 	import { getDrawer } from '$docs/stores.svelte.js';
 
 	const drawer = getDrawer();

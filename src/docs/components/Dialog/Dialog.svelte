@@ -56,7 +56,7 @@
 	const classes = $derived(
 		{
 			drawer: `${commonClasses} top-0 left-0 right-0 bottom-0 h-screen w-fit max-w-[500px]`,
-			modal: `${commonClasses} top-4 md:top-[15%] left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[500px] rounded-md bg-surface-700`,
+			modal: `${commonClasses} top-4 md:top-[15%] left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[500px] rounded-md bg-surface-700 max-h-[75vh] max-w-[800px] overflow-auto`,
 		}[type],
 	);
 
