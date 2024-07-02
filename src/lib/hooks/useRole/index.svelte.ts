@@ -1,4 +1,3 @@
-import { Map as ReactiveMap } from 'svelte/reactivity';
 import type { FloatingContext } from '../useFloating/index.svelte.js';
 import type { ElementProps, ExtendedUserProps } from '../useInteractions/index.svelte.js';
 import { useId } from '../useId/index.js';
@@ -20,7 +19,7 @@ interface UseRoleOptions {
 	role?: AriaRole | ComponentRole;
 }
 
-const componentRoleToAriaRoleMap = new ReactiveMap<AriaRole | ComponentRole, AriaRole | false>([
+const componentRoleToAriaRoleMap = new Map<AriaRole | ComponentRole, AriaRole | false>([
 	['select', 'listbox'],
 	['combobox', 'listbox'],
 	['label', false],
