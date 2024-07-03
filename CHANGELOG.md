@@ -1,5 +1,11 @@
 # @skeletonlabs/floating-ui-svelte
 
+## 0.3.1
+
+### Patch Changes
+
+- 1064c7f: Patch: Svelte version bump
+
 ## 0.3.0
 
 ### Minor Changes
