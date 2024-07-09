@@ -22,7 +22,7 @@ We use [Changesets](https://github.com/changesets/changesets) to automatically c
 
 Please read and apply all [contribution requirements](https://github.com/skeletonlabs/floating-ui-svelte/blob/chore/main/CONTRIBUTING.md).
 
-- [ ] PR targets the `dev` branch (NEVER `master`)
+- [ ] PR targets the `main` branch
 - [ ] All website documentation is current with your changes
 - [ ] Ensure Prettier formatting is current - run `pnpm format`
 - [ ] Ensure ESLint linting is current - run `pnpm lint`

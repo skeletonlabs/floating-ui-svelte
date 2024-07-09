@@ -39,10 +39,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Merge main into dev after publish
-        if: steps.changesets.outputs.published == 'true'
-        run: |
-          git checkout dev
-          git merge main
-          git push
