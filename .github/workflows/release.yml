@@ -9,7 +9,6 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 env:
   node_version: 20
-  pnpm_version: 8
 
 jobs:
   release:
@@ -19,9 +18,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: pnpm/action-setup@v3
-        with:
-          version: ${{ env.pnpm_version }}
+      - uses: pnpm/action-setup@v4
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
