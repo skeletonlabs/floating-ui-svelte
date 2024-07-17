@@ -37,12 +37,7 @@ The floating UI Svelte project is built using SvelteKit to handle both the docum
 
 ## Branch
 
-Floating UI Svelte uses two primary branches. All pull requests should be created again the `dev` branch.
-
-| Branch | Description | Pull Requests |
-| --- | --- | --- |
-| `dev` | The development branch. | Allowed |
-| `main` | The release branch. | Never |
+All pull requests should be created against the `main` branch.
 
 ### PR Branch Conventions
 
