@@ -1,5 +1,6 @@
 import { svelte } from "@sveltejs/vite-plugin-svelte";
-import { defineConfig } from "vite";
+import { svelteTesting } from '@testing-library/svelte/vite'
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
 	build: {
@@ -7,5 +8,14 @@ export default defineConfig({
 		sourcemap: true,
 		outDir: "./dist",
 	},
-	plugins: [svelte()],
+	plugins: [svelte(), svelteTesting()],
+	test: {
+		include: ['./test/**/*.ts'],
+		exclude: ['./test/internal/**/*.ts'],
+		setupFiles: ['./test/internal/setup.ts'],
+		environment: 'jsdom',
+		coverage: {
+			reporter: ['text'],
+		}
+	}
 });
