@@ -1,5 +1,5 @@
 packages:
-  - '/packages/*'
+  - './packages/*'
 
 catalog:
   '@sveltejs/vite-plugin-svelte': ^5.0.0

@@ -5,10 +5,10 @@
 		"format": "biome format . --write",
 		"lint": "biome lint . --write",
 		"check": "biome check . --write",
-		"build": "pnpm --recursive build",
-		"build:watch": "pnpm --recursive build:watch",
-		"test": "pnpm --recursive test",
-		"test:watch": "pnpm --recursive test:watch"
+		"build": "pnpm -r build",
+		"build:watch": "pnpm -r build:watch",
+		"test": "pnpm -r test",
+		"test:watch": "pnpm -r test:watch"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
