@@ -1,14 +1,17 @@
 {
-  "name": "monorepo",
-  "private": true,
-  "scripts": {
-    "build": "pnpm --recursive build",
-    "build:watch": "pnpm --recursive build:watch",
-    "format": "biome format . --write",
-    "lint": "biome lint . --write",
-    "check": "biome check . --write"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^1.9.4"
-  }
+	"name": "monorepo",
+	"private": true,
+	"scripts": {
+		"format": "biome format . --write",
+		"lint": "biome lint . --write",
+		"check": "biome check . --write",
+		"build": "pnpm --recursive build",
+		"build:watch": "pnpm --recursive build:watch",
+		"test": "pnpm --recursive test",
+		"test:watch": "pnpm --recursive test:watch"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@changesets/cli": "^2.27.11"
+	}
 }
