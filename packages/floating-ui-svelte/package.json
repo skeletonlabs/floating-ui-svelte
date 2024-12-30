@@ -11,7 +11,6 @@
 		"svelte": ">=5.0.0"
 	},
 	"devDependencies": {
-		"@floating-ui/dom": "^1.6.12",
 		"@sveltejs/vite-plugin-svelte": "catalog:",
 		"csstype": "^3.1.3",
 		"typescript": "catalog:",
@@ -19,6 +18,7 @@
 		"vitest": "catalog:"
 	},
 	"dependencies": {
+		"@floating-ui/dom": "^1.6.12",
 		"@floating-ui/utils": "^0.2.8"
 	}
 }

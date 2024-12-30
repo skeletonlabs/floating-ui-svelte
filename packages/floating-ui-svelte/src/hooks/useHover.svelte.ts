@@ -412,4 +412,5 @@ function useHover(
 	};
 }
 
-export { useHover, type UseHoverOptions };
+export type { UseHoverOptions };
+export { useHover };

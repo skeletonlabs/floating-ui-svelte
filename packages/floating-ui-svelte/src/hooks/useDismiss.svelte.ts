@@ -424,4 +424,5 @@ function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
 	};
 }
 
-export { useDismiss, type UseDismissOptions };
+export type { UseDismissOptions };
+export { useDismiss };

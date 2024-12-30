@@ -178,4 +178,5 @@ function useFocus(context: FloatingContext, options: UseFocusOptions = {}) {
 	};
 }
 
-export { useFocus, type UseFocusOptions };
+export type { UseFocusOptions };
+export { useFocus };

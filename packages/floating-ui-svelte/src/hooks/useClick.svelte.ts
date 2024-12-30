@@ -178,4 +178,5 @@ function useClick(
 	};
 }
 
-export { useClick, type UseClickOptions };
+export type { UseClickOptions };
+export { useClick };

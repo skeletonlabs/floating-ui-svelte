@@ -61,9 +61,8 @@ function mergeProps<Key extends keyof ElementProps>(
 				}
 				for (const [key, value] of Object.entries(props)) {
 					if (isItem && [ACTIVE_KEY, SELECTED_KEY].includes(key)) {
-						return;
+						continue;
 					}
-
 					if (key.indexOf("on") === 0) {
 						if (!map.has(key)) {
 							map.set(key, []);
