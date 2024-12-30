@@ -1,10 +1,24 @@
 {
-  "name": "@skeletonlabs/floating-ui-svelte",
-  "version": "0.3.2",
-  "scripts": {
-    "build": "vitest build",
-    "build:watch": "vitest dev",
-    "test": "vitest run",
-    "test:watch": "vitest run --watch"
-  }
+	"name": "@skeletonlabs/floating-ui-svelte",
+	"version": "0.3.2",
+	"scripts": {
+		"build": "vitest build",
+		"build:watch": "vitest dev",
+		"test": "vitest run",
+		"test:watch": "vitest run --watch"
+	},
+	"peerDependencies": {
+		"svelte": ">=5.0.0"
+	},
+	"devDependencies": {
+		"@floating-ui/dom": "^1.6.12",
+		"@sveltejs/vite-plugin-svelte": "catalog:",
+		"csstype": "^3.1.3",
+		"typescript": "catalog:",
+		"vite": "catalog:",
+		"vitest": "catalog:"
+	},
+	"dependencies": {
+		"@floating-ui/utils": "^0.2.8"
+	}
 }
