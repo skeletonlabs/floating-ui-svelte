@@ -1,9 +1,9 @@
 <script lang="ts">
 import type { Alignment, Side } from "@floating-ui/dom";
 import { platform } from "@floating-ui/dom";
-import type { FloatingArrowProps } from "../internal/types.js";
 import { useId } from "../hooks/useId.js";
 import { styleObjectToString } from "../internal/style-object-to-string.js";
+import type { FloatingArrowProps } from "../internal/types.js";
 
 let {
 	ref = $bindable(null),

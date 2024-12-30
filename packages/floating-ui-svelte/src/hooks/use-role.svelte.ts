@@ -1,9 +1,9 @@
-import type { FloatingContext } from "./useFloating.svelte.js";
-import { useId } from "./useId.js";
+import type { FloatingContext } from "./use-floating.svelte.js";
+import { useId } from "./use-id.js";
 import type {
 	ElementProps,
 	ExtendedUserProps,
-} from "./useInteractions.svelte.js";
+} from "./use-interactions.svelte.js";
 
 type AriaRole =
 	| "tooltip"
@@ -13,6 +13,7 @@ type AriaRole =
 	| "listbox"
 	| "grid"
 	| "tree";
+
 type ComponentRole = "select" | "label" | "combobox";
 
 interface UseRoleOptions {

@@ -10,7 +10,7 @@ import {
 import { isMac, isSafari } from "../internal//environment.js";
 import { isTypeableElement } from "../internal//is-typable-element.js";
 import type { OpenChangeReason } from "../internal/types.js";
-import type { FloatingContext } from "./useFloating.svelte.js";
+import type { FloatingContext } from "./use-floating.svelte.js";
 
 interface UseFocusOptions {
 	/**
@@ -163,7 +163,7 @@ function useFocus(context: FloatingContext, options: UseFocusOptions = {}) {
 						// inside a shadow root.
 						if (
 							contains(floating, activeEl) ||
-							// @ts-expect-error - FIXME
+							// @ts-expect-error FIXME
 							contains(reference, activeEl) ||
 							movedToFocusGuard
 						) {

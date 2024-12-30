@@ -1,8 +1,8 @@
 import { isHTMLElement } from "@floating-ui/utils/dom";
 import { isMouseLikePointerType } from "../internal/dom.js";
 import { isTypeableElement } from "../internal/is-typable-element.js";
-import type { FloatingContext } from "./useFloating.svelte.js";
-import type { ElementProps } from "./useInteractions.svelte.js";
+import type { FloatingContext } from "./use-floating.svelte.js";
+import type { ElementProps } from "./use-interactions.svelte.js";
 
 interface UseClickOptions {
 	/**
@@ -138,7 +138,7 @@ function useClick(
 					) {
 						return;
 					}
-					// @ts-expect-error - Fix types
+					// @ts-expect-error FIXME
 					if (event.key === " " && !isSpaceIgnored(reference)) {
 						// Prevent scrolling
 						event.preventDefault();
@@ -158,7 +158,7 @@ function useClick(
 						event.defaultPrevented ||
 						!keyboardHandlers ||
 						isButtonTarget(event) ||
-						// @ts-expect-error - Fix types
+						// @ts-expect-error FIXME
 						isSpaceIgnored(reference)
 					) {
 						return;
