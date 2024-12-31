@@ -1,6 +1,6 @@
 <script lang="ts">
 import { page } from "$app/stores";
-import Logo from "$docs/components/Logo/Logo.svelte";
+import Logo from "$lib/components/Logo/Logo.svelte";
 
 // FIXME: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
 // eslint-disable-next-line svelte/valid-compile

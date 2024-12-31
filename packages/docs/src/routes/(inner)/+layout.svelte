@@ -1,8 +1,8 @@
 <script lang="ts">
 // Components
-import Navigation from "$docs/components/Navigation/Navigation.svelte";
-import PageFooter from "$docs/components/PageFooter/PageFooter.svelte";
-import PageHeader from "$docs/components/PageHeader/PageHeader.svelte";
+import Navigation from "$lib/components/Navigation/Navigation.svelte";
+import PageFooter from "$lib/components/PageFooter/PageFooter.svelte";
+import PageHeader from "$lib/components/PageHeader/PageHeader.svelte";
 
 // Props
 let { children } = $props();

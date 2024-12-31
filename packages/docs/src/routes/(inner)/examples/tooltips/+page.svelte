@@ -1,6 +1,6 @@
 <script lang="ts">
-import CodeBlock from "$docs/components/CodeBlock/CodeBlock.svelte";
-import Preview from "$docs/components/Preview/Preview.svelte";
+import CodeBlock from "$lib/components/CodeBlock/CodeBlock.svelte";
+import Preview from "$lib/components/Preview/Preview.svelte";
 import Example from "./Example.svelte";
 import exampleCode from "./Example.svelte?raw";
 </script>

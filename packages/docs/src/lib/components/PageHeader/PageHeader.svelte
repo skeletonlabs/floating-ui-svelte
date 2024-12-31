@@ -1,7 +1,7 @@
 <script lang="ts">
 import { version } from "$app/environment";
 
-import { getDrawer } from "$docs/stores.svelte.js";
+import { getDrawer } from "$lib/stores.svelte.js";
 // Icons
 import IconMenu from "lucide-svelte/icons/menu";
 import SearchDialog from "../Dialog/SearchDialog.svelte";

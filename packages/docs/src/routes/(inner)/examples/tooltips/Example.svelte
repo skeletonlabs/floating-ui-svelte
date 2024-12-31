@@ -23,7 +23,9 @@ const floating = useFloating({
 	get open() {
 		return open;
 	},
-	onOpenChange: (v) => (open = v),
+	onOpenChange: (v) => (v) => {
+		open = v;
+	},
 	placement: "top",
 	get middleware() {
 		return [offset(10), flip(), elemArrow && arrow({ element: elemArrow })];

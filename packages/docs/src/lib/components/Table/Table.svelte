@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { TableData } from "$docs/types.js";
+import type { TableData } from "$lib/types.js";
 interface Props {
 	data: TableData[];
 }

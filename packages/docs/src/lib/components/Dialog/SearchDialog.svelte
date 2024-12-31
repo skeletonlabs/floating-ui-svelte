@@ -1,5 +1,5 @@
 <script lang="ts">
-import { page } from "$app/stores";
+import { page } from "$app/state";
 import LoaderIcon from "lucide-svelte/icons/loader";
 import SearchIcon from "lucide-svelte/icons/search";
 import Dialog from "./Dialog.svelte";
@@ -11,15 +11,10 @@ const searchPromise = $derived.by(async () => {
 	if (query === "") {
 		return [];
 	}
-
-	// FIXME: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
-	// eslint-disable-next-line svelte/valid-compile
-	const result = await $page.data.pagefind.debouncedSearch(query, {}, 250);
-
+	const result = await page.data.pagefind.debouncedSearch(query, {}, 250);
 	if (result === null) {
 		return [];
 	}
-
 	return await Promise.all(result.results.map((result) => result.data()));
 });
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-import CodeBlock from "$docs/components/CodeBlock/CodeBlock.svelte";
+import CodeBlock from "$lib/components/CodeBlock/CodeBlock.svelte";
 import SsrRaw from "./ExampleSsr.svelte?raw";
 </script>
 

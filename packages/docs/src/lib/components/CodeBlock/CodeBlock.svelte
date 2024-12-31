@@ -1,6 +1,6 @@
 <script lang="ts">
-import { page } from "$app/stores";
-import MoonlightDark from "$docs/themes/moonlight-dark.json";
+import { page } from "$app/state";
+import MoonlightDark from "$lib/themes/moonlight-dark.json";
 import type { BuiltinLanguage, SpecialLanguage } from "shiki";
 
 interface Props {
@@ -24,9 +24,7 @@ const highlightedLineNumbers = $derived(
 
 // Process Language
 const renderedCode = $derived(
-	// FIXME: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
-	// eslint-disable-next-line svelte/valid-compile
-	$page.data.highlighter.codeToHtml(code.trim(), {
+	page.data.highlighter.codeToHtml(code.trim(), {
 		lang,
 		themes: {
 			// @ts-expect-error - Shiki theme type is annoyingly strict

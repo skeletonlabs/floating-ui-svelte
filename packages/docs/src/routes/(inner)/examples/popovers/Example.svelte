@@ -23,7 +23,7 @@ const floating = useFloating({
 	get open() {
 		return open;
 	},
-	onOpenChange(v) => {
+	onOpenChange: (v) => {
 		open = v;
 	},
 	placement: "top",

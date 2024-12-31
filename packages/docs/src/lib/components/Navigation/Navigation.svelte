@@ -1,8 +1,8 @@
 <script lang="ts">
-import { page } from "$app/stores";
+import { page } from "$app/state";
 // Components
-import Logo from "$docs/components/Logo/Logo.svelte";
-import { getDrawer } from "$docs/stores.svelte";
+import Logo from "$lib/components/Logo/Logo.svelte";
+import { getDrawer } from "$lib/stores.svelte";
 import IconUseDismiss from "lucide-svelte/icons/circle-x";
 // Icons (API)
 import IconUseFloating from "lucide-svelte/icons/cloud";
@@ -20,6 +20,7 @@ import IconContextMenus from "lucide-svelte/icons/square-menu";
 import IconUseHover from "lucide-svelte/icons/square-mouse-pointer";
 import IconFloatingArrow from "lucide-svelte/icons/triangle";
 import IconUtils from "lucide-svelte/icons/wand-sparkles";
+import { on } from "svelte/events";
 
 // Props
 let { classes = "" } = $props();
@@ -30,7 +31,7 @@ const navigation = [
 		label: "Docs",
 		links: [
 			{
-				icon: IconGetStarted,
+				Icon: IconGetStarted,
 				href: "/docs/getting-started",
 				label: "Getting Started",
 			},
@@ -39,11 +40,11 @@ const navigation = [
 	{
 		label: "Examples",
 		links: [
-			{ icon: IconTooltips, href: "/examples/tooltips", label: "Tooltips" },
-			{ icon: IconPopovers, href: "/examples/popovers", label: "Popovers" },
-			{ icon: IconModals, href: "/examples/modals", label: "Modals" },
+			{ Icon: IconTooltips, href: "/examples/tooltips", label: "Tooltips" },
+			{ Icon: IconPopovers, href: "/examples/popovers", label: "Popovers" },
+			{ Icon: IconModals, href: "/examples/modals", label: "Modals" },
 			{
-				icon: IconContextMenus,
+				Icon: IconContextMenus,
 				href: "/examples/context-menus",
 				label: "Context Menus",
 			},
@@ -53,43 +54,39 @@ const navigation = [
 		label: "API Reference",
 		links: [
 			{
-				icon: IconUseFloating,
+				Icon: IconUseFloating,
 				href: "/api/use-floating",
 				label: "useFloating",
 			},
 			{
-				icon: IconUseInteractions,
+				Icon: IconUseInteractions,
 				href: "/api/use-interactions",
 				label: "useInteractions",
 			},
-			{ icon: IconUseHover, href: "/api/use-hover", label: "useHover" },
-			{ icon: IconUseFocus, href: "/api/use-focus", label: "useFocus" },
-			{ icon: IconUseClick, href: "/api/use-click", label: "useClick" },
-			{ icon: IconUseRole, href: "/api/use-role", label: "useRole" },
-			{ icon: IconUseDismiss, href: "/api/use-dismiss", label: "useDismiss" },
+			{ Icon: IconUseHover, href: "/api/use-hover", label: "useHover" },
+			{ Icon: IconUseFocus, href: "/api/use-focus", label: "useFocus" },
+			{ Icon: IconUseClick, href: "/api/use-click", label: "useClick" },
+			{ Icon: IconUseRole, href: "/api/use-role", label: "useRole" },
+			{ Icon: IconUseDismiss, href: "/api/use-dismiss", label: "useDismiss" },
 			{
-				icon: IconFloatingArrow,
+				Icon: IconFloatingArrow,
 				href: "/api/floating-arrow",
 				label: "Floating Arrow",
 			},
-			{ icon: IconUtils, href: "/api/utilities", label: "Utilities" },
+			{ Icon: IconUtils, href: "/api/utilities", label: "Utilities" },
 		],
 	},
-];
+] as const;
 
 const drawer = getDrawer();
 
-// FIXME: Remove when Svelte 5 supports $page, see: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
-// eslint-disable-next-line svelte/valid-compile
 const navActive = (href: string) =>
-	$page.route.id?.replace("/(inner)", "") === href;
+	page.route.id?.replace("/(inner)", "") === href;
 
 $effect(() => {
-	const close = () => (drawer.open = false);
-	window.addEventListener("resize", close);
-	return () => {
-		window.removeEventListener("resize", close);
-	};
+	return on(window, "resize", () => {
+		drawer.open = false;
+	});
 });
 </script>
 
@@ -118,7 +115,7 @@ $effect(() => {
 								class:nav-active={navActive(link.href)}
 								onclick={() => (drawer.open = false)}
 							>
-								<svelte:component this={link.icon} size={24} />
+								<link.Icon size={24}></link.Icon>
 								<span>{link.label}</span>
 							</a>
 						</li>

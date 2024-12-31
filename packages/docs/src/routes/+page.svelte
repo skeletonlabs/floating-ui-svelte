@@ -1,8 +1,8 @@
 <script lang="ts">
-import Logo from "$docs/components/Logo/Logo.svelte";
-import PageFooter from "$docs/components/PageFooter/PageFooter.svelte";
+import Logo from "$lib/components/Logo/Logo.svelte";
+import PageFooter from "$lib/components/PageFooter/PageFooter.svelte";
 // Components
-import PageHeader from "$docs/components/PageHeader/PageHeader.svelte";
+import PageHeader from "$lib/components/PageHeader/PageHeader.svelte";
 import IconArrowRight from "lucide-svelte/icons/arrow-right";
 // Icons
 import IconAlert from "lucide-svelte/icons/triangle-alert";
