@@ -15,7 +15,7 @@ importers:
         specifier: ^2.27.11
         version: 2.27.11
 
-  packages/documentation:
+  packages/docs:
     dependencies:
       '@tailwindcss/forms':
         specifier: ^0.5.9
