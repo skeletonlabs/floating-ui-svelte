@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { useFloating } from '@skeletonlabs/floating-ui-svelte';
+import { useFloating } from "@skeletonlabs/floating-ui-svelte";
 
-	const floating = useFloating();
+const floating = useFloating();
 </script>
 
 <!-- Floating element is always rendered -->

@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { version } from '$app/environment';
+import { version } from "$app/environment";
 
-	// Icons
-	import IconMenu from 'lucide-svelte/icons/menu';
-	import SearchDialog from '../Dialog/SearchDialog.svelte';
-	import { getDrawer } from '$docs/stores.svelte.js';
+import { getDrawer } from "$docs/stores.svelte.js";
+// Icons
+import IconMenu from "lucide-svelte/icons/menu";
+import SearchDialog from "../Dialog/SearchDialog.svelte";
 
-	const drawer = getDrawer();
+const drawer = getDrawer();
 </script>
 
 <header

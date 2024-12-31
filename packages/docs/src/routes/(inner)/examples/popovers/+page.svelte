@@ -1,8 +1,8 @@
 <script>
-	import CodeBlock from '$docs/components/CodeBlock/CodeBlock.svelte';
-	import Preview from '$docs/components/Preview/Preview.svelte';
-	import Example from './Example.svelte';
-	import ExampleRaw from './Example.svelte?raw';
+import CodeBlock from "$docs/components/CodeBlock/CodeBlock.svelte";
+import Preview from "$docs/components/Preview/Preview.svelte";
+import Example from "./Example.svelte";
+import ExampleRaw from "./Example.svelte?raw";
 </script>
 
 <div class="space-y-10">

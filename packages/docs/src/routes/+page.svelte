@@ -1,11 +1,11 @@
 <script lang="ts">
-	// Components
-	import PageHeader from '$docs/components/PageHeader/PageHeader.svelte';
-	import Logo from '$docs/components/Logo/Logo.svelte';
-	import PageFooter from '$docs/components/PageFooter/PageFooter.svelte';
-	// Icons
-	import IconAlert from 'lucide-svelte/icons/triangle-alert';
-	import IconArrowRight from 'lucide-svelte/icons/arrow-right';
+import Logo from "$docs/components/Logo/Logo.svelte";
+import PageFooter from "$docs/components/PageFooter/PageFooter.svelte";
+// Components
+import PageHeader from "$docs/components/PageHeader/PageHeader.svelte";
+import IconArrowRight from "lucide-svelte/icons/arrow-right";
+// Icons
+import IconAlert from "lucide-svelte/icons/triangle-alert";
 </script>
 
 <div class="h-screen space-y-10">

@@ -1,66 +1,64 @@
 <script lang="ts">
-	import MoonlightDark from '$docs/themes/moonlight-dark.json';
-	import { page } from '$app/stores';
-	import type { BuiltinLanguage, SpecialLanguage } from 'shiki';
+import { page } from "$app/stores";
+import MoonlightDark from "$docs/themes/moonlight-dark.json";
+import type { BuiltinLanguage, SpecialLanguage } from "shiki";
 
-	interface Props {
-		code: string;
-		lang: BuiltinLanguage | SpecialLanguage;
-		mark?: Array<number | [number, number]>;
-	}
+interface Props {
+	code: string;
+	lang: BuiltinLanguage | SpecialLanguage;
+	mark?: Array<number | [number, number]>;
+}
 
-	// Props
-	let { code, lang = 'text', mark = [] }: Props = $props();
+// Props
+let { code, lang = "text", mark = [] }: Props = $props();
 
-	const highlightedLineNumbers = $derived(
-		mark
-			.map((mark) => {
-				if (Array.isArray(mark)) {
-					const [start, end] = mark;
-					return Array.from({ length: end - start + 1 }, (_, i) => start + i);
-				}
-				return mark;
-			})
-			.flat(),
-	);
+const highlightedLineNumbers = $derived(
+	mark.flatMap((mark) => {
+		if (Array.isArray(mark)) {
+			const [start, end] = mark;
+			return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+		}
+		return mark;
+	}),
+);
 
-	// Process Language
-	const renderedCode = $derived(
-		// FIXME: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
-		// eslint-disable-next-line svelte/valid-compile
-		$page.data.highlighter.codeToHtml(code.trim(), {
-			lang,
-			themes: {
-				// @ts-expect-error - Shiki theme type is annoyingly strict
-				dark: MoonlightDark,
-				// @ts-expect-error - Shiki theme type is annoyingly strict
-				light: MoonlightDark,
-			},
-			transformers: [
-				/**
-				 * This transformer adds the `highlighted` class to lines that are to be highlighted.
-				 */
-				{
-					line(node, lineNumber) {
-						if (!highlightedLineNumbers.includes(lineNumber)) {
-							return;
-						}
-						this.addClassToHast(node, 'highlighted');
-					},
+// Process Language
+const renderedCode = $derived(
+	// FIXME: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
+	// eslint-disable-next-line svelte/valid-compile
+	$page.data.highlighter.codeToHtml(code.trim(), {
+		lang,
+		themes: {
+			// @ts-expect-error - Shiki theme type is annoyingly strict
+			dark: MoonlightDark,
+			// @ts-expect-error - Shiki theme type is annoyingly strict
+			light: MoonlightDark,
+		},
+		transformers: [
+			/**
+			 * This transformer adds the `highlighted` class to lines that are to be highlighted.
+			 */
+			{
+				line(node, lineNumber) {
+					if (!highlightedLineNumbers.includes(lineNumber)) {
+						return;
+					}
+					this.addClassToHast(node, "highlighted");
 				},
-			],
-		}),
-	);
+			},
+		],
+	}),
+);
 
-	// Sets the language badge color
-	function setLangCss() {
-		let color = 'bg-surface-500 text-white';
-		if (lang === 'html') color = 'bg-orange-700 text-white';
-		if (lang === 'css') color = 'bg-blue-700 text-white';
-		if (['ts', 'js'].includes(lang)) color = 'bg-yellow-400 text-black';
-		if (lang === 'svelte') color = 'bg-orange-700 text-white';
-		return color;
-	}
+// Sets the language badge color
+function setLangCss() {
+	let color = "bg-surface-500 text-white";
+	if (lang === "html") color = "bg-orange-700 text-white";
+	if (lang === "css") color = "bg-blue-700 text-white";
+	if (["ts", "js"].includes(lang)) color = "bg-yellow-400 text-black";
+	if (lang === "svelte") color = "bg-orange-700 text-white";
+	return color;
+}
 </script>
 
 <!-- eslint-disable svelte/no-at-html-tags -->

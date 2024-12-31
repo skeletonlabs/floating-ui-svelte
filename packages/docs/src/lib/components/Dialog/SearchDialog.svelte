@@ -1,42 +1,42 @@
 <script lang="ts">
-	import Dialog from './Dialog.svelte';
-	import SearchIcon from 'lucide-svelte/icons/search';
-	import LoaderIcon from 'lucide-svelte/icons/loader';
-	import { page } from '$app/stores';
+import { page } from "$app/stores";
+import LoaderIcon from "lucide-svelte/icons/loader";
+import SearchIcon from "lucide-svelte/icons/search";
+import Dialog from "./Dialog.svelte";
 
-	let open = $state(false);
-	let query = $state('');
+let open = $state(false);
+let query = $state("");
 
-	const searchPromise = $derived.by(async () => {
-		if (query === '') {
-			return [];
+const searchPromise = $derived.by(async () => {
+	if (query === "") {
+		return [];
+	}
+
+	// FIXME: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
+	// eslint-disable-next-line svelte/valid-compile
+	const result = await $page.data.pagefind.debouncedSearch(query, {}, 250);
+
+	if (result === null) {
+		return [];
+	}
+
+	return await Promise.all(result.results.map((result) => result.data()));
+});
+
+$effect(() => {
+	function onKeydown(event: KeyboardEvent) {
+		if (event.key === "k" && (event.ctrlKey || event.metaKey)) {
+			event.preventDefault();
+			open = true;
 		}
+	}
 
-		// FIXME: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
-		// eslint-disable-next-line svelte/valid-compile
-		const result = await $page.data.pagefind.debouncedSearch(query, {}, 250);
+	document.addEventListener("keydown", onKeydown);
 
-		if (result === null) {
-			return [];
-		}
-
-		return await Promise.all(result.results.map((result) => result.data()));
-	});
-
-	$effect(() => {
-		function onKeydown(event: KeyboardEvent) {
-			if (event.key === 'k' && (event.ctrlKey || event.metaKey)) {
-				event.preventDefault();
-				open = true;
-			}
-		}
-
-		document.addEventListener('keydown', onKeydown);
-
-		return () => {
-			document.removeEventListener('keydown', onKeydown);
-		};
-	});
+	return () => {
+		document.removeEventListener("keydown", onKeydown);
+	};
+});
 </script>
 
 <button

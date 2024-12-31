@@ -1,9 +1,13 @@
 <script lang="ts">
-	import { useFloating, useInteractions, useFocus } from '@skeletonlabs/floating-ui-svelte';
+import {
+	useFloating,
+	useFocus,
+	useInteractions,
+} from "@skeletonlabs/floating-ui-svelte";
 
-	const floating = useFloating();
-	const focus = useFocus(floating.context);
-	const interactions = useInteractions([focus]);
+const floating = useFloating();
+const focus = useFocus(floating.context);
+const interactions = useInteractions([focus]);
 </script>
 
 <!-- Reference Element -->

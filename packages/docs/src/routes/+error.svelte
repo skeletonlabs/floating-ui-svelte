@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import Logo from '$docs/components/Logo/Logo.svelte';
+import { page } from "$app/stores";
+import Logo from "$docs/components/Logo/Logo.svelte";
 
-	// FIXME: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
-	// eslint-disable-next-line svelte/valid-compile
-	const status = $derived($page.status);
-	// eslint-disable-next-line svelte/valid-compile
-	const message = $derived($page.error ? $page.error.message : 'Unknown error');
+// FIXME: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
+// eslint-disable-next-line svelte/valid-compile
+const status = $derived($page.status);
+// eslint-disable-next-line svelte/valid-compile
+const message = $derived($page.error ? $page.error.message : "Unknown error");
 </script>
 
 <svelte:head>

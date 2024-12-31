@@ -1,7 +1,7 @@
 <script lang="ts">
-	import CodeBlock from '$docs/components/CodeBlock/CodeBlock.svelte';
-	import Table from '$docs/components/Table/Table.svelte';
-	import { tableOptions, tableReturns } from './data.js';
+import CodeBlock from "$docs/components/CodeBlock/CodeBlock.svelte";
+import Table from "$docs/components/Table/Table.svelte";
+import { tableOptions, tableReturns } from "./data.js";
 </script>
 
 <div class="space-y-10">

@@ -1,19 +1,20 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
+import type { Snippet } from "svelte";
 
-	interface PreviewProps {
-		preview: Snippet;
-		code: Snippet;
-	}
+interface PreviewProps {
+	preview: Snippet;
+	code: Snippet;
+}
 
-	let { preview, code }: PreviewProps = $props();
+let { preview, code }: PreviewProps = $props();
 
-	let activeTab = $state('preview');
-	const buttonBase = 'py-2 px-4 border-b-2 border-transparent hover:bg-surface-500/5';
+let activeTab = $state("preview");
+const buttonBase =
+	"py-2 px-4 border-b-2 border-transparent hover:bg-surface-500/5";
 
-	function setTab(v: string) {
-		activeTab = v;
-	}
+function setTab(v: string) {
+	activeTab = v;
+}
 </script>
 
 <figure class="space-y-4">

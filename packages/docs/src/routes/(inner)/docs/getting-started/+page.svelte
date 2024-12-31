@@ -1,6 +1,6 @@
 <script lang="ts">
-	import CodeBlock from '$docs/components/CodeBlock/CodeBlock.svelte';
-	import SsrRaw from './ExampleSsr.svelte?raw';
+import CodeBlock from "$docs/components/CodeBlock/CodeBlock.svelte";
+import SsrRaw from "./ExampleSsr.svelte?raw";
 </script>
 
 <div class="space-y-10">

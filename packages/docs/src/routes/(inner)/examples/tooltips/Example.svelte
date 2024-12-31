@@ -1,40 +1,40 @@
 <script lang="ts">
-	import { fade } from 'svelte/transition';
-	import {
-		autoUpdate,
-		offset,
-		flip,
-		arrow,
-		useFloating,
-		FloatingArrow,
-		useHover,
-		useInteractions,
-		useRole,
-		useDismiss,
-	} from '@skeletonlabs/floating-ui-svelte';
+import {
+	FloatingArrow,
+	arrow,
+	autoUpdate,
+	flip,
+	offset,
+	useDismiss,
+	useFloating,
+	useHover,
+	useInteractions,
+	useRole,
+} from "@skeletonlabs/floating-ui-svelte";
+import { fade } from "svelte/transition";
 
-	// State
-	let open = $state(false);
-	let elemArrow: HTMLElement | null = $state(null);
+// State
+let open = $state(false);
+let elemArrow: HTMLElement | null = $state(null);
 
-	// Use Floating
-	const floating = useFloating({
-		whileElementsMounted: autoUpdate,
-		get open() {
-			return open;
-		},
-		onOpenChange: (v) => (open = v),
-		placement: 'top',
-		get middleware() {
-			return [offset(10), flip(), elemArrow && arrow({ element: elemArrow })];
-		},
-	});
+// Use Floating
+const floating = useFloating({
+	whileElementsMounted: autoUpdate,
+	get open() {
+		return open;
+	},
+	onOpenChange: (v) => (open = v),
+	placement: "top",
+	get middleware() {
+		return [offset(10), flip(), elemArrow && arrow({ element: elemArrow })];
+	},
+});
 
-	// Interactions
-	const role = useRole(floating.context, { role: 'tooltip' });
-	const hover = useHover(floating.context, { move: false });
-	const dismiss = useDismiss(floating.context);
-	const interactions = useInteractions([role, hover, dismiss]);
+// Interactions
+const role = useRole(floating.context, { role: "tooltip" });
+const hover = useHover(floating.context, { move: false });
+const dismiss = useDismiss(floating.context);
+const interactions = useInteractions([role, hover, dismiss]);
 </script>
 
 <div>

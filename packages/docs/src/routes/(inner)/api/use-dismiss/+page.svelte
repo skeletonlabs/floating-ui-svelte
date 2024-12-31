@@ -1,8 +1,8 @@
 <script lang="ts">
-	import CodeBlock from '$docs/components/CodeBlock/CodeBlock.svelte';
-	import ExampleRaw from './Example.svelte?raw';
-	import Table from '$docs/components/Table/Table.svelte';
-	import { tableOptions } from './data.js';
+import CodeBlock from "$docs/components/CodeBlock/CodeBlock.svelte";
+import Table from "$docs/components/Table/Table.svelte";
+import ExampleRaw from "./Example.svelte?raw";
+import { tableOptions } from "./data.js";
 </script>
 
 <div class="space-y-10">

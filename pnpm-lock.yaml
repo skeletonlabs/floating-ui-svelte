@@ -17,6 +17,9 @@ importers:
 
   packages/docs:
     dependencies:
+      '@skeletonlabs/floating-ui-svelte':
+        specifier: workspace:^
+        version: link:../floating-ui-svelte
       '@tailwindcss/forms':
         specifier: ^0.5.9
         version: 0.5.9(tailwindcss@3.4.17)

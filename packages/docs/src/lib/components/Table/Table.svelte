@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { TableData } from '$docs/types.js';
-	interface Props {
-		data: TableData[];
-	}
-	let { data }: Props = $props();
+import type { TableData } from "$docs/types.js";
+interface Props {
+	data: TableData[];
+}
+let { data }: Props = $props();
 </script>
 
 <div class="table-wrap">
