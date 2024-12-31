@@ -1,0 +1,5 @@
+pre-commit:
+  commands:
+    format:
+      glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc,svelte}"
+      run: pnpm format:check
