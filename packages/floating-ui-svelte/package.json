@@ -2,13 +2,13 @@
 	"name": "@skeletonlabs/floating-ui-svelte",
 	"version": "0.3.2",
 	"scripts": {
-		"build": "svelte-package",
-		"build:watch": "svelte-package --watch",
+		"build": "svelte-package --input ./src",
+		"build:watch": "pnpm build --watch",
 		"test": "vitest run",
-		"test:watch": "vitest run --watch"
+		"test:watch": "pnpm test --watch"
 	},
-	"files": ["dist", "!dist/**/*.test.*", "!dist/**/*.spec.*"],
-	"sideEffects": ["**/*.css"],
+	"files": ["dist"],
+	"sideEffects": false,
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"type": "module",

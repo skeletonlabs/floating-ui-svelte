@@ -12,7 +12,7 @@ import {
 	getTarget,
 	isEventTargetWithin,
 	isRootElement,
-} from "../internal//dom.js";
+} from "../internal/dom.js";
 import type { FloatingContext } from "./useFloating.svelte.js";
 
 const bubbleHandlerKeys = {

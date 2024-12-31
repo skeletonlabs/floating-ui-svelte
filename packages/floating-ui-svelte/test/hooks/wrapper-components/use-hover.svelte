@@ -1,11 +1,11 @@
 <script lang="ts">
 import { autoUpdate } from "@floating-ui/dom";
-import { useFloating } from "../../../src/lib/hooks/use-floating.svelte";
+import { useFloating } from "../../../src/hooks/use-floating.svelte";
 import {
 	type UseHoverOptions,
 	useHover,
-} from "../../../src/lib/hooks/use-hover.svelte";
-import { useInteractions } from "../../../src/lib/hooks/use-interactions.svelte.js";
+} from "../../../src/hooks/use-hover.svelte";
+import { useInteractions } from "../../../src/hooks/use-interactions.svelte.js";
 
 interface Props extends UseHoverOptions {
 	open?: boolean;

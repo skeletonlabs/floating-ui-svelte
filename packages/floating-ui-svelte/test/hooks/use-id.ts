@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, test } from "vitest";
-import { useId } from "../../src/lib/hooks/use-id.js";
+import { useId } from "../../src/hooks/use-id.js";
 
 describe("useId", () => {
 	test("returns an id", () => {

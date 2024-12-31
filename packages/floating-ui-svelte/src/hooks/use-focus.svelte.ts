@@ -6,9 +6,9 @@ import {
 	getDocument,
 	getTarget,
 	isVirtualPointerEvent,
-} from "../internal//dom.js";
-import { isMac, isSafari } from "../internal//environment.js";
-import { isTypeableElement } from "../internal//is-typable-element.js";
+} from "../internal/dom.js";
+import { isMac, isSafari } from "../internal/environment.js";
+import { isTypeableElement } from "../internal/is-typable-element.js";
 import type { OpenChangeReason } from "../internal/types.js";
 import type { FloatingContext } from "./use-floating.svelte.js";
 

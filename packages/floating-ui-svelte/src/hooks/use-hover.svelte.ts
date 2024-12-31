@@ -4,8 +4,8 @@ import {
 	createAttribute,
 	getDocument,
 	isMouseLikePointerType,
-} from "../internal//dom.js";
-import { noop } from "../internal//noop.js";
+} from "../internal/dom.js";
+import { noop } from "../internal/noop.js";
 import type { OpenChangeReason } from "../internal/types.js";
 import type { FloatingContext } from "./useFloating.svelte.js";
 import type { ElementProps } from "./useInteractions.svelte.js";

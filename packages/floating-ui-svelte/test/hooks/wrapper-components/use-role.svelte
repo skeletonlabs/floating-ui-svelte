@@ -1,11 +1,11 @@
 <script lang="ts">
 import { autoUpdate } from "@floating-ui/dom";
-import { useFloating } from "../../../src/lib/hooks/use-floating.svelte.js";
-import { useInteractions } from "../../../src/lib/hooks/use-interactions.svelte.js";
+import { useFloating } from "../../../src/hooks/use-floating.svelte.js";
+import { useInteractions } from "../../../src/hooks/use-interactions.svelte.js";
 import {
 	type UseRoleOptions,
 	useRole,
-} from "../../../src/lib/hooks/use-role.svelte.js";
+} from "../../../src/hooks/use-role.svelte.js";
 interface Props extends UseRoleOptions {
 	open?: boolean;
 }

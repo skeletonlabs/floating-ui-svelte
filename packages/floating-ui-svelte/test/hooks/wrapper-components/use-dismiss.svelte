@@ -3,9 +3,9 @@ import { autoUpdate } from "@floating-ui/dom";
 import {
 	type UseDismissOptions,
 	useDismiss,
-} from "../../../src/lib/hooks/use-dismiss.svelte";
-import { useFloating } from "../../../src/lib/hooks/use-floating.svelte";
-import { useInteractions } from "../../../src/lib/hooks/use-interactions.svelte";
+} from "../../../src/hooks/use-dismiss.svelte";
+import { useFloating } from "../../../src/hooks/use-floating.svelte";
+import { useInteractions } from "../../../src/hooks/use-interactions.svelte";
 
 interface Props extends UseDismissOptions {
 	open?: boolean;
