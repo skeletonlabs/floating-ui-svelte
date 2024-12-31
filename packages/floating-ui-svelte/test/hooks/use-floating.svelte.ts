@@ -9,8 +9,8 @@ import { describe, expect, expectTypeOf, it, vi } from "vitest";
 import {
 	type FloatingContext,
 	useFloating,
-} from "../../src/hooks/use-floating.svelte.js";
-import { useId } from "../../src/hooks/use-id.js";
+} from "../../src/lib/hooks/use-floating.svelte.js";
+import { useId } from "../../src/lib/hooks/use-id.js";
 import { withRunes } from "../internal/with-runes.svelte.js";
 
 function createElements(): { reference: HTMLElement; floating: HTMLElement } {

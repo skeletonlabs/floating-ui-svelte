@@ -1,14 +1,15 @@
 {
-	"$schema": "https://json.schemastore.org/tsconfig",
+	"extends": "./.svelte-kit/tsconfig.json",
 	"compilerOptions": {
-		"target": "ESNext",
-		"module": "NodeNext",
-		"moduleResolution": "Bundler",
+		"allowJs": true,
+		"checkJs": true,
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
-		"strict": true,
-		"verbatimModuleSyntax": true,
+		"resolveJsonModule": true,
 		"skipLibCheck": true,
-		"types": ["svelte"]
+		"sourceMap": true,
+		"strict": true,
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext"
 	}
 }

@@ -1,4 +1,7 @@
 {
+	"files": {
+		"ignore": ["dist", ".svelte-kit"]
+	},
 	"overrides": [
 		{
 			"include": ["*.svelte"],

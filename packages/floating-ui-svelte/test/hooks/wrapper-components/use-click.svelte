@@ -3,10 +3,10 @@ import { autoUpdate } from "@floating-ui/dom";
 import {
 	type UseClickOptions,
 	useClick,
-} from "../../../src/hooks/use-click.svelte";
-import { useFloating } from "../../../src/hooks/use-floating.svelte";
-import { useHover } from "../../../src/hooks/use-hover.svelte";
-import { useInteractions } from "../../../src/hooks/use-interactions.svelte";
+} from "../../../src/lib/hooks/use-click.svelte.js";
+import { useFloating } from "../../../src/lib/hooks/use-floating.svelte.js";
+import { useHover } from "../../../src/lib/hooks/use-hover.svelte.js";
+import { useInteractions } from "../../../src/lib/hooks/use-interactions.svelte.js";
 
 interface Props extends UseClickOptions {
 	open?: boolean;

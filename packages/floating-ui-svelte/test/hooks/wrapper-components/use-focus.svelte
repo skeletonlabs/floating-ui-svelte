@@ -1,11 +1,11 @@
 <script lang="ts">
 import { autoUpdate } from "@floating-ui/dom";
-import { useFloating } from "../../../src/hooks/use-floating.svelte";
+import { useFloating } from "../../../src/lib/hooks/use-floating.svelte";
 import {
 	type UseFocusOptions,
 	useFocus,
-} from "../../../src/hooks/use-focus.svelte";
-import { useInteractions } from "../../../src/hooks/use-interactions.svelte";
+} from "../../../src/lib/hooks/use-focus.svelte";
+import { useInteractions } from "../../../src/lib/hooks/use-interactions.svelte";
 
 interface Props extends UseFocusOptions {
 	open?: boolean;

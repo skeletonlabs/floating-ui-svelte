@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { Alignment, Side } from "@floating-ui/dom";
 import { platform } from "@floating-ui/dom";
-import { useId } from "../hooks/useId.js";
+import { useId } from "../hooks/use-id.js";
 import { styleObjectToString } from "../internal/style-object-to-string.js";
 import type { FloatingArrowProps } from "../internal/types.js";
 
