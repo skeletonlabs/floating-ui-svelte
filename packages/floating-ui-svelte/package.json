@@ -7,9 +7,7 @@
 		"test": "vitest run",
 		"test:watch": "pnpm test --watch"
 	},
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"sideEffects": false,
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
