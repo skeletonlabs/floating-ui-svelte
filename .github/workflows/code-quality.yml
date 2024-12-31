@@ -40,8 +40,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-  lint:
-    name: Lint
+  format:
+    name: Format
     needs: setup
     runs-on: ubuntu-latest
     steps:
@@ -62,8 +62,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run Biome checks
-        run: pnpm biome ci
+      - name: Run Formatter
+        run: pnpm format:check
 
   test:
     name: Test
