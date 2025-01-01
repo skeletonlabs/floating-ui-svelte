@@ -22,6 +22,9 @@
 			"svelte": "./dist/index.js"
 		}
 	},
+	"publishConfig": {
+		"access": "public"
+	},
 	"peerDependencies": {
 		"svelte": "^5.0.0"
 	},
