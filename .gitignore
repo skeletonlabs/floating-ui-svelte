@@ -5,6 +5,6 @@
 # Artifacts
 node_modules
 dist
-build
+.vercel
 .svelte-kit
 pagefind/
