@@ -1,5 +1,11 @@
 # @skeletonlabs/floating-ui-svelte
 
+## 0.3.3
+
+### Patch Changes
+
+- 6670b0d: Update svelte 5 peerDep from next to stable
+
 ## 0.3.2
 
 ### Patch Changes
