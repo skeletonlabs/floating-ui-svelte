@@ -7,7 +7,7 @@
 
 ## Project Structure
 
-This project utilizes pnpm monorepos with the following structure:
+This project utilizes [PNPM Workspaces](https://pnpm.io/workspaces) with the following structure:
 ```
 ├── packages/
 │   └── floating-ui-svelte/ # Package
