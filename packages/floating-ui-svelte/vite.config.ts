@@ -8,8 +8,5 @@ export default defineConfig({
 		include: ["./test/{hooks, components}/*.ts"],
 		setupFiles: ["./test/internal/setup.ts"],
 		environment: "jsdom",
-		coverage: {
-			reporter: ["text"],
-		},
 	},
 });

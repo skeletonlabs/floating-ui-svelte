@@ -1,8 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import {
-	type ElementProps,
-	useInteractions,
-} from "../../src/hooks/use-interactions.svelte.js";
+import { type ElementProps, useInteractions } from "../../src/index.js";
 import { withRunes } from "../internal/with-runes.svelte";
 
 describe("useInteractions", () => {

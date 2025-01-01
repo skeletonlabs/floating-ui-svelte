@@ -1,4 +1,5 @@
 export * from "@floating-ui/dom";
+export * from "./components/floating-arrow.svelte";
 export { default as FloatingArrow } from "./components/floating-arrow.svelte";
 export * from "./hooks/use-click.svelte.js";
 export * from "./hooks/use-dismiss.svelte.js";
