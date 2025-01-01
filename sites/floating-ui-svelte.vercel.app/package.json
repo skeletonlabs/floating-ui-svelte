@@ -4,9 +4,8 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
 		"build": "vite build && pagefind",
-		"preview": "vite preview",
+		"build:watch": "vite dev",
 		"sync": "svelte-kit sync"
 	},
 	"devDependencies": {
