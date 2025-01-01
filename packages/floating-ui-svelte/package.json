@@ -2,10 +2,11 @@
 	"name": "@skeletonlabs/floating-ui-svelte",
 	"version": "0.3.2",
 	"scripts": {
-		"build": "svelte-kit sync && svelte-package --input ./src",
+		"build": "svelte-package --input ./src",
 		"build:watch": "pnpm build --watch",
 		"test": "vitest run",
-		"test:watch": "pnpm test --watch"
+		"test:watch": "pnpm test --watch",
+		"postinstall": "svelte-kit sync"
 	},
 	"files": ["dist"],
 	"sideEffects": false,
