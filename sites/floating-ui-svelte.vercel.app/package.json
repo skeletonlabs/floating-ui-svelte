@@ -7,7 +7,7 @@
 		"dev": "vite dev",
 		"build": "vite build && pagefind",
 		"preview": "vite preview",
-		"postinstall": "svelte-kit sync"
+		"sync": "svelte-kit sync"
 	},
 	"devDependencies": {
 		"@skeletonlabs/floating-ui-svelte": "workspace:^",

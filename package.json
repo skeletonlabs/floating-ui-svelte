@@ -7,7 +7,9 @@
 		"build": "pnpm -r build",
 		"build:watch": "pnpm -r build:watch",
 		"test": "pnpm -r test",
-		"test:watch": "pnpm -r test:watch"
+		"test:watch": "pnpm -r test:watch",
+		"sync": "pnpm -r sync",
+		"postinstall": "pnpm sync && pnpm build"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
