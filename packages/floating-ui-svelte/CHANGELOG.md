@@ -1,5 +1,11 @@
 # @skeletonlabs/floating-ui-svelte
 
+## 0.3.5
+
+### Patch Changes
+
+- e47dcb7: Fix typo in internal imports.
+
 ## 0.3.4
 
 ### Patch Changes
