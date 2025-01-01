@@ -8,7 +8,7 @@ Svelte bindings for [Floating UI](https://github.com/floating-ui/floating-ui). B
 
 Maintained by [Hugo Korte](https://github.com/Hugos68), [Skeleton Labs](https://www.skeletonlabs.co/), and the [Svelte community](https://svelte.dev/).
 
-## Contribution
+## Contributing
 
 Looking to contribute? Awesome! Checkout the [Contribution guide](CONTRIBUTING.md) for guidance.
 
