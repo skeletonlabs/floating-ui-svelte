@@ -55,7 +55,7 @@ importers:
         specifier: ^2.1.8
         version: 2.1.8(@types/node@22.10.2)(jsdom@25.0.1)
 
-  sites/docs:
+  sites/floating-ui-svelte.vercel.app:
     devDependencies:
       '@skeletonlabs/floating-ui-svelte':
         specifier: workspace:^
