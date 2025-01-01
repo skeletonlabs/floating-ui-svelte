@@ -8,6 +8,10 @@ Svelte bindings for [Floating UI](https://github.com/floating-ui/floating-ui). B
 
 Maintained by [Hugo Korte](https://github.com/Hugos68), [Skeleton Labs](https://www.skeletonlabs.co/), and the [Svelte community](https://svelte.dev/).
 
+## Contribution
+
+Looking to contribute? Awesome! Checkout the [Contribution guide](CONTRIBUTING.md) for guidance.
+
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.txt) file for details.
