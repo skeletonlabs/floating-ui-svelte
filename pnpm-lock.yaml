@@ -24,6 +24,9 @@ importers:
         specifier: ^0.2.8
         version: 0.2.8
     devDependencies:
+      '@sveltejs/kit':
+        specifier: ^2.15.1
+        version: 2.15.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.16.0)(vite@6.0.6(@types/node@22.10.2)(jiti@1.21.7)(yaml@2.7.0)))(svelte@5.16.0)(vite@6.0.6(@types/node@22.10.2)(jiti@1.21.7)(yaml@2.7.0))
       '@sveltejs/package':
         specifier: ^2.3.7
         version: 2.3.7(svelte@5.16.0)(typescript@5.7.2)
@@ -57,9 +60,9 @@ importers:
       '@skeletonlabs/floating-ui-svelte':
         specifier: workspace:^
         version: link:../../packages/floating-ui-svelte
-      '@sveltejs/adapter-auto':
-        specifier: ^3.3.1
-        version: 3.3.1(@sveltejs/kit@2.15.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.16.0)(vite@6.0.6(@types/node@22.10.2)(jiti@1.21.7)(yaml@2.7.0)))(svelte@5.16.0)(vite@6.0.6(@types/node@22.10.2)(jiti@1.21.7)(yaml@2.7.0)))
+      '@sveltejs/adapter-static':
+        specifier: ^3.0.8
+        version: 3.0.8(@sveltejs/kit@2.15.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.16.0)(vite@6.0.6(@types/node@22.10.2)(jiti@1.21.7)(yaml@2.7.0)))(svelte@5.16.0)(vite@6.0.6(@types/node@22.10.2)(jiti@1.21.7)(yaml@2.7.0)))
       '@sveltejs/kit':
         specifier: ^2.15.1
         version: 2.15.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.16.0)(vite@6.0.6(@types/node@22.10.2)(jiti@1.21.7)(yaml@2.7.0)))(svelte@5.16.0)(vite@6.0.6(@types/node@22.10.2)(jiti@1.21.7)(yaml@2.7.0))
@@ -712,8 +715,8 @@ packages:
   '@shikijs/vscode-textmate@9.3.1':
     resolution: {integrity: sha512-79QfK1393x9Ho60QFyLti+QfdJzRQCVLFb97kOIV7Eo9vQU/roINgk7m24uv0a7AUvN//RDH36FLjjK48v0s9g==}
 
-  '@sveltejs/adapter-auto@3.3.1':
-    resolution: {integrity: sha512-5Sc7WAxYdL6q9j/+D0jJKjGREGlfIevDyHSQ2eNETHcB1TKlQWHcAo8AS8H1QdjNvSXpvOwNjykDUHPEAyGgdQ==}
+  '@sveltejs/adapter-static@3.0.8':
+    resolution: {integrity: sha512-YaDrquRpZwfcXbnlDsSrBQNCChVOT9MGuSg+dMAyfsAa1SmiAhrA5jUYUiIMC59G92kIbY/AaQOWcBdq+lh+zg==}
     peerDependencies:
       '@sveltejs/kit': ^2.0.0
 
@@ -2641,10 +2644,9 @@ snapshots:
 
   '@shikijs/vscode-textmate@9.3.1': {}
 
-  '@sveltejs/adapter-auto@3.3.1(@sveltejs/kit@2.15.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.16.0)(vite@6.0.6(@types/node@22.10.2)(jiti@1.21.7)(yaml@2.7.0)))(svelte@5.16.0)(vite@6.0.6(@types/node@22.10.2)(jiti@1.21.7)(yaml@2.7.0)))':
+  '@sveltejs/adapter-static@3.0.8(@sveltejs/kit@2.15.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.16.0)(vite@6.0.6(@types/node@22.10.2)(jiti@1.21.7)(yaml@2.7.0)))(svelte@5.16.0)(vite@6.0.6(@types/node@22.10.2)(jiti@1.21.7)(yaml@2.7.0)))':
     dependencies:
       '@sveltejs/kit': 2.15.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.16.0)(vite@6.0.6(@types/node@22.10.2)(jiti@1.21.7)(yaml@2.7.0)))(svelte@5.16.0)(vite@6.0.6(@types/node@22.10.2)(jiti@1.21.7)(yaml@2.7.0))
-      import-meta-resolve: 4.1.0
 
   '@sveltejs/kit@2.15.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.16.0)(vite@6.0.6(@types/node@22.10.2)(jiti@1.21.7)(yaml@2.7.0)))(svelte@5.16.0)(vite@6.0.6(@types/node@22.10.2)(jiti@1.21.7)(yaml@2.7.0))':
     dependencies:

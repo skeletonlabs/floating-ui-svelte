@@ -1,6 +1,6 @@
 {
 	"files": {
-		"ignore": ["dist", ".svelte-kit"]
+		"ignore": ["dist", "build", ".svelte-kit", "node_modules", "pagefind"]
 	},
 	"overrides": [
 		{

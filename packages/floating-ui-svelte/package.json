@@ -2,7 +2,7 @@
 	"name": "@skeletonlabs/floating-ui-svelte",
 	"version": "0.3.2",
 	"scripts": {
-		"build": "svelte-package --input ./src",
+		"build": "svelte-kit sync && svelte-package --input ./src",
 		"build:watch": "pnpm build --watch",
 		"test": "vitest run",
 		"test:watch": "pnpm test --watch"
@@ -22,6 +22,7 @@
 		"svelte": "^5.0.0"
 	},
 	"devDependencies": {
+		"@sveltejs/kit": "^2.15.1",
 		"@sveltejs/package": "^2.3.7",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"@testing-library/jest-dom": "^6.6.3",
