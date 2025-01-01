@@ -85,6 +85,25 @@ describe("useFloating", () => {
 				});
 			}),
 		);
+		it(
+			"is synced externally",
+			withRunes(() => {
+				const elements = $state(createElements());
+
+				const floating = useFloating({
+					get elements() {
+						return elements;
+					},
+				});
+
+				const newElements = createElements();
+
+				floating.elements.reference = newElements.reference;
+				floating.elements.floating = newElements.floating;
+
+				expect(elements).toEqual(newElements);
+			}),
+		);
 	});
 
 	describe("transform", () => {

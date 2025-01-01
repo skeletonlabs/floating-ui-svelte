@@ -332,11 +332,17 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 	};
 
 	$effect.pre(() => {
-		elements.reference = options.elements?.reference;
+		if (!options.elements || !options.elements.reference) {
+			return;
+		}
+		elements.reference = options.elements.reference;
 	});
 
 	$effect.pre(() => {
-		elements.floating = options.elements?.floating;
+		if (!options.elements || !options.elements.floating) {
+			return;
+		}
+		elements.floating = options.elements.floating;
 	});
 
 	$effect.pre(() => {
