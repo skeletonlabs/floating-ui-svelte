@@ -1,5 +1,12 @@
 # @skeletonlabs/floating-ui-svelte
 
+## 0.3.4
+
+### Patch Changes
+
+- f32dd0d: Add missing `FloatingArrowProps` export.
+- 56a804b: Ensures referenced dom elements are synced externally.
+
 ## 0.3.3
 
 ### Patch Changes
