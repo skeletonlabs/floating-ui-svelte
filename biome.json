@@ -1,0 +1,18 @@
+{
+	"files": {
+		"ignore": ["dist", ".svelte-kit", ".vercel", "node_modules", "pagefind"]
+	},
+	"overrides": [
+		{
+			"include": ["*.svelte"],
+			"linter": {
+				"rules": {
+					"style": {
+						"useConst": "off",
+						"useImportType": "off"
+					}
+				}
+			}
+		}
+	]
+}
