@@ -6,11 +6,8 @@ import {
 	offset,
 } from "@floating-ui/dom";
 import { describe, expect, expectTypeOf, it, vi } from "vitest";
-import {
-	type FloatingContext,
-	useFloating,
-} from "../../src/hooks/use-floating.svelte.js";
-import { useId } from "../../src/hooks/use-id.js";
+import { type FloatingContext, useFloating } from "../../src/index.js";
+import { useId } from "../../src/index.js";
 import { withRunes } from "../internal/with-runes.svelte.js";
 
 function createElements(): { reference: HTMLElement; floating: HTMLElement } {
