@@ -1,5 +1,11 @@
 # @skeletonlabs/floating-ui-svelte
 
+## 0.3.7
+
+### Patch Changes
+
+- 3511309: Added `main` to the package.json.
+
 ## 0.3.6
 
 ### Patch Changes
