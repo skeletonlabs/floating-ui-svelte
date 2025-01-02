@@ -1,5 +1,11 @@
 # @skeletonlabs/floating-ui-svelte
 
+## 0.3.8
+
+### Patch Changes
+
+- 97b4403: Added `import` to `exports`.
+
 ## 0.3.7
 
 ### Patch Changes
