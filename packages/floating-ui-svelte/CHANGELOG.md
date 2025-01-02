@@ -1,5 +1,11 @@
 # @skeletonlabs/floating-ui-svelte
 
+## 0.3.6
+
+### Patch Changes
+
+- a367fa4: Restructure `@floating-ui/dom` re-exports.
+
 ## 0.3.5
 
 ### Patch Changes
