@@ -12,7 +12,7 @@ import { createPubSub } from "../internal/create-pub-sub.js";
 import { getDPR, roundByDPR } from "../internal/dpr.js";
 import { noop } from "../internal/noop.js";
 import { styleObjectToString } from "../internal/style-object-to-string.js";
-import type { OpenChangeReason } from "../internal/types.js";
+import type { OpenChangeReason } from "../types.js";
 import { useId } from "./use-id.js";
 
 interface FloatingElements {
