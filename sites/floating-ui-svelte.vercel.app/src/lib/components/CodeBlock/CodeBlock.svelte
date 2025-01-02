@@ -1,15 +1,32 @@
-<script lang="ts">
-import { page } from "$app/state";
+<script lang="ts" module>
 import MoonlightDark from "$lib/themes/moonlight-dark.json";
-import type { BuiltinLanguage, SpecialLanguage } from "shiki";
+import type {
+	BuiltinLanguage,
+	SpecialLanguage,
+	ThemeRegistration,
+} from "shiki";
+import { createHighlighterCoreSync } from "shiki/core";
+import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
+import bash from "shiki/langs/bash.mjs";
+import css from "shiki/langs/css.mjs";
+import html from "shiki/langs/html.mjs";
+import svelte from "shiki/langs/svelte.mjs";
+import ts from "shiki/langs/ts.mjs";
 
+const highlighter = createHighlighterCoreSync({
+	engine: createJavaScriptRegexEngine(),
+	langs: [svelte, html, css, ts, bash],
+	themes: [MoonlightDark as ThemeRegistration],
+});
+</script>
+
+<script lang="ts">
 interface Props {
 	code: string;
 	lang: BuiltinLanguage | SpecialLanguage;
 	mark?: Array<number | [number, number]>;
 }
 
-// Props
 let { code, lang = "text", mark = [] }: Props = $props();
 
 const highlightedLineNumbers = $derived(
@@ -22,16 +39,10 @@ const highlightedLineNumbers = $derived(
 	}),
 );
 
-// Process Language
 const renderedCode = $derived(
-	page.data.highlighter.codeToHtml(code.trim(), {
+	highlighter.codeToHtml(code.trim(), {
 		lang,
-		themes: {
-			// @ts-expect-error - Shiki theme type is annoyingly strict
-			dark: MoonlightDark,
-			// @ts-expect-error - Shiki theme type is annoyingly strict
-			light: MoonlightDark,
-		},
+		theme: MoonlightDark as ThemeRegistration,
 		transformers: [
 			/**
 			 * This transformer adds the `highlighted` class to lines that are to be highlighted.
