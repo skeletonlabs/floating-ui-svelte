@@ -1,24 +1,28 @@
 import {
 	type ComputePositionConfig,
-	type FloatingElement,
 	type Middleware,
 	type MiddlewareData,
 	type Placement,
-	type ReferenceElement,
 	type Strategy,
 	computePosition,
 } from "@floating-ui/dom";
 import { getDPR, roundByDPR } from "../internal/dpr.js";
 import { styleObjectToString } from "../internal/style-object-to-string.js";
-import type {
-	ContextData,
-	ExtendedElements,
-	FloatingElements,
-	FloatingEvents,
-	OpenChangeReason,
-} from "../types.js";
+import type { ReferenceType } from "../types.js";
 
-interface UsePositionOptions {
+interface PositionElements<RT extends ReferenceType = ReferenceType> {
+	/**
+	 * The reference element.
+	 */
+	reference?: RT | null;
+
+	/**
+	 * The floating element.
+	 */
+	floating?: HTMLElement | null;
+}
+
+interface UsePositionOptions<RT extends ReferenceType = ReferenceType> {
 	/**
 	 * Represents the open/close state of the floating element.
 	 * @default true
@@ -54,23 +58,17 @@ interface UsePositionOptions {
 	 * Object containing the floating and reference elements.
 	 * @default {}
 	 */
-	elements?: FloatingElements;
+	elements?: PositionElements<RT>;
 
 	/**
 	 * Callback to handle mounting/unmounting of the elements.
 	 * @default undefined
 	 */
 	whileElementsMounted?: (
-		reference: ReferenceElement,
-		floating: FloatingElement,
+		reference: RT,
+		floating: HTMLElement,
 		update: () => void,
 	) => () => void;
-
-	/**
-	 * Unique node id when using `FloatingTree`.
-	 * @default undefined
-	 */
-	nodeId?: string;
 }
 
 interface UsePositionData {
@@ -105,11 +103,11 @@ interface UsePositionData {
 	isPositioned: boolean;
 }
 
-interface UsePositionReturn {
+interface UsePositionReturn<RT extends ReferenceType = ReferenceType> {
 	/**
 	 * The reference and floating elements.
 	 */
-	readonly elements: FloatingElements;
+	readonly elements: Required<PositionElements<RT>>;
 
 	/**
 	 * CSS styles to apply to the floating element to position it.
@@ -130,8 +128,13 @@ interface UsePositionReturn {
 /**
  * Hook for managing floating elements.
  */
-function usePosition(options: UsePositionOptions = {}): UsePositionReturn {
-	const elements = $state(options.elements ?? {});
+function usePosition<RT extends ReferenceType = ReferenceType>(
+	options: UsePositionOptions = {},
+): UsePositionReturn<RT> {
+	const elements = $state({
+		reference: (options.elements?.reference ?? null) as RT | null,
+		floating: options.elements?.floating ?? null,
+	});
 	const {
 		placement = "bottom",
 		strategy = "absolute",
@@ -139,7 +142,6 @@ function usePosition(options: UsePositionOptions = {}): UsePositionReturn {
 		transform = true,
 		open = true,
 		whileElementsMounted,
-		nodeId,
 	} = $derived(options);
 	const floatingStyles = $derived.by(() => {
 		const initialStyles = {
@@ -208,7 +210,7 @@ function usePosition(options: UsePositionOptions = {}): UsePositionReturn {
 		if (!options.elements || !options.elements.reference) {
 			return;
 		}
-		elements.reference = options.elements.reference;
+		elements.reference = options.elements.reference as RT;
 	});
 
 	$effect.pre(() => {

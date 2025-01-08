@@ -1,8 +1,5 @@
-import type { FloatingElement, ReferenceElement } from "@floating-ui/dom";
-import type {
-	UsePositionData,
-	UsePositionReturn,
-} from "./hooks/use-position.svelte.js";
+import type { FloatingElement, VirtualElement } from "@floating-ui/dom";
+import type { UsePositionReturn } from "./hooks/use-position.svelte.js";
 
 type OpenChangeReason =
 	| "outside-press"
@@ -14,6 +11,10 @@ type OpenChangeReason =
 	| "focus"
 	| "list-navigation"
 	| "safe-polygon";
+
+type ReferenceType = Element | VirtualElement;
+
+type NarrowedElement<T> = T extends Element ? T : Element;
 
 interface FloatingEvents {
 	// biome-ignore lint/suspicious/noExplicitAny: From the port
@@ -28,7 +29,7 @@ interface FloatingElements {
 	/**
 	 * The reference element.
 	 */
-	reference?: ReferenceElement | null;
+	reference?: ReferenceType | null;
 
 	/**
 	 * The floating element.
@@ -36,12 +37,12 @@ interface FloatingElements {
 	floating?: FloatingElement | null;
 }
 
-interface ExtendedElements extends FloatingElements {
+interface ExtendedElements extends Required<FloatingElements> {
 	/**
 	 * Some hooks require the reference element to be a DOM element,
 	 * not a VirtualElement.
 	 */
-	domReference?: Element | null;
+	domReference: Element | null;
 }
 
 interface ContextData {
@@ -128,4 +129,6 @@ export type {
 	FloatingContext,
 	FloatingNodeType,
 	FloatingTreeType,
+	ReferenceType,
+	NarrowedElement,
 };
