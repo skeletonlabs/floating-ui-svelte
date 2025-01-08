@@ -8,40 +8,22 @@ import {
 	type Strategy,
 	computePosition,
 } from "@floating-ui/dom";
-import { createPubSub } from "../internal/create-pub-sub.js";
 import { getDPR, roundByDPR } from "../internal/dpr.js";
-import { noop } from "../internal/noop.js";
 import { styleObjectToString } from "../internal/style-object-to-string.js";
-import type { OpenChangeReason } from "../types.js";
-import { useId } from "./use-id.js";
+import type {
+	ContextData,
+	ExtendedElements,
+	FloatingElements,
+	FloatingEvents,
+	OpenChangeReason,
+} from "../types.js";
 
-interface FloatingElements {
-	/**
-	 * The reference element.
-	 */
-	reference?: ReferenceElement | null;
-
-	/**
-	 * The floating element.
-	 */
-	floating?: FloatingElement | null;
-}
-
-interface UseFloatingOptions {
+interface UsePositionOptions {
 	/**
 	 * Represents the open/close state of the floating element.
 	 * @default true
 	 */
 	open?: boolean;
-
-	/**
-	 * Callback that is called whenever the open state changes.
-	 */
-	onOpenChange?: (
-		open: boolean,
-		event?: Event,
-		reason?: OpenChangeReason,
-	) => void;
 
 	/**
 	 * Where to place the floating element relative to its reference element.
@@ -91,7 +73,7 @@ interface UseFloatingOptions {
 	nodeId?: string;
 }
 
-interface UseFloatingData {
+interface UsePositionData {
 	/**
 	 * The x-coordinate of the floating element.
 	 */
@@ -123,69 +105,11 @@ interface UseFloatingData {
 	isPositioned: boolean;
 }
 
-interface FloatingEvents {
-	// biome-ignore lint/suspicious/noExplicitAny: From the port
-	emit<T extends string>(event: T, data?: any): void;
-	// biome-ignore lint/suspicious/noExplicitAny: From the port
-	on(event: string, handler: (data: any) => void): void;
-	// biome-ignore lint/suspicious/noExplicitAny: From the port
-	off(event: string, handler: (data: any) => void): void;
-}
-
-interface ContextData {
+interface UsePositionReturn {
 	/**
-	 * The latest even that caused the open state to change.
+	 * The reference and floating elements.
 	 */
-	openEvent?: Event;
-
-	/**
-	 * Arbitrary data produced and consumed by other hooks.
-	 */
-	[key: string]: unknown;
-}
-
-interface FloatingContext extends UseFloatingData {
-	/**
-	 * Represents the open/close state of the floating element.
-	 */
-	open: boolean;
-
-	/**
-	 * Callback that is called whenever the open state changes.
-	 */
-	onOpenChange(open: boolean, event?: Event, reason?: OpenChangeReason): void;
-
-	/**
-	 * Events for other hooks to consume.
-	 */
-	events: FloatingEvents;
-
-	/**
-	 * Arbitrary data produced and consumer by other hooks.
-	 */
-	data: ContextData;
-
-	/**
-	 * The id for the reference element
-	 */
-	nodeId: string | undefined;
-
-	/**
-	 * The id for the floating element
-	 */
-	floatingId: string;
-
-	/**
-	 * Object containing the floating and reference elements.
-	 */
-	elements: FloatingElements;
-}
-
-interface UseFloatingReturn extends UseFloatingData {
-	/**
-	 * Represents the open/close state of the floating element.
-	 */
-	readonly open: boolean;
+	readonly elements: FloatingElements;
 
 	/**
 	 * CSS styles to apply to the floating element to position it.
@@ -193,25 +117,20 @@ interface UseFloatingReturn extends UseFloatingData {
 	readonly floatingStyles: string;
 
 	/**
-	 * The reference and floating elements.
-	 */
-	readonly elements: FloatingElements;
-
-	/**
 	 * Updates the floating element position.
 	 */
 	readonly update: () => Promise<void>;
 
 	/**
-	 * Additional context meant for other hooks to consume.
+	 * The computed position state of the floating element
 	 */
-	readonly context: FloatingContext;
+	readonly state: UsePositionData;
 }
 
 /**
  * Hook for managing floating elements.
  */
-function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
+function usePosition(options: UsePositionOptions = {}): UsePositionReturn {
 	const elements = $state(options.elements ?? {});
 	const {
 		placement = "bottom",
@@ -219,7 +138,6 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		middleware = [],
 		transform = true,
 		open = true,
-		onOpenChange: unstableOnOpenChange = noop,
 		whileElementsMounted,
 		nodeId,
 	} = $derived(options);
@@ -252,58 +170,13 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		});
 	});
 
-	const events = createPubSub();
-	const data: ContextData = $state({});
-
-	const onOpenChange = (
-		open: boolean,
-		event?: Event,
-		reason?: OpenChangeReason,
-	) => {
-		data.openEvent = open ? event : undefined;
-		events.emit("openchange", { open, event, reason });
-		unstableOnOpenChange(open, event, reason);
-	};
-
-	const state: UseFloatingData = $state({
+	const state: UsePositionData = $state({
 		x: 0,
 		y: 0,
 		strategy,
 		placement,
 		middlewareData: {},
 		isPositioned: false,
-	});
-
-	const context: FloatingContext = $state({
-		data,
-		events,
-		elements,
-		onOpenChange,
-		floatingId: useId(),
-		get nodeId() {
-			return nodeId;
-		},
-		get x() {
-			return state.x;
-		},
-		get y() {
-			return state.y;
-		},
-		get placement() {
-			return state.placement;
-		},
-		get strategy() {
-			return state.strategy;
-		},
-		get middlewareData() {
-			return state.middlewareData;
-		},
-		get isPositioned() {
-			return state.isPositioned;
-		},
-		get open() {
-			return open;
-		},
 	});
 
 	const update = async () => {
@@ -368,34 +241,13 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 
 	return {
 		update,
-		context,
 		elements,
-		get x() {
-			return state.x;
-		},
-		get y() {
-			return state.y;
-		},
-		get placement() {
-			return state.placement;
-		},
-		get strategy() {
-			return state.strategy;
-		},
-		get middlewareData() {
-			return state.middlewareData;
-		},
-		get isPositioned() {
-			return state.isPositioned;
-		},
-		get open() {
-			return open;
-		},
+		state,
 		get floatingStyles() {
 			return floatingStyles;
 		},
 	};
 }
 
-export type { UseFloatingOptions, UseFloatingReturn, FloatingContext };
-export { useFloating };
+export type { UsePositionOptions, UsePositionReturn, UsePositionData };
+export { usePosition };

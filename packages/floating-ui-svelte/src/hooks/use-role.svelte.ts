@@ -1,4 +1,4 @@
-import type { FloatingContext } from "./use-floating.svelte.js";
+import type { FloatingContext } from "../types.js";
 import { useId } from "./use-id.js";
 import type {
 	ElementProps,
