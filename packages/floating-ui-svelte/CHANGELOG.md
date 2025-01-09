@@ -1,5 +1,11 @@
 # @skeletonlabs/floating-ui-svelte
 
+## 0.3.9
+
+### Patch Changes
+
+- 3ab7653: Fix package installations by removing `postinstall` lifecycle script.
+
 ## 0.3.8
 
 ### Patch Changes
