@@ -1,12 +1,9 @@
 <script lang="ts">
-import { page } from "$app/stores";
+import { page } from "$app/state";
 import Logo from "$lib/components/Logo/Logo.svelte";
 
-// FIXME: https://github.com/sveltejs/eslint-plugin-svelte/issues/652
-// eslint-disable-next-line svelte/valid-compile
-const status = $derived($page.status);
-// eslint-disable-next-line svelte/valid-compile
-const message = $derived($page.error ? $page.error.message : "Unknown error");
+const status = $derived(page.status);
+const message = $derived(page.error ? page.error.message : "Unknown error");
 </script>
 
 <svelte:head>
