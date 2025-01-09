@@ -6,7 +6,7 @@
 		"build:watch": "pnpm build --watch",
 		"test": "vitest run",
 		"test:watch": "pnpm test --watch",
-		"sync": "pnpm build"
+		"sync": "sveltekit-sync && pnpm build"
 	},
 	"files": ["dist"],
 	"sideEffects": false,
