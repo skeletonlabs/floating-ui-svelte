@@ -1,5 +1,5 @@
 <script lang="ts">
-import { version } from "$app/environment";
+import { page } from "$app/state";
 
 import { getDrawer } from "$lib/stores.svelte.js";
 // Icons
@@ -38,7 +38,7 @@ const drawer = getDrawer();
 				class="btn-rose-sm"
 				target="_blank"
 			>
-				v{version}
+				v{page.data.version}
 			</a>
 		</div>
 	</div>
