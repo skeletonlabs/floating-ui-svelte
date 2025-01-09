@@ -6,8 +6,7 @@
 		"build:watch": "pnpm build --watch",
 		"test": "vitest run",
 		"test:watch": "pnpm test --watch",
-		"postinstall": "svelte-kit sync",
-		"sync": "pnpm build"
+		"sync": "svelte-kit sync && pnpm build"
 	},
 	"files": ["dist"],
 	"sideEffects": false,
