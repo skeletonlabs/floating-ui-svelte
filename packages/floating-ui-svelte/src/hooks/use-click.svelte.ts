@@ -1,8 +1,8 @@
 import { isHTMLElement } from "@floating-ui/utils/dom";
 import { isMouseLikePointerType } from "../internal/dom.js";
 import { isTypeableElement } from "../internal/is-typeable-element.js";
-import type { FloatingContext } from "./use-position.svelte.js";
 import type { ElementProps } from "./use-interactions.svelte.js";
+import type { FloatingContext } from "../types.js";
 
 interface UseClickOptions {
 	/**
@@ -57,13 +57,6 @@ function useClick(
 	options: UseClickOptions = {},
 ): ElementProps {
 	const {
-		open,
-		onOpenChange,
-		data,
-		elements: { reference },
-	} = $derived(context);
-
-	const {
 		enabled = true,
 		event: eventOption = "click",
 		toggle = true,
@@ -97,15 +90,17 @@ function useClick(
 					}
 
 					if (
-						open &&
+						context.open &&
 						toggle &&
-						(data.openEvent ? data.openEvent.type === "mousedown" : true)
+						(context.data.openEvent
+							? context.data.openEvent.type === "mousedown"
+							: true)
 					) {
-						onOpenChange(false, event, "click");
+						context.onOpenChange(false, event, "click");
 					} else {
 						// Prevent stealing focus from the floating element
 						event.preventDefault();
-						onOpenChange(true, event, "click");
+						context.onOpenChange(true, event, "click");
 					}
 				},
 				onclick: (event: MouseEvent) => {
@@ -119,13 +114,15 @@ function useClick(
 					}
 
 					if (
-						open &&
+						context.open &&
 						toggle &&
-						(data.openEvent ? data.openEvent.type === "click" : true)
+						(context.data.openEvent
+							? context.data.openEvent.type === "click"
+							: true)
 					) {
-						onOpenChange(false, event, "click");
+						context.onOpenChange(false, event, "click");
 					} else {
-						onOpenChange(true, event, "click");
+						context.onOpenChange(true, event, "click");
 					}
 				},
 				onkeydown: (event: KeyboardEvent) => {
@@ -146,10 +143,10 @@ function useClick(
 					}
 
 					if (event.key === "Enter") {
-						if (open && toggle) {
-							onOpenChange(false, event, "click");
+						if (context.open && toggle) {
+							context.onOpenChange(false, event, "click");
 						} else {
-							onOpenChange(true, event, "click");
+							context.onOpenChange(true, event, "click");
 						}
 					}
 				},
@@ -166,10 +163,10 @@ function useClick(
 
 					if (event.key === " " && didKeyDown) {
 						didKeyDown = false;
-						if (open && toggle) {
-							onOpenChange(false, event, "click");
+						if (context.open && toggle) {
+							context.onOpenChange(false, event, "click");
 						} else {
-							onOpenChange(true, event, "click");
+							context.onOpenChange(true, event, "click");
 						}
 					}
 				},

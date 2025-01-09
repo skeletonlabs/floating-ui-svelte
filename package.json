@@ -6,8 +6,8 @@
 		"format:check": "biome check .",
 		"build": "pnpm --recursive build",
 		"build:watch": "pnpm --recursive --parallel build:watch",
-		"test": "pnpm --recursive test",
-		"test:watch": "pnpm --recursive test:watch",
+		"test": "pnpm --recursive --reporter append-only --color test",
+		"test:watch": "pnpm --recursive --reporter append-only --color test:watch",
 		"sync": "pnpm --recursive sync",
 		"postinstall": "pnpm sync"
 	},

@@ -1,4 +1,5 @@
 import type { FloatingContext } from "../types.js";
+import type { FloatingRootContext } from "./use-floating-root-context.svelte.js";
 import { useId } from "./use-id.js";
 import type {
 	ElementProps,
@@ -43,8 +44,6 @@ function useRole(
 	context: FloatingContext,
 	options: UseRoleOptions = {},
 ): ElementProps {
-	const { open, floatingId } = $derived(context);
-
 	const { enabled = true, role = "dialog" } = $derived(options);
 
 	const ariaRole = $derived(
@@ -62,7 +61,7 @@ function useRole(
 	const isNested = parentId != null;
 
 	const floatingProps = $derived({
-		id: floatingId,
+		id: context.floatingId,
 		...(ariaRole && { role: ariaRole }),
 	});
 
@@ -75,13 +74,13 @@ function useRole(
 			if (ariaRole === "tooltip" || role === "label") {
 				return {
 					[`aria-${role === "label" ? "labelledby" : "describedby"}` as const]:
-						open ? floatingId : undefined,
+						context.open ? context.floatingId : undefined,
 				};
 			}
 			return {
-				"aria-expanded": open ? "true" : "false",
+				"aria-expanded": context.open ? "true" : "false",
 				"aria-haspopup": ariaRole === "alertdialog" ? "dialog" : ariaRole,
-				"aria-controls": open ? floatingId : undefined,
+				"aria-controls": context.open ? context.floatingId : undefined,
 				...(ariaRole === "listbox" && { role: "combobox" }),
 				...(ariaRole === "menu" && { id: referenceId }),
 				...(ariaRole === "menu" && isNested && { role: "menuitem" }),

@@ -6,9 +6,8 @@ import {
 	isMouseLikePointerType,
 } from "../internal/dom.js";
 import { noop } from "../internal/noop.js";
-import type { OpenChangeReason } from "../internal/types.js";
-import type { FloatingContext } from "./use-position.svelte.js";
 import type { ElementProps } from "./use-interactions.svelte.js";
+import type { FloatingContext, OpenChangeReason } from "../types.js";
 
 interface DelayOptions {
 	/**
@@ -97,14 +96,6 @@ function useHover(
 	options: UseHoverOptions = {},
 ): ElementProps {
 	const {
-		open,
-		onOpenChange,
-		data,
-		events,
-		elements: { reference, floating },
-	} = $derived(context);
-
-	const {
 		enabled = true,
 		mouseOnly = false,
 		delay = 0,
@@ -124,13 +115,13 @@ function useHover(
 	let unbindMouseMove = noop;
 
 	const isHoverOpen = $derived.by(() => {
-		const type = data.openEvent?.type;
+		const type = context.data.openEvent?.type;
 		return type?.includes("mouse") && type !== "mousedown";
 	});
 
 	const isClickLikeOpenEvent = $derived(
-		data.openEvent
-			? ["click", "mousedown"].includes(data.openEvent.type)
+		context.data.openEvent
+			? ["click", "mousedown"].includes(context.data.openEvent.type)
 			: false,
 	);
 
@@ -147,9 +138,9 @@ function useHover(
 			}
 		};
 
-		events.on("openchange", onOpenChange);
+		context.events.on("openchange", onOpenChange);
 		return () => {
-			events.off("openchange", onOpenChange);
+			context.events.off("openchange", onOpenChange);
 		};
 	});
 
@@ -162,10 +153,10 @@ function useHover(
 			if (!isHoverOpen) {
 				return;
 			}
-			onOpenChange(false, event, "hover");
+			context.onOpenChange(false, event, "hover");
 		};
 
-		const document = getDocument(floating);
+		const document = getDocument(context.elements.floating);
 		document.addEventListener("mouseleave", onLeave);
 		return () => {
 			document.removeEventListener("mouseleave", onLeave);
@@ -181,12 +172,12 @@ function useHover(
 		if (closeDelay && !handler) {
 			clearTimeout(timeout);
 			timeout = window.setTimeout(
-				() => onOpenChange(false, event, reason),
+				() => context.onOpenChange(false, event, reason),
 				closeDelay,
 			);
 		} else if (runElseBranch) {
 			clearTimeout(timeout);
-			onOpenChange(false, event, reason);
+			context.onOpenChange(false, event, reason);
 		}
 	};
 
@@ -199,7 +190,7 @@ function useHover(
 		if (!performedPointerEventsMutation) {
 			return;
 		}
-		const body = getDocument(floating).body;
+		const body = getDocument(context.elements.floating).body;
 		body.style.pointerEvents = "";
 		body.removeAttribute(safePolygonIdentifier);
 		performedPointerEventsMutation = false;
@@ -214,14 +205,20 @@ function useHover(
 			return;
 		}
 
-		if (open && handleClose?.__options.blockPointerEvents && isHoverOpen) {
-			const body = getDocument(floating).body;
+		if (
+			context.open &&
+			handleClose?.__options.blockPointerEvents &&
+			isHoverOpen
+		) {
+			const body = getDocument(context.elements.floating).body;
 			body.setAttribute(safePolygonIdentifier, "");
 			body.style.pointerEvents = "none";
 			performedPointerEventsMutation = true;
 
-			if (isElement(reference) && floating) {
-				const ref = reference as unknown as HTMLElement | SVGSVGElement;
+			if (isElement(context.elements.reference) && context.elements.floating) {
+				const ref = context.elements.reference as unknown as
+					| HTMLElement
+					| SVGSVGElement;
 
 				// const parentFloating = tree?.nodesRef.current.find((node) => node.id === parentId)?.context
 				// 	?.elements.floating;
@@ -231,11 +228,13 @@ function useHover(
 				// }
 
 				ref.style.pointerEvents = "auto";
-				floating.style.pointerEvents = "auto";
+				context.elements.floating.style.pointerEvents = "auto";
 
 				return () => {
 					ref.style.pointerEvents = "";
-					floating.style.pointerEvents = "";
+					if (context.elements.floating) {
+						context.elements.floating.style.pointerEvents = "";
+					}
 				};
 			}
 		}
@@ -279,10 +278,10 @@ function useHover(
 
 				if (openDelay) {
 					timeout = window.setTimeout(() => {
-						onOpenChange(true, event, "hover");
+						context.onOpenChange(true, event, "hover");
 					}, openDelay);
 				} else {
-					onOpenChange(true, event, "hover");
+					context.onOpenChange(true, event, "hover");
 				}
 			};
 			return {
@@ -299,7 +298,7 @@ function useHover(
 					}
 					function handleMouseMove() {
 						if (!blockMouseMove) {
-							onOpenChange(true, event, "hover");
+							context.onOpenChange(true, event, "hover");
 						}
 					}
 
@@ -307,7 +306,7 @@ function useHover(
 						return;
 					}
 
-					if (open || restMs === 0) {
+					if (context.open || restMs === 0) {
 						return;
 					}
 
@@ -323,7 +322,7 @@ function useHover(
 					if (!isClickLikeOpenEvent) {
 						unbindMouseMove();
 
-						const doc = getDocument(floating);
+						const doc = getDocument(context.elements.floating);
 						clearTimeout(restTimeout);
 
 						if (handleClose) {
@@ -359,14 +358,17 @@ function useHover(
 						// consistently.
 						const shouldClose =
 							pointerType === "touch"
-								? !contains(floating, event.relatedTarget as Element | null)
+								? !contains(
+										context.elements.floating,
+										event.relatedTarget as Element | null,
+									)
 								: true;
 						if (shouldClose) {
 							closeWithDelay(event);
 						}
 					}
 
-					if (open && !isClickLikeOpenEvent) {
+					if (context.open && !isClickLikeOpenEvent) {
 						handleClose?.({
 							...context,
 							// tree,

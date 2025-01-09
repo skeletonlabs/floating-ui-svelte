@@ -13,7 +13,7 @@ import {
 	isEventTargetWithin,
 	isRootElement,
 } from "../internal/dom.js";
-import type { FloatingContext } from "./use-position.svelte.js";
+import type { FloatingContext } from "../types.js";
 
 const bubbleHandlerKeys = {
 	pointerdown: "onpointerdown",
@@ -110,14 +110,6 @@ interface UseDismissOptions {
 
 function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
 	const {
-		open,
-		onOpenChange,
-		// nodeId,
-		elements: { reference, floating },
-		data,
-	} = $derived(context);
-
-	const {
 		enabled = true,
 		escapeKey = true,
 		outsidePress: unstable_outsidePress = true,
@@ -148,7 +140,7 @@ function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
 		normalizeProp(capture);
 
 	const closeOnEscapeKeyDown = (event: KeyboardEvent) => {
-		if (!open || !enabled || !escapeKey || event.key !== "Escape") {
+		if (!context.open || !enabled || !escapeKey || event.key !== "Escape") {
 			return;
 		}
 
@@ -173,7 +165,7 @@ function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
 			// }
 		}
 
-		onOpenChange(false, event, "escape-key");
+		context.onOpenChange(false, event, "escape-key");
 	};
 
 	const closeOnEscapeKeyDownCapture = (event: KeyboardEvent) => {
@@ -211,7 +203,9 @@ function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
 
 		const target = getTarget(event);
 		const inertSelector = `[${createAttribute("inert")}]`;
-		const markers = getDocument(floating).querySelectorAll(inertSelector);
+		const markers = getDocument(context.elements.floating).querySelectorAll(
+			inertSelector,
+		);
 
 		let targetRootAncestor = isElement(target) ? target : null;
 		while (targetRootAncestor && !isLastTraversableNode(targetRootAncestor)) {
@@ -230,7 +224,7 @@ function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
 			isElement(target) &&
 			!isRootElement(target) &&
 			// Clicked on a direct ancestor (e.g. FloatingOverlay).
-			!contains(target, floating) &&
+			!contains(target, context.elements.floating) &&
 			// If the target root element contains none of the markers, then the
 			// element was injected after the floating element rendered.
 			Array.from(markers).every(
@@ -241,7 +235,7 @@ function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
 		}
 
 		// Check if the click occurred on the scrollbar
-		if (isHTMLElement(target) && floating) {
+		if (isHTMLElement(target) && context.elements.floating) {
 			// In Firefox, `target.scrollWidth > target.clientWidth` for inline
 			// elements.
 			const canScrollX =
@@ -275,9 +269,9 @@ function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
 		// 	);
 
 		if (
-			isEventTargetWithin(event, floating) ||
-			// @ts-expect-error - FIXME
-			isEventTargetWithin(event, reference)
+			isEventTargetWithin(event, context.elements.floating) ||
+			(isElement(context.elements.reference) &&
+				isEventTargetWithin(event, context.elements.reference))
 			// targetIsInsideChildren
 		) {
 			return;
@@ -299,7 +293,7 @@ function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
 		// 	}
 		// }
 
-		onOpenChange(false, event, "outside-press");
+		context.onOpenChange(false, event, "outside-press");
 	};
 
 	const closeOnPressOutsideCapture = (event: MouseEvent) => {
@@ -311,18 +305,18 @@ function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
 	};
 
 	$effect(() => {
-		if (!open || !enabled) {
+		if (!context.open || !enabled) {
 			return;
 		}
 
-		data.__escapeKeyBubbles = escapeKeyBubbles;
-		data.__outsidePressBubbles = outsidePressBubbles;
+		context.data.__escapeKeyBubbles = escapeKeyBubbles;
+		context.data.__outsidePressBubbles = outsidePressBubbles;
 
 		function onScroll(event: Event) {
-			onOpenChange(false, event, "ancestor-scroll");
+			context.onOpenChange(false, event, "ancestor-scroll");
 		}
 
-		const doc = getDocument(floating);
+		const doc = getDocument(context.elements.floating);
 		escapeKey &&
 			doc.addEventListener(
 				"keydown",
@@ -339,17 +333,23 @@ function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
 		let ancestors: (Element | Window | VisualViewport)[] = [];
 
 		if (ancestorScroll) {
-			if (isElement(reference)) {
-				ancestors = getOverflowAncestors(reference);
+			if (isElement(context.elements.reference)) {
+				ancestors = getOverflowAncestors(context.elements.reference);
 			}
 
-			if (isElement(floating)) {
-				ancestors = ancestors.concat(getOverflowAncestors(floating));
-			}
-
-			if (!isElement(reference) && reference && reference.contextElement) {
+			if (isElement(context.elements.floating)) {
 				ancestors = ancestors.concat(
-					getOverflowAncestors(reference.contextElement),
+					getOverflowAncestors(context.elements.floating),
+				);
+			}
+
+			if (
+				!isElement(context.elements.reference) &&
+				context.elements.reference &&
+				context.elements.reference.contextElement
+			) {
+				ancestors = ancestors.concat(
+					getOverflowAncestors(context.elements.reference.contextElement),
 				);
 			}
 		}
@@ -398,7 +398,7 @@ function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
 				onKeyDown: closeOnEscapeKeyDown,
 				[bubbleHandlerKeys[referencePressEvent]]: (event: Event) => {
 					if (referencePress) {
-						onOpenChange(false, event, "reference-press");
+						context.onOpenChange(false, event, "reference-press");
 					}
 				},
 			};

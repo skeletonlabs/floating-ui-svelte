@@ -103,7 +103,8 @@ interface UsePositionData {
 	isPositioned: boolean;
 }
 
-interface UsePositionReturn<RT extends ReferenceType = ReferenceType> {
+interface UsePositionReturn<RT extends ReferenceType = ReferenceType>
+	extends UsePositionData {
 	/**
 	 * The reference and floating elements.
 	 */
@@ -118,11 +119,6 @@ interface UsePositionReturn<RT extends ReferenceType = ReferenceType> {
 	 * Updates the floating element position.
 	 */
 	readonly update: () => Promise<void>;
-
-	/**
-	 * The computed position state of the floating element
-	 */
-	readonly state: UsePositionData;
 }
 
 /**
@@ -244,7 +240,24 @@ function usePosition<RT extends ReferenceType = ReferenceType>(
 	return {
 		update,
 		elements,
-		state,
+		get x() {
+			return state.x;
+		},
+		get y() {
+			return state.y;
+		},
+		get placement() {
+			return state.placement;
+		},
+		get strategy() {
+			return state.strategy;
+		},
+		get middlewareData() {
+			return state.middlewareData;
+		},
+		get isPositioned() {
+			return state.isPositioned;
+		},
 		get floatingStyles() {
 			return floatingStyles;
 		},

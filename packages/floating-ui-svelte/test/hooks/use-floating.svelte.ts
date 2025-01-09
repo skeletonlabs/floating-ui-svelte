@@ -316,7 +316,7 @@ describe("useFloating", () => {
 			"can be set",
 			withRunes(() => {
 				const floating = useFloating({ open: true });
-				expect(floating.open).toBe(true);
+				expect(floating.context.open).toBe(true);
 			}),
 		);
 		it(
@@ -330,14 +330,14 @@ describe("useFloating", () => {
 			"defaults to true",
 			withRunes(() => {
 				const floating = useFloating();
-				expect(floating.open).toBe(true);
+				expect(floating.context.open).toBe(true);
 			}),
 		);
 		it(
 			"is of type boolean",
 			withRunes(() => {
 				const floating = useFloating();
-				expectTypeOf(floating.open).toMatchTypeOf<boolean>();
+				expectTypeOf(floating.context.open).toMatchTypeOf<boolean>();
 			}),
 		);
 		it(
@@ -352,12 +352,12 @@ describe("useFloating", () => {
 					},
 				});
 
-				expect(floating.open).toBe(open);
+				expect(floating.context.open).toBe(open);
 
 				open = true;
 
 				await vi.waitFor(() => {
-					expect(floating.open).toBe(open);
+					expect(floating.context.open).toBe(open);
 				});
 			}),
 		);
@@ -409,8 +409,8 @@ describe("useFloating", () => {
 					expect(whileElementsMounted).toHaveBeenCalled();
 				});
 
-				floating.elements.reference = undefined;
-				floating.elements.floating = undefined;
+				floating.elements.reference = null;
+				floating.elements.floating = null;
 
 				await vi.waitFor(() => {
 					expect(cleanup).toHaveBeenCalled();

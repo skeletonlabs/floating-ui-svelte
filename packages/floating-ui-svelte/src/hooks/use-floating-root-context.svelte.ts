@@ -56,6 +56,21 @@ function useFloatingRootContext(
 		reference: ReferenceType | null;
 		floating: HTMLElement | null;
 	} = $state(options.elements);
+
+	$effect.pre(() => {
+		if (!options.elements || !options.elements.reference) {
+			return;
+		}
+		elementsProp.reference = options.elements.reference;
+	});
+
+	$effect.pre(() => {
+		if (!options.elements || !options.elements.floating) {
+			return;
+		}
+		elementsProp.floating = options.elements.floating;
+	});
+
 	const { open = false, onOpenChange: onOpenChangeProp = noop } = options;
 
 	const floatingId = useId();
@@ -90,7 +105,7 @@ function useFloatingRootContext(
 		onOpenChangeProp(open, event, reason);
 	};
 
-	const _elements = $derived({
+	const elements = $derived({
 		reference: positionReference || elementsProp.reference || null,
 		floating: elementsProp.floating || null,
 		domReference: elementsProp.reference as Element | null,
@@ -98,23 +113,25 @@ function useFloatingRootContext(
 
 	return {
 		data,
-		open,
+		get open() {
+			return open;
+		},
 		onOpenChange,
 		elements: {
 			get reference() {
-				return _elements.reference;
+				return elements.reference;
 			},
 			set reference(v: ReferenceType | null) {
 				elementsProp.reference = v;
 			},
 			get floating() {
-				return _elements.floating;
+				return elements.floating;
 			},
 			set floating(v: HTMLElement | null) {
 				elementsProp.floating = v;
 			},
 			get domReference() {
-				return _elements.domReference;
+				return elements.domReference;
 			},
 		},
 		events,

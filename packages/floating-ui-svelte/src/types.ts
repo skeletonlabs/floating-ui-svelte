@@ -37,12 +37,12 @@ interface FloatingElements {
 	floating?: FloatingElement | null;
 }
 
-interface ExtendedElements extends Required<FloatingElements> {
+interface ExtendedElements<RT> extends Required<FloatingElements> {
 	/**
 	 * Some hooks require the reference element to be a DOM element,
 	 * not a VirtualElement.
 	 */
-	domReference: Element | null;
+	domReference: NarrowedElement<RT> | null;
 }
 
 interface ContextData {
@@ -59,7 +59,8 @@ interface ContextData {
 	[key: string]: unknown;
 }
 
-interface FloatingContext extends Omit<UsePositionReturn, "elements"> {
+interface FloatingContext<RT extends ReferenceType = ReferenceType>
+	extends Omit<UsePositionReturn, "elements"> {
 	/**
 	 * Represents the open/close state of the floating element.
 	 */
@@ -88,12 +89,12 @@ interface FloatingContext extends Omit<UsePositionReturn, "elements"> {
 	/**
 	 * The id for the floating element
 	 */
-	floatingId: string;
+	floatingId: string | undefined;
 
 	/**
 	 * Object containing the floating and reference elements.
 	 */
-	elements: ExtendedElements;
+	elements: ExtendedElements<RT>;
 }
 
 interface FloatingNodeType {
