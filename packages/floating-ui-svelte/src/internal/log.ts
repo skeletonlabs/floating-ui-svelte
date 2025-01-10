@@ -5,7 +5,7 @@ if (DEV) {
 	devMessageSet = new Set();
 }
 
-export function warn(...messages: string[]) {
+function warn(...messages: string[]) {
 	const message = `Floating UI Svelte: ${messages.join(" ")}`;
 	if (!devMessageSet?.has(message)) {
 		devMessageSet?.add(message);
@@ -13,10 +13,12 @@ export function warn(...messages: string[]) {
 	}
 }
 
-export function error(...messages: string[]) {
+function error(...messages: string[]) {
 	const message = `Floating UI Svelte: ${messages.join(" ")}`;
 	if (!devMessageSet?.has(message)) {
 		devMessageSet?.add(message);
 		console.error(message);
 	}
 }
+
+export { warn, error };
