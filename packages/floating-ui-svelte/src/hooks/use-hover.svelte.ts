@@ -7,7 +7,8 @@ import {
 } from "../internal/dom.js";
 import { noop } from "../internal/noop.js";
 import type { ElementProps } from "./use-interactions.svelte.js";
-import type { FloatingContext, OpenChangeReason } from "../types.js";
+import type { OpenChangeReason } from "../types.js";
+import type { FloatingContext } from "./use-floating.svelte.js";
 
 interface DelayOptions {
 	/**

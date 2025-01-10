@@ -73,9 +73,11 @@ class FloatingRootContext<RT extends ReferenceType = ReferenceType> {
 			}
 		}
 		this.#positionReference = options.elements.reference;
+		this.onOpenChange = this.onOpenChange.bind(this);
+		this.setPositionReference = this.setPositionReference.bind(this);
 	}
 
-	onOpenChange: OnOpenChange = (open, event, reason) => {
+	onOpenChange(open: boolean, event?: Event, reason?: OpenChangeReason) {
 		this.data.openEvent = open ? event : undefined;
 		this.events.emit("openchange", {
 			open,
@@ -84,11 +86,11 @@ class FloatingRootContext<RT extends ReferenceType = ReferenceType> {
 			nested: this.#nested,
 		});
 		this.options.onOpenChange?.(open, event, reason);
-	};
+	}
 
-	setPositionReference = (node: ReferenceElement | null) => {
+	setPositionReference(node: ReferenceElement | null) {
 		this.#positionReference = node;
-	};
+	}
 
 	get elements() {
 		const _this = this;

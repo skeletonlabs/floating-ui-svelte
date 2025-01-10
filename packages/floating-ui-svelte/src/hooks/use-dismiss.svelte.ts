@@ -19,6 +19,7 @@ import type { FloatingTreeType } from "../types.js";
 import { useFloatingTree } from "../components/floating-tree/hooks.svelte.js";
 import { getChildren } from "../internal/get-children.js";
 import { on } from "svelte/events";
+import { executeCallbacks } from "../internal/execute-callbacks.js";
 
 const bubbleHandlerKeys = {
 	pointerdown: "onpointerdown",
@@ -251,9 +252,7 @@ class DismissState {
 			}
 
 			return () => {
-				for (const listener of listenersToRemove) {
-					listener();
-				}
+				executeCallbacks(...listenersToRemove);
 				window.clearTimeout(compositionTimeout);
 			};
 		});
@@ -448,7 +447,7 @@ class DismissState {
 		getTarget(event)?.addEventListener(this.#outsidePressEvent, callback);
 	}
 
-	reference = $derived.by(() => {
+	readonly reference = $derived.by(() => {
 		if (!this.#enabled) return {};
 		return {
 			onkeydown: this.#closeOnEscapeKeyDown,
@@ -465,7 +464,7 @@ class DismissState {
 		};
 	});
 
-	floating = $derived.by(() => {
+	readonly floating = $derived.by(() => {
 		if (!this.#enabled) return {};
 		return {
 			onkeydown: this.#closeOnEscapeKeyDown,

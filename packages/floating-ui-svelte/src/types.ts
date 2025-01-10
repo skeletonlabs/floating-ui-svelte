@@ -59,44 +59,6 @@ interface ContextData<RT extends ReferenceType = ReferenceType> {
 	[key: string]: unknown;
 }
 
-// interface FloatingContext<RT extends ReferenceType = ReferenceType>
-// 	extends Omit<UsePositionReturn, "elements"> {
-// 	/**
-// 	 * Represents the open/close state of the floating element.
-// 	 */
-// 	open: boolean;
-
-// 	/**
-// 	 * Callback that is called whenever the open state changes.
-// 	 */
-// 	onOpenChange(open: boolean, event?: Event, reason?: OpenChangeReason): void;
-
-// 	/**
-// 	 * Events for other hooks to consume.
-// 	 */
-// 	events: FloatingEvents;
-
-// 	/**
-// 	 * Arbitrary data produced and consumer by other hooks.
-// 	 */
-// 	data: ContextData;
-
-// 	/**
-// 	 * The id for the reference element
-// 	 */
-// 	nodeId: string | undefined;
-
-// 	/**
-// 	 * The id for the floating element
-// 	 */
-// 	floatingId: string | undefined;
-
-// 	/**
-// 	 * Object containing the floating and reference elements.
-// 	 */
-// 	elements: ExtendedElements<RT>;
-// }
-
 type OnOpenChange = (
 	open: boolean,
 	event?: Event,

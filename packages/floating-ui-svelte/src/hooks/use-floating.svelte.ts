@@ -7,15 +7,11 @@ import type {
 	OpenChangeReason,
 	ReferenceType,
 } from "../types.js";
-import {
-	FloatingRootContext,
-	useFloatingRootContext,
-} from "./use-floating-root-context.svelte.js";
+import { FloatingRootContext } from "./use-floating-root-context.svelte.js";
 import {
 	PositionState,
 	type UsePositionOptions,
 } from "./use-position.svelte.js";
-import { untrack } from "svelte";
 
 interface UseFloatingOptions<RT extends ReferenceType = ReferenceType>
 	extends Omit<UsePositionOptions<RT>, "elements"> {
@@ -43,27 +39,6 @@ interface UseFloatingOptions<RT extends ReferenceType = ReferenceType>
 	 */
 	nodeId?: string;
 }
-
-// interface UseFloatingReturn<RT extends ReferenceType = ReferenceType>
-// 	extends UsePositionReturn {
-// 	/**
-// 	 * `FloatingContext`
-// 	 */
-// 	context: FloatingContext<RT>;
-
-// 	/**
-// 	 * Set the position reference outside of the `elements`
-// 	 * object.
-// 	 */
-// 	refs: {
-// 		setPositionReference(node: ReferenceType | null): void;
-// 	};
-
-// 	/**
-// 	 * The floating elements.
-// 	 */
-// 	elements: ExtendedElements<RT>;
-// }
 
 type FloatingContextOptions<RT extends ReferenceType = ReferenceType> = {
 	floating: FloatingState<RT>;
@@ -192,9 +167,11 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 				node.context = this.context;
 			}
 		});
+
+		this.setPositionReference = this.setPositionReference.bind(this);
 	}
 
-	setPositionReference = (node: ReferenceType | null) => {
+	setPositionReference(node: ReferenceType | null) {
 		const computedPositionReference = isElement(node)
 			? {
 					getBoundingClientRect: () => node.getBoundingClientRect(),
@@ -203,7 +180,7 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 			: node;
 
 		this.#positionReference = computedPositionReference;
-	};
+	}
 
 	get placement() {
 		return this.#position.data.placement;
