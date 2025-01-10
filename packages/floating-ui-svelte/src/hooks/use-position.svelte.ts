@@ -9,6 +9,11 @@ import {
 import { getDPR, roundByDPR } from "../internal/dpr.js";
 import { styleObjectToString } from "../internal/style-object-to-string.js";
 import type { ReferenceType } from "../types.js";
+import type {
+	FloatingState,
+	UseFloatingOptions,
+} from "./use-floating.svelte.js";
+import type { FloatingRootContext } from "./use-floating-root-context.svelte.js";
 
 interface PositionElements<RT extends ReferenceType = ReferenceType> {
 	/**
@@ -103,166 +108,119 @@ interface UsePositionData {
 	isPositioned: boolean;
 }
 
-interface UsePositionReturn<RT extends ReferenceType = ReferenceType>
-	extends UsePositionData {
-	/**
-	 * The reference and floating elements.
-	 */
-	readonly elements: Required<PositionElements<RT>>;
-
-	/**
-	 * CSS styles to apply to the floating element to position it.
-	 */
-	readonly floatingStyles: string;
-
-	/**
-	 * Updates the floating element position.
-	 */
-	readonly update: () => Promise<void>;
-}
-
 /**
- * Hook for managing floating elements.
+ * Manages the positioning of floating elements.
  */
-function usePosition<RT extends ReferenceType = ReferenceType>(
-	options: UsePositionOptions = {},
-): UsePositionReturn<RT> {
-	const elements = $state({
-		reference: (options.elements?.reference ?? null) as RT | null,
-		floating: options.elements?.floating ?? null,
+class PositionState<RT extends ReferenceType = ReferenceType> {
+	#strategy: Strategy = $derived.by(() => this.options.strategy ?? "absolute");
+	#placement: Placement = $derived.by(() => this.options.placement ?? "bottom");
+	#middleware: Array<Middleware | undefined | null | false> = $derived.by(
+		() => this.options.middleware ?? [],
+	);
+	#transform: boolean = $derived.by(() => this.options.transform ?? true);
+	#positionReference = $derived.by(() => this.getPositionReference());
+
+	reference = $derived.by(
+		() => this.#positionReference ?? this.rootContext.elements.reference,
+	);
+
+	data: UsePositionData = $state({
+		x: 0,
+		y: 0,
+		strategy: this.#strategy,
+		placement: this.#placement,
+		middlewareData: {},
+		isPositioned: false,
 	});
-	const {
-		placement = "bottom",
-		strategy = "absolute",
-		middleware = [],
-		transform = true,
-		open = true,
-		whileElementsMounted,
-	} = $derived(options);
-	const floatingStyles = $derived.by(() => {
+	floatingStyles = $derived.by(() => {
 		const initialStyles = {
-			position: strategy,
+			position: this.#strategy,
 			left: "0px",
 			top: "0px",
 		};
 
-		if (!elements.floating) {
+		if (!this.rootContext.elements.floating) {
 			return styleObjectToString(initialStyles);
 		}
 
-		const x = roundByDPR(elements.floating, state.x);
-		const y = roundByDPR(elements.floating, state.y);
+		const x = roundByDPR(this.rootContext.elements.floating, this.data.x);
+		const y = roundByDPR(this.rootContext.elements.floating, this.data.y);
 
-		if (transform) {
+		if (this.#transform) {
 			return styleObjectToString({
 				...initialStyles,
 				transform: `translate(${x}px, ${y}px)`,
-				...(getDPR(elements.floating) >= 1.5 && { willChange: "transform" }),
+				...(getDPR(this.rootContext.elements.floating) >= 1.5 && {
+					willChange: "transform",
+				}),
 			});
 		}
 
 		return styleObjectToString({
-			position: strategy,
+			position: this.options.strategy,
 			left: `${x}px`,
 			top: `${y}px`,
 		});
 	});
 
-	const state: UsePositionData = $state({
-		x: 0,
-		y: 0,
-		strategy,
-		placement,
-		middlewareData: {},
-		isPositioned: false,
-	});
+	constructor(
+		private readonly options: UseFloatingOptions<RT>,
+		private readonly rootContext: FloatingRootContext<RT>,
+		// We use a getter to prevent having to expose the internal only
+		// `#positionReference` property in `FloatingState` to the public API.
+		private readonly getPositionReference: () => ReferenceType | null,
+	) {
+		$effect.pre(() => {
+			if (this.rootContext.open || !this.data.isPositioned) {
+				return;
+			}
 
-	const update = async () => {
-		if (!elements.floating || !elements.reference) {
+			this.data.isPositioned = false;
+		});
+
+		$effect.pre(() => {
+			if (!this.rootContext.elements.floating || !this.reference) {
+				return;
+			}
+
+			if (!this.options.whileElementsMounted) {
+				this.update();
+				return;
+			}
+
+			return this.options.whileElementsMounted(
+				this.reference as RT,
+				this.rootContext.elements.floating,
+				this.update,
+			);
+		});
+	}
+
+	update = async () => {
+		if (!this.rootContext.elements.floating || !this.reference) {
 			return;
 		}
 
 		const config: ComputePositionConfig = {
-			placement,
-			strategy,
-			middleware,
+			placement: this.#placement,
+			strategy: this.#strategy,
+			middleware: this.#middleware,
 		};
 
 		const position = await computePosition(
-			elements.reference,
-			elements.floating,
+			this.reference,
+			this.rootContext.elements.floating,
 			config,
 		);
 
-		state.x = position.x;
-		state.y = position.y;
-		state.placement = position.placement;
-		state.strategy = position.strategy;
-		state.middlewareData = position.middlewareData;
-		state.isPositioned = true;
-	};
-
-	$effect.pre(() => {
-		if (!options.elements || !options.elements.reference) {
-			return;
-		}
-		elements.reference = options.elements.reference as RT;
-	});
-
-	$effect.pre(() => {
-		if (!options.elements || !options.elements.floating) {
-			return;
-		}
-		elements.floating = options.elements.floating;
-	});
-
-	$effect.pre(() => {
-		if (open || !state.isPositioned) {
-			return;
-		}
-
-		state.isPositioned = false;
-	});
-
-	$effect.pre(() => {
-		if (!elements.floating || !elements.reference) {
-			return;
-		}
-
-		if (!whileElementsMounted) {
-			update();
-			return;
-		}
-
-		return whileElementsMounted(elements.reference, elements.floating, update);
-	});
-
-	return {
-		update,
-		elements,
-		get x() {
-			return state.x;
-		},
-		get y() {
-			return state.y;
-		},
-		get placement() {
-			return state.placement;
-		},
-		get strategy() {
-			return state.strategy;
-		},
-		get middlewareData() {
-			return state.middlewareData;
-		},
-		get isPositioned() {
-			return state.isPositioned;
-		},
-		get floatingStyles() {
-			return floatingStyles;
-		},
+		this.data.x = position.x;
+		this.data.y = position.y;
+		this.data.placement = position.placement;
+		this.data.strategy = position.strategy;
+		this.data.middlewareData = position.middlewareData;
+		this.data.isPositioned = true;
 	};
 }
 
-export type { UsePositionOptions, UsePositionReturn, UsePositionData };
-export { usePosition };
+export type { UsePositionOptions, UsePositionData };
+export { PositionState };

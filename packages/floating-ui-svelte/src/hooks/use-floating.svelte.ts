@@ -2,20 +2,20 @@ import { isElement } from "@floating-ui/utils/dom";
 import { useFloatingTree } from "../components/floating-tree/hooks.svelte.js";
 import type {
 	ExtendedElements,
-	FloatingContext,
+	FloatingTreeType,
 	NarrowedElement,
 	OpenChangeReason,
 	ReferenceType,
 } from "../types.js";
 import {
+	FloatingRootContext,
 	useFloatingRootContext,
-	type FloatingRootContext,
 } from "./use-floating-root-context.svelte.js";
 import {
-	usePosition,
+	PositionState,
 	type UsePositionOptions,
-	type UsePositionReturn,
 } from "./use-position.svelte.js";
+import { untrack } from "svelte";
 
 interface UseFloatingOptions<RT extends ReferenceType = ReferenceType>
 	extends Omit<UsePositionOptions<RT>, "elements"> {
@@ -44,200 +44,234 @@ interface UseFloatingOptions<RT extends ReferenceType = ReferenceType>
 	nodeId?: string;
 }
 
-interface UseFloatingReturn<RT extends ReferenceType = ReferenceType>
-	extends UsePositionReturn {
-	/**
-	 * `FloatingContext`
-	 */
+// interface UseFloatingReturn<RT extends ReferenceType = ReferenceType>
+// 	extends UsePositionReturn {
+// 	/**
+// 	 * `FloatingContext`
+// 	 */
+// 	context: FloatingContext<RT>;
+
+// 	/**
+// 	 * Set the position reference outside of the `elements`
+// 	 * object.
+// 	 */
+// 	refs: {
+// 		setPositionReference(node: ReferenceType | null): void;
+// 	};
+
+// 	/**
+// 	 * The floating elements.
+// 	 */
+// 	elements: ExtendedElements<RT>;
+// }
+
+type FloatingContextOptions<RT extends ReferenceType = ReferenceType> = {
+	floating: FloatingState<RT>;
+	floatingOptions: UseFloatingOptions<RT>;
+	rootContext: FloatingRootContext<RT>;
+	getElements: (state: FloatingState<RT>) => ExtendedElements<RT>;
+};
+
+class FloatingContext<RT extends ReferenceType = ReferenceType> {
+	constructor(private readonly opts: FloatingContextOptions<RT>) {}
+
+	get elements() {
+		return this.opts.getElements(this.opts.floating);
+	}
+
+	get x() {
+		return this.opts.floating.x;
+	}
+
+	get y() {
+		return this.opts.floating.y;
+	}
+
+	get placement() {
+		return this.opts.floating.placement;
+	}
+
+	get strategy() {
+		return this.opts.floating.strategy;
+	}
+
+	get middlewareData() {
+		return this.opts.floating.middlewareData;
+	}
+
+	get isPositioned() {
+		return this.opts.floating.isPositioned;
+	}
+
+	get update() {
+		return this.opts.floating.update;
+	}
+
+	get floatingStyles() {
+		return this.opts.floating.floatingStyles;
+	}
+
+	get onOpenChange() {
+		return this.opts.rootContext.onOpenChange;
+	}
+
+	get open() {
+		return this.opts.rootContext.open;
+	}
+
+	get data() {
+		return this.opts.rootContext.data;
+	}
+
+	get floatingId() {
+		return this.opts.rootContext.floatingId;
+	}
+
+	get events() {
+		return this.opts.rootContext.events;
+	}
+
+	get nodeId() {
+		return this.opts.floatingOptions.nodeId;
+	}
+}
+
+class FloatingState<RT extends ReferenceType = ReferenceType> {
+	#rootContext: FloatingRootContext<RT>;
+	#position: PositionState<RT>;
+	#positionReference = $state<ReferenceType | null>(null);
+	#domReference = $state<NarrowedElement<RT> | null>(null);
+	#derivedDomReference = $derived.by(
+		() =>
+			(this.#rootContext.elements.domReference ||
+				this.#domReference) as NarrowedElement<RT>,
+	);
+	#tree: FloatingTreeType<RT> | null;
+	#nodeId = $derived.by(() => this.options.nodeId);
 	context: FloatingContext<RT>;
 
-	/**
-	 * Set the position reference outside of the `elements`
-	 * object.
-	 */
-	refs: {
-		setPositionReference(node: ReferenceType | null): void;
+	constructor(private readonly options: UseFloatingOptions<RT> = {}) {
+		this.#rootContext =
+			options.rootContext ??
+			new FloatingRootContext({
+				get open() {
+					return options.open ?? true;
+				},
+				get elements() {
+					const reference = options.elements?.reference ?? null;
+					const floating = options.elements?.floating ?? null;
+					return {
+						reference,
+						floating,
+					};
+				},
+				get onOpenChange() {
+					return options.onOpenChange;
+				},
+			});
+
+		this.#tree = useFloatingTree();
+		this.#position = new PositionState<RT>(
+			options,
+			this.#rootContext,
+			() => this.#positionReference,
+		);
+
+		this.context = new FloatingContext({
+			floating: this,
+			floatingOptions: options,
+			rootContext: this.#rootContext,
+			getElements: this.#getElements,
+		});
+
+		$effect(() => {
+			this.#rootContext.data.floatingContext = this.context;
+
+			const node = this.#tree?.nodes.find((node) => node.id === this.#nodeId);
+			if (node) {
+				node.context = this.context;
+			}
+		});
+	}
+
+	setPositionReference = (node: ReferenceType | null) => {
+		const computedPositionReference = isElement(node)
+			? {
+					getBoundingClientRect: () => node.getBoundingClientRect(),
+					contextElement: node,
+				}
+			: node;
+
+		this.#positionReference = computedPositionReference;
 	};
 
-	/**
-	 * The floating elements.
-	 */
-	elements: ExtendedElements<RT>;
+	get placement() {
+		return this.#position.data.placement;
+	}
+
+	get strategy() {
+		return this.#position.data.strategy;
+	}
+
+	get middlewareData() {
+		return this.#position.data.middlewareData;
+	}
+
+	get isPositioned() {
+		return this.#position.data.isPositioned;
+	}
+
+	get x() {
+		return this.#position.data.x;
+	}
+
+	get y() {
+		return this.#position.data.y;
+	}
+
+	get floatingStyles() {
+		return this.#position.floatingStyles;
+	}
+
+	get update() {
+		return this.#position.update;
+	}
+
+	#getElements = (state: FloatingState<RT>) => {
+		return {
+			get reference() {
+				return state.#position.reference as RT | null;
+			},
+			set reference(node: RT | null) {
+				if (isElement(node) || node === null) {
+					state.#domReference = node as NarrowedElement<RT> | null;
+				}
+			},
+			get floating() {
+				return state.#rootContext.elements.floating;
+			},
+			set floating(node: HTMLElement | null) {
+				state.#rootContext.elements.floating = node;
+			},
+			get domReference() {
+				return state.#derivedDomReference;
+			},
+		};
+	};
+
+	get elements() {
+		return this.#getElements(this);
+	}
 }
 
 /**
  * Provides data to position a floating element and context to add interactions.
  */
-
-export function useFloating<RT extends ReferenceType = ReferenceType>(
-	options: UseFloatingOptions = {},
-): UseFloatingReturn<RT> {
-	const elementsProp = $state({
-		reference: options.elements?.reference ?? null,
-		floating: options.elements?.floating ?? null,
-		domReference: null as NarrowedElement<RT> | null,
-	});
-
-	$effect.pre(() => {
-		if (!options.elements || !options.elements.reference) {
-			return;
-		}
-		elementsProp.reference = options.elements.reference;
-	});
-
-	$effect.pre(() => {
-		if (!options.elements || !options.elements.floating) {
-			return;
-		}
-		elementsProp.floating = options.elements.floating;
-	});
-
-	const { nodeId } = options;
-
-	const internalRootContext = useFloatingRootContext({
-		get open() {
-			if (options.open === undefined) return true;
-			return options.open;
-		},
-		get elements() {
-			return {
-				reference: options.elements?.reference ?? null,
-				floating: options.elements?.floating ?? null,
-			};
-		},
-	});
-
-	const rootContext = options.rootContext ?? internalRootContext;
-	const computedElements = $derived(rootContext.elements);
-
-	let _domReference = $state<NarrowedElement<RT> | null>(null);
-	let positionReference = $state<ReferenceType | null>(null);
-	const optionDomReference = $derived(computedElements.domReference);
-	const domReference = $derived(
-		optionDomReference ?? _domReference,
-	) as NarrowedElement<RT>;
-
-	const tree = useFloatingTree();
-
-	$effect.pre(() => {
-		if (domReference) {
-			elementsProp.domReference = domReference;
-		}
-	});
-
-	const position = usePosition({
-		...options,
-		elements: {
-			get floating() {
-				return computedElements.floating;
-			},
-			get reference() {
-				if (positionReference) {
-					return positionReference;
-				}
-				return computedElements.reference;
-			},
-		},
-	});
-
-	const elements = $state({
-		get reference() {
-			return position.elements.reference;
-		},
-		set reference(node: ReferenceType | null) {
-			if (isElement(node) || node === null) {
-				(_domReference as Element | null) = node;
-			}
-		},
-		get floating() {
-			return position.elements.floating;
-		},
-		set floating(node: HTMLElement | null) {
-			elementsProp.floating = node;
-		},
-		get domReference() {
-			return domReference;
-		},
-	});
-
-	const context = $state<FloatingContext<RT>>({
-		get x() {
-			return position.x;
-		},
-		get y() {
-			return position.y;
-		},
-		get placement() {
-			return position.placement;
-		},
-		get strategy() {
-			return position.strategy;
-		},
-		get middlewareData() {
-			return position.middlewareData;
-		},
-		get isPositioned() {
-			return position.isPositioned;
-		},
-		update: position.update,
-		get floatingStyles() {
-			return position.floatingStyles;
-		},
-		data: rootContext.data,
-		floatingId: rootContext.floatingId,
-		events: rootContext.events,
-		elements,
-		nodeId,
-		onOpenChange: rootContext.onOpenChange,
-		get open() {
-			return rootContext.open;
-		},
-	});
-
-	$effect(() => {
-		rootContext.data.floatingContext = context;
-
-		const node = tree?.nodes.find((node) => node.id === nodeId);
-		if (node) {
-			node.context = context;
-		}
-	});
-
-	return {
-		context,
-		elements,
-		update: position.update,
-		get x() {
-			return position.x;
-		},
-		get y() {
-			return position.y;
-		},
-		get placement() {
-			return position.placement;
-		},
-		get strategy() {
-			return position.strategy;
-		},
-		get middlewareData() {
-			return position.middlewareData;
-		},
-		get isPositioned() {
-			return position.isPositioned;
-		},
-		get floatingStyles() {
-			return position.floatingStyles;
-		},
-		refs: {
-			setPositionReference: (node: ReferenceType | null) => {
-				const computedPositionReference = isElement(node)
-					? {
-							getBoundingClientRect: () => node.getBoundingClientRect(),
-							contextElement: node,
-						}
-					: node;
-				positionReference = computedPositionReference;
-			},
-		},
-	};
+function useFloating<RT extends ReferenceType = ReferenceType>(
+	options: UseFloatingOptions<RT> = {},
+): FloatingState<RT> {
+	return new FloatingState<RT>(options);
 }
+
+export { FloatingState, FloatingContext, useFloating };
+export type { UseFloatingOptions };

@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import type { SVGAttributes } from "svelte/elements";
-	import type { FloatingContext } from "../../src/index.js";
+	import type { FloatingContext } from "../../hooks/use-floating.svelte.js";
 
 	export interface FloatingArrowProps extends SVGAttributes<SVGElement> {
 		/** The bound HTML element reference. */
@@ -54,8 +54,8 @@
 <script lang="ts">
 	import type { Alignment, Side } from "@floating-ui/dom";
 	import { platform } from "@floating-ui/dom";
-	import { useId } from "../hooks/use-id.js";
-	import { styleObjectToString } from "../internal/style-object-to-string.js";
+	import { useId } from "../../hooks/use-id.js";
+	import { styleObjectToString } from "../../internal/style-object-to-string.js";
 
 	let {
 		ref = $bindable(null),
@@ -75,12 +75,6 @@
 		...rest
 	}: FloatingArrowProps = $props();
 
-	const {
-		placement,
-		elements: { floating },
-		middlewareData: { arrow },
-	} = $derived(context);
-
 	const clipPathId = useId();
 
 	// Strokes must be double the border width, this ensures the stroke's width
@@ -92,9 +86,11 @@
 	const svgY = $derived(((height / 2) * tipRadius) / 4);
 
 	const [side, alignment] = $derived(
-		placement.split("-") as [Side, Alignment]
+		context.placement.split("-") as [Side, Alignment]
 	);
-	const isRTL = $derived(floating && platform.isRTL(floating));
+	const isRTL = $derived(
+		context.elements.floating && platform.isRTL(context.elements.floating)
+	);
 	const isCustomShape = $derived(!!d);
 	const isVerticalSide = $derived(side === "top" || side === "bottom");
 

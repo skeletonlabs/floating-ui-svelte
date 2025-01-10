@@ -1,6 +1,10 @@
 import { useId } from "../../hooks/use-id.js";
 import { Context } from "../../internal/context.js";
-import type { FloatingNodeType, FloatingTreeType } from "../../types.js";
+import type {
+	FloatingNodeType,
+	FloatingTreeType,
+	ReferenceType,
+} from "../../types.js";
 
 export const FloatingNodeContext = new Context<FloatingNodeType>(
 	"FloatingNodeContext",
@@ -21,8 +25,10 @@ export function useFloatingParentNodeId(): string | null {
 /**
  * Returns the nearest floating tree context, if available.
  */
-export function useFloatingTree(): FloatingTreeType | null {
-	return FloatingTreeContext.getOr(null);
+export function useFloatingTree<
+	RT extends ReferenceType = ReferenceType,
+>(): FloatingTreeType<RT> | null {
+	return FloatingTreeContext.getOr(null) as FloatingTreeType<RT> | null;
 }
 
 /**

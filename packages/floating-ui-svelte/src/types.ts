@@ -1,5 +1,5 @@
 import type { FloatingElement, VirtualElement } from "@floating-ui/dom";
-import type { UsePositionReturn } from "./hooks/use-position.svelte.js";
+import type { FloatingContext } from "./hooks/use-floating.svelte.js";
 
 type OpenChangeReason =
 	| "outside-press"
@@ -45,13 +45,13 @@ interface ExtendedElements<RT> extends Required<FloatingElements> {
 	domReference: NarrowedElement<RT> | null;
 }
 
-interface ContextData {
+interface ContextData<RT extends ReferenceType = ReferenceType> {
 	/**
 	 * The latest even that caused the open state to change.
 	 */
 	openEvent?: Event;
 
-	floatingContext?: FloatingContext;
+	floatingContext?: FloatingContext<RT>;
 
 	/**
 	 * Arbitrary data produced and consumed by other hooks.
@@ -59,45 +59,51 @@ interface ContextData {
 	[key: string]: unknown;
 }
 
-interface FloatingContext<RT extends ReferenceType = ReferenceType>
-	extends Omit<UsePositionReturn, "elements"> {
-	/**
-	 * Represents the open/close state of the floating element.
-	 */
-	open: boolean;
+// interface FloatingContext<RT extends ReferenceType = ReferenceType>
+// 	extends Omit<UsePositionReturn, "elements"> {
+// 	/**
+// 	 * Represents the open/close state of the floating element.
+// 	 */
+// 	open: boolean;
 
-	/**
-	 * Callback that is called whenever the open state changes.
-	 */
-	onOpenChange(open: boolean, event?: Event, reason?: OpenChangeReason): void;
+// 	/**
+// 	 * Callback that is called whenever the open state changes.
+// 	 */
+// 	onOpenChange(open: boolean, event?: Event, reason?: OpenChangeReason): void;
 
-	/**
-	 * Events for other hooks to consume.
-	 */
-	events: FloatingEvents;
+// 	/**
+// 	 * Events for other hooks to consume.
+// 	 */
+// 	events: FloatingEvents;
 
-	/**
-	 * Arbitrary data produced and consumer by other hooks.
-	 */
-	data: ContextData;
+// 	/**
+// 	 * Arbitrary data produced and consumer by other hooks.
+// 	 */
+// 	data: ContextData;
 
-	/**
-	 * The id for the reference element
-	 */
-	nodeId: string | undefined;
+// 	/**
+// 	 * The id for the reference element
+// 	 */
+// 	nodeId: string | undefined;
 
-	/**
-	 * The id for the floating element
-	 */
-	floatingId: string | undefined;
+// 	/**
+// 	 * The id for the floating element
+// 	 */
+// 	floatingId: string | undefined;
 
-	/**
-	 * Object containing the floating and reference elements.
-	 */
-	elements: ExtendedElements<RT>;
-}
+// 	/**
+// 	 * Object containing the floating and reference elements.
+// 	 */
+// 	elements: ExtendedElements<RT>;
+// }
 
-interface FloatingNodeType {
+type OnOpenChange = (
+	open: boolean,
+	event?: Event,
+	reason?: OpenChangeReason,
+) => void;
+
+interface FloatingNodeType<RT extends ReferenceType = ReferenceType> {
 	/**
 	 * The unique id for the node.
 	 */
@@ -111,11 +117,11 @@ interface FloatingNodeType {
 	/**
 	 * An optional context object that can be used to pass data between hooks.
 	 */
-	context?: FloatingContext;
+	context?: FloatingContext<RT>;
 }
 
-interface FloatingTreeType {
-	nodes: FloatingNodeType[];
+interface FloatingTreeType<RT extends ReferenceType = ReferenceType> {
+	nodes: FloatingNodeType<RT>[];
 	events: FloatingEvents;
 	addNode(node: FloatingNodeType): void;
 	removeNode(node: FloatingNodeType): void;
@@ -127,9 +133,9 @@ export type {
 	FloatingElements,
 	ContextData,
 	ExtendedElements,
-	FloatingContext,
 	FloatingNodeType,
 	FloatingTreeType,
 	ReferenceType,
 	NarrowedElement,
+	OnOpenChange,
 };

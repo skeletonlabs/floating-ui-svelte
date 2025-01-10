@@ -9,7 +9,8 @@ import {
 } from "../internal/dom.js";
 import { isMac, isSafari } from "../internal/environment.js";
 import { isTypeableElement } from "../internal/is-typeable-element.js";
-import type { FloatingContext, OpenChangeReason } from "../types.js";
+import type { OpenChangeReason } from "../types.js";
+import type { FloatingContext } from "./use-floating.svelte.js";
 
 interface UseFocusOptions {
 	/**

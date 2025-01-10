@@ -13,7 +13,7 @@ import {
 	isEventTargetWithin,
 	isRootElement,
 } from "../internal/dom.js";
-import type { FloatingContext } from "../types.js";
+import type { FloatingContext } from "./use-floating.svelte.js";
 
 const bubbleHandlerKeys = {
 	pointerdown: "onpointerdown",
