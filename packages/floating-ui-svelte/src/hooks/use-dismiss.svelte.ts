@@ -114,7 +114,7 @@ interface UseDismissOptions {
 	capture?: boolean | { escapeKey?: boolean; outsidePress?: boolean };
 }
 
-class DismissState {
+class DismissInteraction {
 	#enabled = $derived.by(() => this.options.enabled ?? true);
 	#escapeKey = $derived.by(() => this.options.escapeKey ?? true);
 	#unstable_outsidePress = $derived.by(() => this.options.outsidePress ?? true);
@@ -486,8 +486,8 @@ class DismissState {
 }
 
 function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
-	return new DismissState(context, options);
+	return new DismissInteraction(context, options);
 }
 
 export type { UseDismissOptions };
-export { useDismiss, DismissState };
+export { useDismiss, DismissInteraction as DismissState };

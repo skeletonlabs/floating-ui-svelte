@@ -52,7 +52,7 @@ function isSpaceIgnored(element: ReferenceType | null) {
 	return isTypeableElement(element);
 }
 
-class ClickState {
+class ClickInteraction {
 	#enabled = $derived.by(() => this.options.enabled ?? "true");
 	#eventOption = $derived.by(() => this.options.event ?? "click");
 	#toggle = $derived.by(() => this.options.toggle ?? true);
@@ -175,10 +175,14 @@ class ClickState {
 			onkeyup: this.#onkeyup,
 		};
 	});
+
+	get enabled() {
+		return this.#enabled;
+	}
 }
 
 function useClick(context: FloatingContext, options: UseClickOptions = {}) {
-	return new ClickState(context, options);
+	return new ClickInteraction(context, options);
 }
 
 export type { UseClickOptions };

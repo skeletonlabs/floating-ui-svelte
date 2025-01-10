@@ -1,7 +1,9 @@
 import { isElement } from "@floating-ui/utils/dom";
 import { useFloatingTree } from "../components/floating-tree/hooks.svelte.js";
 import type {
+	ContextData,
 	ExtendedElements,
+	FloatingEvents,
 	FloatingTreeType,
 	NarrowedElement,
 	OpenChangeReason,
@@ -12,6 +14,8 @@ import {
 	PositionState,
 	type UsePositionOptions,
 } from "./use-position.svelte.js";
+import type { Placement, Strategy } from "@floating-ui/utils";
+import type { MiddlewareData } from "@floating-ui/dom";
 
 interface UseFloatingOptions<RT extends ReferenceType = ReferenceType>
 	extends Omit<UsePositionOptions<RT>, "elements"> {
@@ -47,8 +51,58 @@ type FloatingContextOptions<RT extends ReferenceType = ReferenceType> = {
 	getElements: (state: FloatingState<RT>) => ExtendedElements<RT>;
 };
 
-class FloatingContext<RT extends ReferenceType = ReferenceType> {
+interface FloatingContextData<RT extends ReferenceType = ReferenceType> {
+	elements: ExtendedElements<RT>;
+	x: number;
+	y: number;
+	placement: Placement;
+	strategy: Strategy;
+	middlewareData: MiddlewareData;
+	isPositioned: boolean;
+	update: () => Promise<void>;
+	floatingStyles: string;
+	onOpenChange: (
+		open: boolean,
+		event?: Event,
+		reason?: OpenChangeReason,
+	) => void;
+	open: boolean;
+	data: ContextData<RT>;
+	floatingId: string;
+	events: FloatingEvents;
+	nodeId: string | undefined;
+}
+
+class FloatingContext<RT extends ReferenceType = ReferenceType>
+	implements FloatingContextData<RT>
+{
 	constructor(private readonly opts: FloatingContextOptions<RT>) {}
+
+	/**
+	 * INTERNAL ONLY. DO NOT USE.
+	 *
+	 * @internal
+	 */
+	// prefix with `z` to push to bottom of intellisense
+	readonly z_internal_current: FloatingContextData<RT> = $derived.by(() => {
+		return {
+			elements: this.opts.getElements(this.opts.floating),
+			x: this.opts.floating.x,
+			y: this.opts.floating.y,
+			placement: this.opts.floating.placement,
+			strategy: this.opts.floating.strategy,
+			middlewareData: this.opts.floating.middlewareData,
+			isPositioned: this.opts.floating.isPositioned,
+			update: this.opts.floating.update,
+			floatingStyles: this.opts.floating.floatingStyles,
+			onOpenChange: this.opts.rootContext.onOpenChange,
+			open: this.opts.rootContext.open,
+			data: this.opts.rootContext.data,
+			floatingId: this.opts.rootContext.floatingId,
+			events: this.opts.rootContext.events,
+			nodeId: this.opts.floatingOptions.nodeId,
+		};
+	});
 
 	get elements() {
 		return this.opts.getElements(this.opts.floating);
@@ -251,4 +305,4 @@ function useFloating<RT extends ReferenceType = ReferenceType>(
 }
 
 export { FloatingState, FloatingContext, useFloating };
-export type { UseFloatingOptions };
+export type { UseFloatingOptions, FloatingContextData };

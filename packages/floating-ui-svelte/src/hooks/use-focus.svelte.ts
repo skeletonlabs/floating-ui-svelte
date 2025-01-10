@@ -29,7 +29,7 @@ interface UseFocusOptions {
 	visibleOnly?: boolean;
 }
 
-class FocusState {
+class FocusInteraction {
 	#enabled = $derived.by(() => this.options.enabled ?? true);
 	#visibleOnly = $derived.by(() => this.options.visibleOnly ?? true);
 	#blockFocus = false;
@@ -173,11 +173,15 @@ class FocusState {
 			onblur: this.#onblur,
 		};
 	});
+
+	get enabled() {
+		return this.#enabled;
+	}
 }
 
 function useFocus(context: FloatingContext, options: UseFocusOptions = {}) {
-	return new FocusState(context, options);
+	return new FocusInteraction(context, options);
 }
 
 export type { UseFocusOptions };
-export { useFocus, FocusState };
+export { useFocus, FocusInteraction as FocusState };
