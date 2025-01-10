@@ -15,6 +15,7 @@
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"autoprefixer": "^10.4.20",
 		"focus-trap": "^7.6.2",
+		"latest-version": "^9.0.0",
 		"lucide-svelte": "^0.469.0",
 		"pagefind": "^1.3.0",
 		"shiki": "^1.24.4",
