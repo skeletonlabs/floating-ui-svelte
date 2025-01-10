@@ -7,31 +7,29 @@ on:
 
 jobs:
   publish:
-    name: Publish
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/*'
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 'latest'
-          run_install: false
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Create Release Pull Request or Publish to npm
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          publish: pnpm changeset publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  name: Format
+  runs-on: ubuntu-22.04
+  strategy:
+    matrix:
+      node-version: latest
+  steps:
+    - uses: actions/checkout@v4
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 10
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+      cache: 'pnpm'
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    - name: Create Release Pull Request or Publish to npm
+      id: changesets
+      uses: changesets/action@v1
+      with:
+        publish: pnpm changeset publish
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
