@@ -1,10 +1,5 @@
 import type { ReferenceElement } from "@floating-ui/dom";
-import type {
-	ContextData,
-	OnOpenChange,
-	OpenChangeReason,
-	ReferenceType,
-} from "../types.js";
+import type { ContextData, OpenChangeReason, ReferenceType } from "../types.js";
 import { useId } from "./use-id.js";
 import { createPubSub } from "../internal/create-pub-sub.js";
 import { useFloatingParentNodeId } from "../components/floating-tree/hooks.svelte.js";

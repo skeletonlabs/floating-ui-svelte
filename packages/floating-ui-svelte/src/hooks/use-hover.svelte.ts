@@ -18,6 +18,7 @@ import {
 } from "../components/floating-tree/hooks.svelte.js";
 import { on } from "svelte/events";
 import { executeCallbacks } from "../internal/execute-callbacks.js";
+import { snapshotFloatingContext } from "../internal/snapshot.svelte.js";
 
 interface DelayOptions {
 	/**
@@ -209,7 +210,7 @@ class HoverInteraction {
 					}
 
 					this.#handler = this.#handleClose({
-						...this.context.data.floatingContext.z_internal_current,
+						...snapshotFloatingContext(this.context).current,
 						tree: this.#tree,
 						x: event.clientX,
 						y: event.clientY,
@@ -250,14 +251,13 @@ class HoverInteraction {
 			// Ensure the floating element closes after scrolling even if the pointer
 			// did not move.
 			// https://github.com/floating-ui/floating-ui/discussions/1692
-
 			const onScrollMouseLeave = (event: MouseEvent) => {
 				if (!this.#isClickLikeOpenEvent || !this.context.data.floatingContext) {
 					return;
 				}
 
 				this.#handleClose?.({
-					...this.context.data.floatingContext.z_internal_current,
+					...snapshotFloatingContext(this.context).current,
 					tree: this.#tree,
 					x: event.clientX,
 					y: event.clientY,
@@ -401,7 +401,63 @@ class HoverInteraction {
 		this.#pointerType = event.pointerType;
 	};
 
-	#onReferenceMouseMove = (event: MouseEvent) => {};
+	#onReferenceMouseMove = (event: MouseEvent) => {
+		const handleMouseMove = () => {
+			if (!this.#blockMouseMove && !this.context.open) {
+				this.context.onOpenChange(true, event, "hover");
+			}
+		};
+
+		if (this.#mouseOnly && !isMouseLikePointerType(this.#pointerType)) return;
+		if (this.context.open || this.#restMs === 0) return;
+
+		// ignore insignificant movements to account for tremors
+		if (
+			this.#restTimeoutPending &&
+			event.movementX ** 2 + event.movementY ** 2 < 2
+		) {
+			return;
+		}
+
+		window.clearTimeout(this.#restTimeout);
+
+		if (this.#pointerType === "touch") {
+			handleMouseMove();
+		} else {
+			this.#restTimeoutPending = true;
+			this.#restTimeout = window.setTimeout(handleMouseMove, this.#restMs);
+		}
+	};
+
+	#onFloatingMouseEnter = () => {
+		window.clearTimeout(this.#timeout);
+	};
+
+	#onFloatingMouseLeave = (event: MouseEvent) => {
+		if (this.#isClickLikeOpenEvent) return;
+		this.#closeWithDelay(event, false);
+	};
+
+	reference = $derived.by(() => {
+		if (!this.#enabled) return {};
+		return {
+			onpointerdown: this.#setPointerType,
+			onpointerenter: this.#setPointerType,
+			onmousemove: this.#onReferenceMouseMove,
+		};
+	});
+
+	floating = $derived.by(() => {
+		if (!this.#enabled) return {};
+		return {
+			onmouseenter: this.#onFloatingMouseEnter,
+			onmouseleave: this.#onFloatingMouseLeave,
+		};
+	});
+
+	get enabled() {
+		return this.#enabled;
+	}
 }
 
 function useHover(context: FloatingContext, options: UseHoverOptions = {}) {
@@ -409,4 +465,4 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}) {
 }
 
 export type { UseHoverOptions };
-export { useHover };
+export { useHover, HoverInteraction };

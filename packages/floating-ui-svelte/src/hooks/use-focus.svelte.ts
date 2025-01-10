@@ -95,9 +95,11 @@ class FocusInteraction {
 		if (isVirtualPointerEvent(event)) return;
 		this.#keyboardModality = false;
 	};
+
 	#onmouseleave = () => {
 		this.#blockFocus = false;
 	};
+
 	#onfocus = (event: FocusEvent) => {
 		if (this.#blockFocus) {
 			return;
@@ -122,6 +124,7 @@ class FocusInteraction {
 
 		this.context.onOpenChange(true, event, "focus");
 	};
+
 	#onblur = (event: FocusEvent) => {
 		this.#blockFocus = false;
 		const relatedTarget = event.relatedTarget;

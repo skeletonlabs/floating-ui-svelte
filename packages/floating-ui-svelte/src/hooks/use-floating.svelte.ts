@@ -78,32 +78,6 @@ class FloatingContext<RT extends ReferenceType = ReferenceType>
 {
 	constructor(private readonly opts: FloatingContextOptions<RT>) {}
 
-	/**
-	 * INTERNAL ONLY. DO NOT USE.
-	 *
-	 * @internal
-	 */
-	// prefix with `z` to push to bottom of intellisense
-	readonly z_internal_current: FloatingContextData<RT> = $derived.by(() => {
-		return {
-			elements: this.opts.getElements(this.opts.floating),
-			x: this.opts.floating.x,
-			y: this.opts.floating.y,
-			placement: this.opts.floating.placement,
-			strategy: this.opts.floating.strategy,
-			middlewareData: this.opts.floating.middlewareData,
-			isPositioned: this.opts.floating.isPositioned,
-			update: this.opts.floating.update,
-			floatingStyles: this.opts.floating.floatingStyles,
-			onOpenChange: this.opts.rootContext.onOpenChange,
-			open: this.opts.rootContext.open,
-			data: this.opts.rootContext.data,
-			floatingId: this.opts.rootContext.floatingId,
-			events: this.opts.rootContext.events,
-			nodeId: this.opts.floatingOptions.nodeId,
-		};
-	});
-
 	get elements() {
 		return this.opts.getElements(this.opts.floating);
 	}

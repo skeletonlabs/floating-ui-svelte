@@ -116,11 +116,9 @@ class PositionState<RT extends ReferenceType = ReferenceType> {
 	);
 	#transform: boolean = $derived.by(() => this.options.transform ?? true);
 	#positionReference = $derived.by(() => this.getPositionReference());
-
 	reference = $derived.by(
 		() => this.#positionReference ?? this.rootContext.elements.reference,
 	);
-
 	data: UsePositionData = $state({
 		x: 0,
 		y: 0,
@@ -168,17 +166,13 @@ class PositionState<RT extends ReferenceType = ReferenceType> {
 		private readonly getPositionReference: () => ReferenceType | null,
 	) {
 		$effect.pre(() => {
-			if (this.rootContext.open || !this.data.isPositioned) {
-				return;
-			}
+			if (this.rootContext.open || !this.data.isPositioned) return;
 
 			this.data.isPositioned = false;
 		});
 
 		$effect.pre(() => {
-			if (!this.rootContext.elements.floating || !this.reference) {
-				return;
-			}
+			if (!this.rootContext.elements.floating || !this.reference) return;
 
 			if (!this.options.whileElementsMounted) {
 				this.update();
@@ -194,9 +188,7 @@ class PositionState<RT extends ReferenceType = ReferenceType> {
 	}
 
 	async update() {
-		if (!this.rootContext.elements.floating || !this.reference) {
-			return;
-		}
+		if (!this.rootContext.elements.floating || !this.reference) return;
 
 		const config: ComputePositionConfig = {
 			placement: this.#placement,

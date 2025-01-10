@@ -1,10 +1,6 @@
 <script lang="ts" module>
 	import type { Snippet } from "svelte";
-	import type {
-		FloatingNodeType,
-		FloatingTreeType,
-		ReferenceType,
-	} from "../../types.js";
+	import type { FloatingNodeType } from "../../types.js";
 	import { createPubSub } from "../../internal/create-pub-sub.js";
 	import { FloatingTreeContext } from "./hooks.svelte.js";
 

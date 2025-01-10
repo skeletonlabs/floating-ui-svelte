@@ -87,28 +87,32 @@ function mergeProps<Key extends keyof ElementProps>(
 	};
 }
 
-function useInteractions(
-	propsList: Array<ElementProps> = [],
-): UseInteractionsReturn {
-	const getReferenceProps = $derived((userProps?: HTMLAttributes<Element>) => {
-		return mergeProps(userProps, propsList, "reference");
+class Interactions {
+	constructor(private readonly propsList: Array<ElementProps> = []) {}
+
+	getReferenceProps = $derived((userProps?: HTMLAttributes<Element>) => {
+		return mergeProps(userProps, this.propsList, "reference");
 	});
 
-	const getFloatingProps = $derived((userProps?: HTMLAttributes<Element>) => {
-		return mergeProps(userProps, propsList, "floating");
+	getFloatingProps = $derived((userProps?: HTMLAttributes<Element>) => {
+		return mergeProps(userProps, this.propsList, "floating");
 	});
 
-	const getItemProps = $derived(
+	getItemProps = $derived(
 		(
 			userProps?: Omit<HTMLAttributes<Element>, "selected" | "active"> &
 				ExtendedUserProps,
 		) => {
-			return mergeProps(userProps, propsList, "item");
+			return mergeProps(userProps, this.propsList, "item");
 		},
 	);
+}
 
-	return { getReferenceProps, getFloatingProps, getItemProps };
+function useInteractions(
+	propsList: Array<ElementProps> = [],
+): UseInteractionsReturn {
+	return new Interactions(propsList);
 }
 
 export type { UseInteractionsReturn, ElementProps, ExtendedUserProps };
-export { useInteractions };
+export { useInteractions, Interactions };

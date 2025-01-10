@@ -42,12 +42,6 @@
 		 * @default 0
 		 */
 		strokeWidth?: number;
-
-		// Styling ---
-		/** Set transform styles. */
-		transform?: string;
-		/** Set fill styles. */
-		fill?: string;
 	}
 </script>
 
@@ -55,7 +49,12 @@
 	import type { Alignment, Side } from "@floating-ui/dom";
 	import { platform } from "@floating-ui/dom";
 	import { useId } from "../../hooks/use-id.js";
-	import { styleObjectToString } from "../../internal/style-object-to-string.js";
+	import {
+		styleObjectToString,
+		styleStringToObject,
+	} from "../../internal/style-object-to-string.js";
+	import parse from "style-to-object";
+	import { watch } from "../../internal/watch.svelte.js";
 
 	let {
 		ref = $bindable(null),
@@ -68,14 +67,43 @@
 		staticOffset,
 		stroke,
 		d,
-		// ---
-		transform,
-		fill,
-		// ---
+		style: styleProp = "",
 		...rest
 	}: FloatingArrowProps = $props();
 
+	const { transform, ...restStyle } = $derived(
+		styleStringToObject(styleProp)
+	);
+
 	const clipPathId = useId();
+
+	let isRTL = $state(false);
+
+	// https://github.com/floating-ui/floating-ui/issues/2932
+	watch(
+		() => context.elements.floating,
+		(floatingEl) => {
+			if (!floatingEl) return;
+			if (getComputedStyle(floatingEl).direction === "rtl") {
+				isRTL = true;
+			}
+		}
+	);
+
+	const [side, alignment] = $derived(
+		context.placement.split("-") as [Side, Alignment]
+	);
+	const isVerticalSide = $derived(side === "top" || side === "bottom");
+
+	const computedStaticOffset = $derived.by(() => {
+		if (
+			(isVerticalSide && context.middlewareData.shift?.x) ||
+			(!isVerticalSide && context.middlewareData.shift?.y)
+		) {
+			return null;
+		}
+		return staticOffset;
+	});
 
 	// Strokes must be double the border width, this ensures the stroke's width
 	// works as you'd expect.
@@ -85,33 +113,27 @@
 	const svgX = $derived((width / 2) * (tipRadius / -8 + 1));
 	const svgY = $derived(((height / 2) * tipRadius) / 4);
 
-	const [side, alignment] = $derived(
-		context.placement.split("-") as [Side, Alignment]
-	);
-	const isRTL = $derived(
-		context.elements.floating && platform.isRTL(context.elements.floating)
-	);
 	const isCustomShape = $derived(!!d);
-	const isVerticalSide = $derived(side === "top" || side === "bottom");
 
 	const yOffsetProp = $derived(
-		staticOffset && alignment === "end" ? "bottom" : "top"
+		computedStaticOffset && alignment === "end" ? "bottom" : "top"
 	);
 	const xOffsetProp = $derived.by(() => {
-		if (!staticOffset) {
-			return "left";
-		}
-		if (isRTL) {
-			return alignment === "end" ? "right" : "left";
+		if (computedStaticOffset && isRTL) {
+			return alignment === "end" ? "left" : "right";
 		}
 		return alignment === "end" ? "right" : "left";
 	});
 
 	const arrowX = $derived(
-		arrow?.x != null ? staticOffset || `${arrow.x}px` : ""
+		context.middlewareData.arrow?.x != null
+			? staticOffset || `${context.middlewareData.arrow.x}px`
+			: ""
 	);
 	const arrowY = $derived(
-		arrow?.y != null ? staticOffset || `${arrow.y}px` : ""
+		context.middlewareData.arrow?.y != null
+			? staticOffset || `${context.middlewareData.arrow.y}px`
+			: ""
 	);
 
 	const dValue = $derived(
@@ -120,61 +142,61 @@
 	);
 
 	const rotation = $derived.by(() => {
-		switch (side) {
-			case "top":
-				return isCustomShape ? "rotate(180deg)" : "";
-			case "left":
-				return isCustomShape ? "rotate(90deg)" : "rotate(-90deg)";
-			case "bottom":
-				return isCustomShape ? "" : "rotate(180deg)";
-			case "right":
-				return isCustomShape ? "rotate(-90deg)" : "rotate(90deg)";
-		}
+		return {
+			top: isCustomShape ? "rotate(180deg)" : "",
+			left: isCustomShape ? "rotate(90deg)" : "rotate(-90deg)",
+			bottom: isCustomShape ? "" : "rotate(180deg)",
+			right: isCustomShape ? "rotate(-90deg)" : "rotate(90deg)",
+		}[side];
 	});
 </script>
 
 <!-- FIXME: extend styleObjectToString type to accept `rest.styles` -->
 
-<svg
-	bind:this={ref}
-	width={isCustomShape ? width : width + computedStrokeWidth}
-	height={width}
-	viewBox={`0 0 ${width} ${height > width ? height : width}`}
-	aria-hidden="true"
-	style={styleObjectToString({
-		position: "absolute",
-		"pointer-events": "none",
-		[xOffsetProp]: `${arrowX}`,
-		[yOffsetProp]: `${arrowY}`,
-		[side]:
-			isVerticalSide || isCustomShape
-				? "100%"
-				: `calc(100% - ${computedStrokeWidth / 2}px)`,
-		transform: `${rotation} ${transform ?? ""}`,
-		fill,
-	})}
-	data-testid="floating-arrow"
-	{...rest}>
-	{#if computedStrokeWidth > 0}
-		<!-- Account for the stroke on the fill path rendered below. -->
-		<path
-			fill="none"
-			{stroke}
-			clip-path={`url(#${clipPathId})`}
-			stroke-width={computedStrokeWidth + (d ? 0 : 1)}
-			d={dValue} />
-	{/if}
-	<!--
+{#if context.elements.floating}
+	<svg
+		bind:this={ref}
+		{...rest}
+		width={isCustomShape ? width : width + computedStrokeWidth}
+		height={width}
+		viewBox={`0 0 ${width} ${height > width ? height : width}`}
+		aria-hidden="true"
+		style={styleObjectToString({
+			position: "absolute",
+			"pointer-events": "none",
+			[xOffsetProp]: `${arrowX}`,
+			[yOffsetProp]: `${arrowY}`,
+			[side]:
+				isVerticalSide || isCustomShape
+					? "100%"
+					: `calc(100% - ${computedStrokeWidth / 2}px)`,
+			transform: [rotation, transform].filter((t) => !!t).join(" "),
+			...restStyle,
+		})}
+		data-testid="floating-arrow">
+		{#if computedStrokeWidth > 0}
+			<!-- Account for the stroke on the fill path rendered below. -->
+			<path
+				clip-path={`url(#${clipPathId})`}
+				fill="none"
+				{stroke}
+				stroke-width={computedStrokeWidth + (d ? 0 : 1)}
+				d={dValue} />
+		{/if}
+		<!--
         In Firefox, for left/right placements there's a ~0.5px gap where the
         border can show through. Adding a stroke on the fill removes it.
     -->
-	<path stroke={computedStrokeWidth && !d ? fill : "none"} d={dValue} />
-	<!-- Assumes the border-width of the floating element matches the stroke. -->
-	<clipPath id={clipPathId}>
-		<rect
-			x={-halfStrokeWidth}
-			y={halfStrokeWidth * (isCustomShape ? -1 : 1)}
-			width={width + computedStrokeWidth}
-			height={width} />
-	</clipPath>
-</svg>
+		<path
+			stroke={computedStrokeWidth && !d ? rest.fill : "none"}
+			d={dValue} />
+		<!-- Assumes the border-width of the floating element matches the stroke. -->
+		<clipPath id={clipPathId}>
+			<rect
+				x={-halfStrokeWidth}
+				y={halfStrokeWidth * (isCustomShape ? -1 : 1)}
+				width={width + computedStrokeWidth}
+				height={width} />
+		</clipPath>
+	</svg>
+{/if}
