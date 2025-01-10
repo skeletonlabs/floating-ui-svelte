@@ -1,8 +1,8 @@
 import { isHTMLElement } from "@floating-ui/utils/dom";
 import { isMouseLikePointerType } from "../internal/dom.js";
 import { isTypeableElement } from "../internal/is-typeable-element.js";
-import type { ElementProps } from "./use-interactions.svelte.js";
 import type { FloatingContext } from "./use-floating.svelte.js";
+import type { ReferenceType } from "../types.js";
 
 interface UseClickOptions {
 	/**
@@ -48,131 +48,139 @@ function isButtonTarget(event: KeyboardEvent) {
 	return isHTMLElement(event.target) && event.target.tagName === "BUTTON";
 }
 
-function isSpaceIgnored(element: Element | null) {
+function isSpaceIgnored(element: ReferenceType | null) {
 	return isTypeableElement(element);
 }
 
-function useClick(
-	context: FloatingContext,
-	options: UseClickOptions = {},
-): ElementProps {
-	const {
-		enabled = true,
-		event: eventOption = "click",
-		toggle = true,
-		ignoreMouse = false,
-		keyboardHandlers = true,
-	} = $derived(options);
+class ClickState {
+	#enabled = $derived.by(() => this.options.enabled ?? "true");
+	#eventOption = $derived.by(() => this.options.event ?? "click");
+	#toggle = $derived.by(() => this.options.toggle ?? true);
+	#ignoreMouse = $derived.by(() => this.options.ignoreMouse ?? false);
+	#keyboardHandlers = $derived.by(() => this.options.keyboardHandlers ?? true);
+	#pointerType: PointerEvent["pointerType"] | undefined = undefined;
+	#didKeyDown = false;
 
-	let pointerType: PointerEvent["pointerType"] | undefined = undefined;
-	let didKeyDown = false;
+	constructor(
+		private readonly context: FloatingContext,
+		private readonly options: UseClickOptions = {},
+	) {}
 
-	return {
-		get reference() {
-			if (!enabled) {
-				return {};
-			}
-			return {
-				onpointerdown: (event: PointerEvent) => {
-					pointerType = event.pointerType;
-				},
-				onmousedown: (event: MouseEvent) => {
-					if (event.button !== 0) {
-						return;
-					}
+	get reference() {
+		if (!this.#enabled) {
+			return {};
+		}
+		return {
+			onpointerdown: (event: PointerEvent) => {
+				this.#pointerType = event.pointerType;
+			},
+			onmousedown: (event: MouseEvent) => {
+				if (event.button !== 0) {
+					return;
+				}
 
-					if (isMouseLikePointerType(pointerType, true) && ignoreMouse) {
-						return;
-					}
+				if (
+					isMouseLikePointerType(this.#pointerType, true) &&
+					this.#ignoreMouse
+				) {
+					return;
+				}
 
-					if (eventOption === "click") {
-						return;
-					}
+				if (this.#eventOption === "click") {
+					return;
+				}
 
-					if (
-						context.open &&
-						toggle &&
-						(context.data.openEvent
-							? context.data.openEvent.type === "mousedown"
-							: true)
-					) {
-						context.onOpenChange(false, event, "click");
+				if (
+					this.context.open &&
+					this.#toggle &&
+					(this.context.data.openEvent
+						? this.context.data.openEvent.type === "mousedown"
+						: true)
+				) {
+					this.context.onOpenChange(false, event, "click");
+				} else {
+					// Prevent stealing focus from the floating element
+					event.preventDefault();
+					this.context.onOpenChange(true, event, "click");
+				}
+			},
+			onclick: (event: MouseEvent) => {
+				if (this.#eventOption === "mousedown" && this.#pointerType) {
+					this.#pointerType = undefined;
+					return;
+				}
+
+				if (
+					isMouseLikePointerType(this.#pointerType, true) &&
+					this.#ignoreMouse
+				) {
+					return;
+				}
+
+				if (
+					this.context.open &&
+					this.#toggle &&
+					(this.context.data.openEvent
+						? this.context.data.openEvent.type === "click"
+						: true)
+				) {
+					this.context.onOpenChange(false, event, "click");
+				} else {
+					this.context.onOpenChange(true, event, "click");
+				}
+			},
+			onkeydown: (event: KeyboardEvent) => {
+				this.#pointerType = undefined;
+
+				if (
+					event.defaultPrevented ||
+					!this.#keyboardHandlers ||
+					isButtonTarget(event)
+				) {
+					return;
+				}
+				if (
+					event.key === " " &&
+					!isSpaceIgnored(this.context.elements.reference)
+				) {
+					// Prevent scrolling
+					event.preventDefault();
+					this.#didKeyDown = true;
+				}
+
+				if (event.key === "Enter") {
+					if (this.context.open && this.#toggle) {
+						this.context.onOpenChange(false, event, "click");
 					} else {
-						// Prevent stealing focus from the floating element
-						event.preventDefault();
-						context.onOpenChange(true, event, "click");
+						this.context.onOpenChange(true, event, "click");
 					}
-				},
-				onclick: (event: MouseEvent) => {
-					if (eventOption === "mousedown" && pointerType) {
-						pointerType = undefined;
-						return;
-					}
+				}
+			},
+			onkeyup: (event: KeyboardEvent) => {
+				if (
+					event.defaultPrevented ||
+					!this.#keyboardHandlers ||
+					isButtonTarget(event) ||
+					isSpaceIgnored(this.context.elements.reference)
+				) {
+					return;
+				}
 
-					if (isMouseLikePointerType(pointerType, true) && ignoreMouse) {
-						return;
-					}
-
-					if (
-						context.open &&
-						toggle &&
-						(context.data.openEvent
-							? context.data.openEvent.type === "click"
-							: true)
-					) {
-						context.onOpenChange(false, event, "click");
+				if (event.key === " " && this.#didKeyDown) {
+					this.#didKeyDown = false;
+					if (this.context.open && this.#toggle) {
+						this.context.onOpenChange(false, event, "click");
 					} else {
-						context.onOpenChange(true, event, "click");
+						this.context.onOpenChange(true, event, "click");
 					}
-				},
-				onkeydown: (event: KeyboardEvent) => {
-					pointerType = undefined;
+				}
+			},
+		};
+	}
+}
 
-					if (
-						event.defaultPrevented ||
-						!keyboardHandlers ||
-						isButtonTarget(event)
-					) {
-						return;
-					}
-					// @ts-expect-error FIXME
-					if (event.key === " " && !isSpaceIgnored(reference)) {
-						// Prevent scrolling
-						event.preventDefault();
-						didKeyDown = true;
-					}
-
-					if (event.key === "Enter") {
-						if (context.open && toggle) {
-							context.onOpenChange(false, event, "click");
-						} else {
-							context.onOpenChange(true, event, "click");
-						}
-					}
-				},
-				onkeyup: (event: KeyboardEvent) => {
-					if (
-						event.defaultPrevented ||
-						!keyboardHandlers ||
-						isButtonTarget(event) ||
-						// @ts-expect-error FIXME
-						isSpaceIgnored(reference)
-					) {
-						return;
-					}
-
-					if (event.key === " " && didKeyDown) {
-						didKeyDown = false;
-						if (context.open && toggle) {
-							context.onOpenChange(false, event, "click");
-						} else {
-							context.onOpenChange(true, event, "click");
-						}
-					}
-				},
-			};
-		},
-	};
+function useClick(context: FloatingContext, options: UseClickOptions = {}) {
+	return new ClickState(context, options);
 }
 
 export type { UseClickOptions };

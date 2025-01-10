@@ -9,10 +9,7 @@ import {
 import { getDPR, roundByDPR } from "../internal/dpr.js";
 import { styleObjectToString } from "../internal/style-object-to-string.js";
 import type { ReferenceType } from "../types.js";
-import type {
-	FloatingState,
-	UseFloatingOptions,
-} from "./use-floating.svelte.js";
+import type { UseFloatingOptions } from "./use-floating.svelte.js";
 import type { FloatingRootContext } from "./use-floating-root-context.svelte.js";
 
 interface PositionElements<RT extends ReferenceType = ReferenceType> {
@@ -191,12 +188,12 @@ class PositionState<RT extends ReferenceType = ReferenceType> {
 			return this.options.whileElementsMounted(
 				this.reference as RT,
 				this.rootContext.elements.floating,
-				this.update,
+				() => this.update(),
 			);
 		});
 	}
 
-	update = async () => {
+	async update() {
 		if (!this.rootContext.elements.floating || !this.reference) {
 			return;
 		}
@@ -219,7 +216,7 @@ class PositionState<RT extends ReferenceType = ReferenceType> {
 		this.data.strategy = position.strategy;
 		this.data.middlewareData = position.middlewareData;
 		this.data.isPositioned = true;
-	};
+	}
 }
 
 export type { UsePositionOptions, UsePositionData };
