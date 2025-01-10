@@ -1,12 +1,9 @@
 <script lang="ts">
 	import { autoUpdate } from "@floating-ui/dom";
-	import {
-		type UseClickOptions,
-		useClick,
-	} from "../../../src/hooks/use-click.svelte.js";
 	import { useFloating } from "../../../src/hooks/use-floating.svelte.js";
 	import { useHover } from "../../../src/hooks/use-hover.svelte.js";
 	import { useInteractions } from "../../../src/hooks/use-interactions.svelte.js";
+	import { useClick, type UseClickOptions } from "../../../src/index.js";
 
 	interface Props extends UseClickOptions {
 		open?: boolean;

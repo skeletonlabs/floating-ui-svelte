@@ -30,7 +30,9 @@
 <button
 	data-testid="reference"
 	bind:this={floating.elements.reference}
-	{...interactions.getReferenceProps()}></button>
+	{...interactions.getReferenceProps()}>
+	button
+</button>
 
 {#if open}
 	<div

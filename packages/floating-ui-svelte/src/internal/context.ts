@@ -1,7 +1,6 @@
 /**
  * Sourced from Runed `Context`: https://runed.dev/docs/utilities/context
  */
-
 import { getContext, hasContext, setContext } from "svelte";
 
 export class Context<TContext> {

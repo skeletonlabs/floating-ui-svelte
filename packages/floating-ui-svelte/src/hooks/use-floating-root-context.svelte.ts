@@ -87,6 +87,10 @@ class FloatingRootContext<RT extends ReferenceType = ReferenceType> {
 		this.#positionReference = node;
 	}
 
+	setFloatingElement(node: HTMLElement | null) {
+		this.#floatingElement = node;
+	}
+
 	get elements() {
 		const _this = this;
 		return {
@@ -97,7 +101,7 @@ class FloatingRootContext<RT extends ReferenceType = ReferenceType> {
 				return _this.#elements.floating;
 			},
 			set floating(node: HTMLElement | null) {
-				_this.#floatingElement = node;
+				_this.setFloatingElement(node);
 			},
 			get domReference() {
 				return _this.#referenceElement;

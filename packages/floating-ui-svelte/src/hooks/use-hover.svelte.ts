@@ -6,7 +6,6 @@ import {
 	isMouseLikePointerType,
 } from "../internal/dom.js";
 import { noop } from "../internal/noop.js";
-import type { ElementProps } from "./use-interactions.svelte.js";
 import type { FloatingTreeType, OpenChangeReason } from "../types.js";
 import type {
 	FloatingContext,

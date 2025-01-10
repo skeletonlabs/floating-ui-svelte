@@ -2,6 +2,7 @@
 	"name": "monorepo",
 	"private": true,
 	"scripts": {
+		"dev": "pnpm -F \"./packages/**\" svelte-kit sync && pnpm -r --parallel --reporter append-only --color dev",
 		"format": "biome check . --write",
 		"format:check": "biome check .",
 		"build": "pnpm --recursive build",

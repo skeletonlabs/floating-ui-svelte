@@ -210,6 +210,10 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 		this.#positionReference = computedPositionReference;
 	}
 
+	setDomReference(node: NarrowedElement<RT> | null) {
+		this.#domReference = node;
+	}
+
 	get placement() {
 		return this.#position.data.placement;
 	}
@@ -249,7 +253,7 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 			},
 			set reference(node: RT | null) {
 				if (isElement(node) || node === null) {
-					state.#domReference = node as NarrowedElement<RT> | null;
+					state.setDomReference(node as NarrowedElement<RT> | null);
 				}
 			},
 			get floating() {
@@ -264,9 +268,9 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 		};
 	};
 
-	get elements() {
+	readonly elements = $derived.by(() => {
 		return this.#getElements(this);
-	}
+	});
 }
 
 /**

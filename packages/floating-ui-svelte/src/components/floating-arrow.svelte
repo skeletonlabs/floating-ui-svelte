@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import type { SVGAttributes } from "svelte/elements";
-	import type { FloatingContext } from "../../hooks/use-floating.svelte.js";
+	import type { FloatingContext } from "../hooks/use-floating.svelte.js";
 
 	export interface FloatingArrowProps extends SVGAttributes<SVGElement> {
 		/** The bound HTML element reference. */
@@ -47,14 +47,12 @@
 
 <script lang="ts">
 	import type { Alignment, Side } from "@floating-ui/dom";
-	import { platform } from "@floating-ui/dom";
-	import { useId } from "../../hooks/use-id.js";
+	import { useId } from "../hooks/use-id.js";
 	import {
 		styleObjectToString,
 		styleStringToObject,
-	} from "../../internal/style-object-to-string.js";
-	import parse from "style-to-object";
-	import { watch } from "../../internal/watch.svelte.js";
+	} from "../internal/style-object-to-string.js";
+	import { watch } from "../internal/watch.svelte.js";
 
 	let {
 		ref = $bindable(null),

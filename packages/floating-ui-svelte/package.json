@@ -5,12 +5,11 @@
 		"build": "svelte-package --input ./src",
 		"build:watch": "pnpm build --watch",
 		"test": "vitest run",
+		"dev": "pnpm build:watch",
 		"test:watch": "pnpm test --watch",
 		"sync": "svelte-kit sync && pnpm build"
 	},
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"sideEffects": false,
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",

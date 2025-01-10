@@ -109,12 +109,14 @@ interface UsePositionData {
  * Manages the positioning of floating elements.
  */
 class PositionState<RT extends ReferenceType = ReferenceType> {
-	#strategy: Strategy = $derived.by(() => this.options.strategy ?? "absolute");
-	#placement: Placement = $derived.by(() => this.options.placement ?? "bottom");
-	#middleware: Array<Middleware | undefined | null | false> = $derived.by(
-		() => this.options.middleware ?? [],
+	#strategy: Strategy = $derived.by(() => this.options?.strategy ?? "absolute");
+	#placement: Placement = $derived.by(
+		() => this.options?.placement ?? "bottom",
 	);
-	#transform: boolean = $derived.by(() => this.options.transform ?? true);
+	#middleware: Array<Middleware | undefined | null | false> = $derived.by(
+		() => this.options?.middleware ?? [],
+	);
+	#transform: boolean = $derived.by(() => this.options?.transform ?? true);
 	#positionReference = $derived.by(() => this.getPositionReference());
 	reference = $derived.by(
 		() => this.#positionReference ?? this.rootContext.elements.reference,
