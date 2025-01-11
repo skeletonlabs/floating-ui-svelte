@@ -89,6 +89,9 @@ interface FloatingTreeType<RT extends ReferenceType = ReferenceType> {
 	removeNode(node: FloatingNodeType): void;
 }
 
+type Getter<T> = () => T;
+type MaybeGetter<T> = T | Getter<T>;
+
 export type {
 	OpenChangeReason,
 	FloatingEvents,
@@ -100,4 +103,6 @@ export type {
 	ReferenceType,
 	NarrowedElement,
 	OnOpenChange,
+	Getter,
+	MaybeGetter,
 };
