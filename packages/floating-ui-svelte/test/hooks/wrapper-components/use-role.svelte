@@ -12,9 +12,7 @@
 	let { open = false, ...useRoleOptions }: Props = $props();
 	const floating = useFloating({
 		whileElementsMounted: autoUpdate,
-		get open() {
-			return open;
-		},
+		open: () => open,
 		onOpenChange: (v) => {
 			open = v;
 		},
@@ -25,7 +23,7 @@
 
 <button
 	data-testid="reference"
-	bind:this={floating.elements.reference}
+	bind:this={floating.reference}
 	{...interactions.getReferenceProps()}>
 	button
 </button>
@@ -33,7 +31,7 @@
 {#if open}
 	<div
 		data-testid="floating"
-		bind:this={floating.elements.floating}
+		bind:this={floating.floating}
 		style={floating.floatingStyles}
 		{...interactions.getFloatingProps()}>
 		{#each [1, 2, 3] as i}

@@ -20,10 +20,8 @@
 
 	const floating = useFloating({
 		whileElementsMounted: autoUpdate,
-		get open() {
-			return open;
-		},
-		onOpenChange(v) {
+		open: () => open,
+		onOpenChange: (v) => {
 			open = v;
 		},
 	});
@@ -35,7 +33,7 @@
 {#if showReference}
 	<button
 		data-testid="reference"
-		bind:this={floating.elements.reference}
+		bind:this={floating.reference}
 		{...interactions.getReferenceProps()}>
 		button
 	</button>
@@ -44,7 +42,7 @@
 {#if open}
 	<div
 		data-testid="floating"
-		bind:this={floating.elements.floating}
+		bind:this={floating.floating}
 		style={floating.floatingStyles}
 		{...interactions.getFloatingProps()}>
 	</div>

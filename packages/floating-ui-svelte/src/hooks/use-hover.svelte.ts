@@ -162,7 +162,7 @@ class HoverInteraction {
 				this.context.onOpenChange(false, event, "hover");
 			};
 
-			const html = getDocument(this.context.elements.floating).documentElement;
+			const html = getDocument(this.context.floating).documentElement;
 
 			return on(html, "mouseleave", onLeave);
 		});
@@ -198,7 +198,7 @@ class HoverInteraction {
 				if (this.#isClickLikeOpenEvent) return;
 
 				this.#unbindMouseMove();
-				const doc = getDocument(this.context.elements.floating);
+				const doc = getDocument(this.context.floating);
 				window.clearTimeout(this.#restTimeout);
 				this.#restTimeoutPending = false;
 
@@ -238,7 +238,7 @@ class HoverInteraction {
 				const shouldClose =
 					this.#pointerType === "touch"
 						? !contains(
-								this.context.elements.floating,
+								this.context.floating,
 								event.relatedTarget as Element | null,
 							)
 						: true;
@@ -270,19 +270,15 @@ class HoverInteraction {
 				})(event);
 			};
 
-			if (isElement(this.context.elements.domReference)) {
-				const domRef = this.context.elements.domReference as HTMLElement;
+			if (isElement(this.context.domReference)) {
+				const domRef = this.context.domReference as HTMLElement;
 				const listenersToRemove: Array<() => void> = [];
 				if (this.context.open) {
 					listenersToRemove.push(on(domRef, "mouseleave", onScrollMouseLeave));
 				}
-				if (this.context.elements.floating) {
+				if (this.context.floating) {
 					listenersToRemove.push(
-						on(
-							this.context.elements.floating,
-							"mouseleave",
-							onScrollMouseLeave,
-						),
+						on(this.context.floating, "mouseleave", onScrollMouseLeave),
 					);
 				}
 				if (this.#move) {
@@ -315,18 +311,18 @@ class HoverInteraction {
 				this.#isHoverOpen
 			) {
 				this.#performedPointerEventsMutation = true;
-				const floatingEl = this.context.elements.floating;
-				if (isElement(this.context.elements.domReference) && floatingEl) {
+				const floatingEl = this.context.floating;
+				if (isElement(this.context.domReference) && floatingEl) {
 					const body = getDocument(floatingEl).body;
 					body.setAttribute(safePolygonIdentifier, "");
 
-					const ref = this.context.elements.domReference as unknown as
+					const ref = this.context.domReference as unknown as
 						| HTMLElement
 						| SVGSVGElement;
 
 					const parentFloating = this.#tree?.nodes.find(
 						(node) => node.id === this.#parentId,
-					)?.context?.elements.floating;
+					)?.context?.floating;
 
 					if (parentFloating) {
 						parentFloating.style.pointerEvents = "";
@@ -354,7 +350,7 @@ class HoverInteraction {
 		});
 
 		$effect(() => {
-			[this.#enabled, this.context.elements.domReference];
+			[this.#enabled, this.context.domReference];
 			return () => {
 				this.#cleanupMouseMoveHandler();
 				window.clearTimeout(this.#timeout);
@@ -390,7 +386,7 @@ class HoverInteraction {
 	#clearPointerEvents = () => {
 		if (!this.#performedPointerEventsMutation) return;
 
-		const body = getDocument(this.context.elements.floating).body;
+		const body = getDocument(this.context.floating).body;
 		body.style.pointerEvents = "";
 		body.removeAttribute(safePolygonIdentifier);
 		this.#performedPointerEventsMutation = false;

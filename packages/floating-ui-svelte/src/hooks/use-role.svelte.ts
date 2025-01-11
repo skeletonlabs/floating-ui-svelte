@@ -1,4 +1,6 @@
 import { useFloatingParentNodeId } from "../components/floating-tree/hooks.svelte.js";
+import { extract } from "../internal/extract.js";
+import type { MaybeGetter } from "../types.js";
 import type { FloatingContext } from "./use-floating.svelte.js";
 import { useId } from "./use-id.js";
 import type {
@@ -23,12 +25,12 @@ interface UseRoleOptions {
 	 * handlers.
 	 * @default true
 	 */
-	enabled?: boolean;
+	enabled?: MaybeGetter<boolean>;
 	/**
 	 * The role of the floating element.
 	 * @default 'dialog'
 	 */
-	role?: AriaRole | ComponentRole;
+	role?: MaybeGetter<AriaRole | ComponentRole>;
 }
 
 const componentRoleToAriaRoleMap = new Map<
@@ -41,8 +43,8 @@ const componentRoleToAriaRoleMap = new Map<
 ]);
 
 class RoleInteraction {
-	#enabled = $derived.by(() => this.options.enabled ?? true);
-	#role = $derived.by(() => this.options.role ?? "dialog");
+	#enabled = $derived.by(() => extract(this.options.enabled, true));
+	#role = $derived.by(() => extract(this.options.role, "dialog"));
 	#ariaRole = $derived(
 		(componentRoleToAriaRoleMap.get(this.#role) ?? this.#role) as
 			| AriaRole

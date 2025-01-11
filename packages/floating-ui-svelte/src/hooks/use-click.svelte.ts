@@ -2,7 +2,8 @@ import { isHTMLElement } from "@floating-ui/utils/dom";
 import { isMouseLikePointerType } from "../internal/dom.js";
 import { isTypeableElement } from "../internal/is-typeable-element.js";
 import type { FloatingContext } from "./use-floating.svelte.js";
-import type { ReferenceType } from "../types.js";
+import type { MaybeGetter, ReferenceType } from "../types.js";
+import { extract } from "../internal/extract.js";
 
 interface UseClickOptions {
 	/**
@@ -10,20 +11,20 @@ interface UseClickOptions {
 	 * handlers.
 	 * @default true
 	 */
-	enabled?: boolean;
+	enabled?: MaybeGetter<boolean>;
 
 	/**
 	 * The type of event to use to determine a “click” with mouse input.
 	 * Keyboard clicks work as normal.
 	 * @default 'click'
 	 */
-	event?: "click" | "mousedown";
+	event?: MaybeGetter<"click" | "mousedown">;
 
 	/**
 	 * Whether to toggle the open state with repeated clicks.
 	 * @default true
 	 */
-	toggle?: boolean;
+	toggle?: MaybeGetter<boolean>;
 
 	/**
 	 * Whether to ignore the logic for mouse input (for example, if `useHover()`
@@ -33,7 +34,7 @@ interface UseClickOptions {
 	 * even once the cursor leaves. This may be not be desirable in some cases.
 	 * @default false
 	 */
-	ignoreMouse?: boolean;
+	ignoreMouse?: MaybeGetter<boolean>;
 
 	/**
 	 * Whether to add keyboard handlers (Enter and Space key functionality) for
@@ -41,7 +42,7 @@ interface UseClickOptions {
 	 * “click”).
 	 * @default true
 	 */
-	keyboardHandlers?: boolean;
+	keyboardHandlers?: MaybeGetter<boolean>;
 }
 
 function isButtonTarget(event: KeyboardEvent) {
@@ -53,11 +54,13 @@ function isSpaceIgnored(element: ReferenceType | null) {
 }
 
 class ClickInteraction {
-	#enabled = $derived.by(() => this.options.enabled ?? "true");
-	#eventOption = $derived.by(() => this.options.event ?? "click");
-	#toggle = $derived.by(() => this.options.toggle ?? true);
-	#ignoreMouse = $derived.by(() => this.options.ignoreMouse ?? false);
-	#keyboardHandlers = $derived.by(() => this.options.keyboardHandlers ?? true);
+	#enabled = $derived.by(() => extract(this.options?.enabled, true));
+	#eventOption = $derived.by(() => extract(this.options?.event, "click"));
+	#toggle = $derived.by(() => extract(this.options?.toggle, true));
+	#ignoreMouse = $derived.by(() => extract(this.options?.ignoreMouse, false));
+	#keyboardHandlers = $derived.by(() =>
+		extract(this.options?.keyboardHandlers, true),
+	);
 	#pointerType: PointerEvent["pointerType"] | undefined = undefined;
 	#didKeyDown = false;
 
@@ -127,10 +130,7 @@ class ClickInteraction {
 			return;
 		}
 
-		if (
-			event.key === " " &&
-			!isSpaceIgnored(this.context.elements.domReference)
-		) {
+		if (event.key === " " && !isSpaceIgnored(this.context.domReference)) {
 			// Prevent scrolling
 			event.preventDefault();
 			this.#didKeyDown = true;
@@ -150,7 +150,7 @@ class ClickInteraction {
 			event.defaultPrevented ||
 			!this.#keyboardHandlers ||
 			isButtonTarget(event) ||
-			isSpaceIgnored(this.context.elements.domReference)
+			isSpaceIgnored(this.context.domReference)
 		) {
 			return;
 		}

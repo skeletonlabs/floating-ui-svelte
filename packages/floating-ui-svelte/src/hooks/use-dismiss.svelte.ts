@@ -15,11 +15,12 @@ import {
 	isRootElement,
 } from "../internal/dom.js";
 import type { FloatingContext } from "./use-floating.svelte.js";
-import type { FloatingTreeType } from "../types.js";
+import type { FloatingTreeType, MaybeGetter } from "../types.js";
 import { useFloatingTree } from "../components/floating-tree/hooks.svelte.js";
 import { getChildren } from "../internal/get-children.js";
 import { on } from "svelte/events";
 import { executeCallbacks } from "../internal/execute-callbacks.js";
+import { extract } from "../internal/extract.js";
 
 const bubbleHandlerKeys = {
 	pointerdown: "onpointerdown",
@@ -54,19 +55,19 @@ interface UseDismissOptions {
 	 * handlers.
 	 * @default true
 	 */
-	enabled?: boolean;
+	enabled?: MaybeGetter<boolean>;
 	/**
 	 * Whether to dismiss the floating element upon pressing the `esc` key.
 	 * @default true
 	 */
-	escapeKey?: boolean;
+	escapeKey?: MaybeGetter<boolean>;
 	/**
 	 * Whether to dismiss the floating element upon pressing the reference
 	 * element. You likely want to ensure the `move` option in the `useHover()`
 	 * Hook has been disabled when this is in use.
 	 * @default false
 	 */
-	referencePress?: boolean;
+	referencePress?: MaybeGetter<boolean>;
 	/**
 	 * The type of event to use to determine a “press”.
 	 * - `pointerdown` is eager on both mouse + touch input.
@@ -74,7 +75,7 @@ interface UseDismissOptions {
 	 * - `click` is lazy on both mouse + touch input.
 	 * @default 'pointerdown'
 	 */
-	referencePressEvent?: "pointerdown" | "mousedown" | "click";
+	referencePressEvent?: MaybeGetter<"pointerdown" | "mousedown" | "click">;
 	/**
 	 * Whether to dismiss the floating element upon pressing outside of the
 	 * floating element.
@@ -96,38 +97,46 @@ interface UseDismissOptions {
 	 * - `click` is lazy on both mouse + touch input.
 	 * @default 'pointerdown'
 	 */
-	outsidePressEvent?: "pointerdown" | "mousedown" | "click";
+	outsidePressEvent?: MaybeGetter<"pointerdown" | "mousedown" | "click">;
 	/**
 	 * Whether to dismiss the floating element upon scrolling an overflow
 	 * ancestor.
 	 * @default false
 	 */
-	ancestorScroll?: boolean;
+	ancestorScroll?: MaybeGetter<boolean>;
 	/**
 	 * Determines whether event listeners bubble upwards through a tree of
 	 * floating elements.
 	 */
-	bubbles?: boolean | { escapeKey?: boolean; outsidePress?: boolean };
+	bubbles?: MaybeGetter<
+		boolean | { escapeKey?: boolean; outsidePress?: boolean }
+	>;
 	/**
 	 * Determines whether to use capture phase event listeners.
 	 */
-	capture?: boolean | { escapeKey?: boolean; outsidePress?: boolean };
+	capture?: MaybeGetter<
+		boolean | { escapeKey?: boolean; outsidePress?: boolean }
+	>;
 }
 
 class DismissInteraction {
-	#enabled = $derived.by(() => this.options.enabled ?? true);
-	#escapeKey = $derived.by(() => this.options.escapeKey ?? true);
+	#enabled = $derived.by(() => extract(this.options.enabled, true));
+	#escapeKey = $derived.by(() => extract(this.options.escapeKey, true));
 	#unstable_outsidePress = $derived.by(() => this.options.outsidePress ?? true);
-	#outsidePressEvent = $derived.by(
-		() => this.options.outsidePressEvent ?? "pointerdown",
+	#outsidePressEvent = $derived.by(() =>
+		extract(this.options.outsidePressEvent, "pointerdown"),
 	);
-	#referencePress = $derived.by(() => this.options.referencePress ?? false);
-	#referencePressEvent = $derived.by(
-		() => this.options.referencePressEvent ?? "pointerdown",
+	#referencePress = $derived.by(() =>
+		extract(this.options.referencePress, false),
 	);
-	#ancestorScroll = $derived.by(() => this.options.ancestorScroll ?? false);
-	#bubbles = $derived.by(() => this.options.bubbles);
-	#capture = $derived.by(() => this.options.capture);
+	#referencePressEvent = $derived.by(() =>
+		extract(this.options.referencePressEvent, "pointerdown"),
+	);
+	#ancestorScroll = $derived.by(() =>
+		extract(this.options.ancestorScroll, false),
+	);
+	#bubbles = $derived.by(() => extract(this.options.bubbles));
+	#capture = $derived.by(() => extract(this.options.capture));
 
 	#outsidePressFn = $derived.by(() =>
 		typeof this.#unstable_outsidePress === "function"
@@ -184,7 +193,7 @@ class DismissInteraction {
 				);
 			};
 
-			const doc = getDocument(this.context.elements.floating);
+			const doc = getDocument(this.context.floating);
 
 			const listenersToRemove: Array<() => void> = [];
 
@@ -217,25 +226,23 @@ class DismissInteraction {
 			let ancestors: (Element | Window | VisualViewport)[] = [];
 
 			if (this.#ancestorScroll) {
-				if (isElement(this.context.elements.domReference)) {
-					ancestors = getOverflowAncestors(this.context.elements.domReference);
+				if (isElement(this.context.domReference)) {
+					ancestors = getOverflowAncestors(this.context.domReference);
 				}
 
-				if (isElement(this.context.elements.floating)) {
+				if (isElement(this.context.floating)) {
 					ancestors = ancestors.concat(
-						getOverflowAncestors(this.context.elements.floating),
+						getOverflowAncestors(this.context.floating),
 					);
 				}
 
 				if (
-					!isElement(this.context.elements.reference) &&
-					this.context.elements.reference &&
-					this.context.elements.reference.contextElement
+					!isElement(this.context.reference) &&
+					this.context.reference &&
+					this.context.reference.contextElement
 				) {
 					ancestors = ancestors.concat(
-						getOverflowAncestors(
-							this.context.elements.reference.contextElement,
-						),
+						getOverflowAncestors(this.context.reference.contextElement),
 					);
 				}
 			}
@@ -335,9 +342,9 @@ class DismissInteraction {
 
 		const target = getTarget(event);
 		const inertSelector = `[${createAttribute("inert")}]`;
-		const markers = getDocument(
-			this.context.elements.floating,
-		).querySelectorAll(inertSelector);
+		const markers = getDocument(this.context.floating).querySelectorAll(
+			inertSelector,
+		);
 
 		let targetRootAncestor = isElement(target) ? target : null;
 
@@ -355,7 +362,7 @@ class DismissInteraction {
 			isElement(target) &&
 			!isRootElement(target) &&
 			// Clicked on a direct ancestor (e.g. FloatingOverlay).
-			!contains(target, this.context.elements.floating) &&
+			!contains(target, this.context.floating) &&
 			// If the target root element contains none of the markers, then the
 			// element was injected after the floating element rendered.
 			Array.from(markers).every(
@@ -412,12 +419,12 @@ class DismissInteraction {
 		const targetIsInsideChildren =
 			children.length &&
 			children.some((node) =>
-				isEventTargetWithin(event, node.context?.elements.floating),
+				isEventTargetWithin(event, node.context?.floating),
 			);
 
 		if (
-			isEventTargetWithin(event, this.context.elements.floating) ||
-			isEventTargetWithin(event, this.context.elements.domReference) ||
+			isEventTargetWithin(event, this.context.floating) ||
+			isEventTargetWithin(event, this.context.domReference) ||
 			targetIsInsideChildren
 		) {
 			return;

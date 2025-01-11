@@ -25,10 +25,12 @@ function extract<T, D extends T | undefined = undefined>(
 		return result as any;
 	}
 
-	if (value === undefined && defaultValue !== undefined) {
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-		return defaultValue as any;
-	}
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	if (value !== undefined) return value as any;
+
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	if (defaultValue !== undefined) return defaultValue as any;
+
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	return value as any;
 }

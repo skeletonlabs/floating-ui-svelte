@@ -177,7 +177,7 @@ describe("useClick", () => {
 			expect(screen.queryByTestId("floating")).toBeInTheDocument();
 		});
 
-		it("when applied to a typable reference does not return a `Space` key event handler", async () => {
+		it("when applied to a typeable reference does not return a `Space` key event handler", async () => {
 			render(App, { element: "input" });
 
 			await fireEvent.keyDown(screen.getByTestId("reference"), { key: " " });
@@ -186,7 +186,7 @@ describe("useClick", () => {
 			expect(screen.queryByTestId("floating")).not.toBeInTheDocument();
 		});
 
-		it("when applied to a typable reference does not return a `Enter` key event handler", async () => {
+		it("when applied to a typeable reference does not return a `Enter` key event handler", async () => {
 			render(App, { element: "input" });
 
 			await fireEvent.keyDown(screen.getByTestId("reference"), {

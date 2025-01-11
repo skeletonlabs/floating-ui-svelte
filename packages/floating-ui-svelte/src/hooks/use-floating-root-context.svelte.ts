@@ -45,10 +45,10 @@ class FloatingRootContextOptions {
 	#stableFloating = $state<HTMLElement | null>(null);
 	reference: WritableBox<Element | null>;
 	floating: WritableBox<HTMLElement | null>;
+	floatingProp = $derived.by(() => extract(this.options.floating, null));
+	referenceProp = $derived.by(() => extract(this.options.reference, null));
 
-	constructor(options: UseFloatingRootContextOptions) {
-		const floatingProp = $derived.by(() => extract(options.floating, null));
-		const referenceProp = $derived.by(() => extract(options.reference, null));
+	constructor(readonly options: UseFloatingRootContextOptions) {
 		this.open = box.with(() => extract(options.open, false));
 		this.onOpenChange = options.onOpenChange ?? noop;
 		this.onReferenceChange = options.onReferenceChange ?? noop;
@@ -68,15 +68,20 @@ class FloatingRootContextOptions {
 			},
 		);
 
-		this.reference.current = referenceProp;
-		this.floating.current = floatingProp;
+		this.reference.current = this.referenceProp;
+		this.floating.current = this.floatingProp;
 
 		$effect.pre(() => {
-			this.reference.current = referenceProp;
+			console.log("REFERENCE IN FLOATING ROOT", this.reference.current);
+			console.log("REFERENCE PROP IN FLOATING ROOT", this.referenceProp);
 		});
 
 		$effect.pre(() => {
-			this.floating.current = floatingProp;
+			this.reference.current = this.referenceProp;
+		});
+
+		$effect.pre(() => {
+			this.floating.current = this.floatingProp;
 		});
 	}
 }

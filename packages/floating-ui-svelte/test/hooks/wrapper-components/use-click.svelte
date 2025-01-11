@@ -20,10 +20,8 @@
 
 	const floating = useFloating({
 		whileElementsMounted: autoUpdate,
-		get open() {
-			return open;
-		},
-		onOpenChange(v) {
+		open: () => open,
+		onOpenChange: (v) => {
 			open = v;
 		},
 	});
@@ -35,14 +33,13 @@
 
 <svelte:element
 	this={element}
+	bind:this={floating.reference}
 	data-testid="reference"
-	bind:this={floating.elements.reference}
 	{...interactions.getReferenceProps()}></svelte:element>
-
 {#if open}
 	<div
 		data-testid="floating"
-		bind:this={floating.elements.floating}
+		bind:this={floating.floating}
 		style={floating.floatingStyles}
 		{...interactions.getFloatingProps()}>
 	</div>

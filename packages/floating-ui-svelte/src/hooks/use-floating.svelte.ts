@@ -1,7 +1,6 @@
 import { useFloatingTree } from "../components/floating-tree/hooks.svelte.js";
 import type {
 	ContextData,
-	ExtendedElements,
 	FloatingEvents,
 	FloatingTreeType,
 	MaybeGetter,
@@ -23,6 +22,7 @@ import {
 } from "../internal/box.svelte.js";
 import { extract } from "../internal/extract.js";
 import { noop } from "../internal/noop.js";
+import { isElement } from "@floating-ui/utils/dom";
 
 interface UseFloatingOptions<RT extends ReferenceType = ReferenceType> {
 	/**
@@ -122,10 +122,9 @@ class FloatingOptions<RT extends ReferenceType = ReferenceType> {
 	#stableFloating = $state<HTMLElement | null>(null);
 	reference: WritableBox<Element | null> = box(null);
 	floating: WritableBox<HTMLElement | null> = box(null);
-	constructor(options: UseFloatingOptions<RT>) {
-		const floatingProp = $derived.by(() => extract(options.floating, null));
-		const referenceProp = $derived.by(() => extract(options.reference, null));
-
+	floatingProp = $derived.by(() => extract(this.options.floating, null));
+	referenceProp = $derived.by(() => extract(this.options.reference, null));
+	constructor(private readonly options: UseFloatingOptions<RT>) {
 		this.open = box.with(() => extract(options.open, true));
 		this.placement = box.with(() => extract(options.placement, "bottom"));
 		this.strategy = box.with(() => extract(options.strategy, "absolute"));
@@ -153,15 +152,24 @@ class FloatingOptions<RT extends ReferenceType = ReferenceType> {
 				this.onFloatingChange(node);
 			},
 		);
-		this.reference.current = referenceProp;
-		this.floating.current = floatingProp;
+		this.reference.current = this.referenceProp;
+		this.floating.current = this.floatingProp;
 
 		$effect(() => {
-			this.floating.current = floatingProp;
+			console.log("REFERENCE IN FLOATING OPTIONS", this.reference.current);
+			console.log("REFERENCE PROP IN FLOATING OPTIONS", this.referenceProp);
 		});
 
 		$effect(() => {
-			this.reference.current = referenceProp;
+			this.floating.current = this.floatingProp;
+		});
+
+		$effect(() => {
+			this.reference.current = this.referenceProp;
+		});
+
+		$effect(() => {
+			console.log("OPEN STATE:", this.open.current);
 		});
 	}
 }
@@ -170,11 +178,9 @@ type FloatingContextOptions<RT extends ReferenceType = ReferenceType> = {
 	floating: FloatingState<RT>;
 	floatingOptions: FloatingOptions<RT>;
 	rootContext: FloatingRootContext<RT>;
-	getElements: (state: FloatingState<RT>) => ExtendedElements<RT>;
 };
 
 interface FloatingContextData<RT extends ReferenceType = ReferenceType> {
-	elements: ExtendedElements<RT>;
 	reference: ReferenceType | null;
 	floating: HTMLElement | null;
 	domReference: NarrowedElement<RT> | null;
@@ -213,8 +219,20 @@ class FloatingContext<RT extends ReferenceType = ReferenceType>
 		this.update = this.opts.floating.update;
 	}
 
-	get elements() {
-		return this.opts.getElements(this.opts.floating);
+	get reference() {
+		return this.opts.floatingOptions.reference.current as ReferenceType | null;
+	}
+
+	get floating() {
+		return this.opts.floatingOptions.floating.current;
+	}
+
+	set floating(node: HTMLElement | null) {
+		this.opts.floatingOptions.floating.current = node;
+	}
+
+	get domReference() {
+		return this.opts.floating.domReference;
 	}
 
 	get x() {
@@ -271,7 +289,6 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 	#position: PositionState<RT>;
 	#positionReference = $state<ReferenceType | null>(null);
 	#_domReference = $state<NarrowedElement<RT> | null>(null);
-	#domReference = $state<NarrowedElement<RT> | null>(null);
 	#derivedDomReference = $derived.by(
 		() =>
 			(this.#rootContext.domReference ||
@@ -281,14 +298,15 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 	context: FloatingContext<RT>;
 
 	constructor(private readonly options: FloatingOptions<RT>) {
+		const internalRootContext = useFloatingRootContext({
+			open: () => options.open.current ?? true,
+			reference: () => options.reference.current,
+			floating: () => options.floating.current,
+		});
+
 		this.#rootContext =
 			options.rootContext.current ??
-			(useFloatingRootContext({
-				open: () => options.open.current ?? true,
-				reference: () => options.reference.current,
-				floating: () => options.floating.current,
-				onOpenChange: options.onOpenChange,
-			}) as unknown as FloatingRootContext<RT>);
+			(internalRootContext as unknown as FloatingRootContext<RT>);
 
 		this.#tree = useFloatingTree();
 		this.#position = new PositionState<RT>(
@@ -313,12 +331,29 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 				node.context = this.context;
 			}
 		});
+	}
 
-		$effect(() => {
-			if (this.#derivedDomReference) {
-				this.#domReference = this.#derivedDomReference;
-			}
-		});
+	get domReference() {
+		return this.#derivedDomReference;
+	}
+
+	get reference() {
+		return this.#positionReference as RT | null;
+	}
+
+	set reference(node: RT | null) {
+		console.log("setting reference!", node);
+		if (isElement(node) || node === null) {
+			this.options.reference.current = node;
+		}
+	}
+
+	get floating() {
+		return this.options.floating.current;
+	}
+
+	set floating(node: HTMLElement | null) {
+		this.options.floating.current = node;
 	}
 
 	get placement() {

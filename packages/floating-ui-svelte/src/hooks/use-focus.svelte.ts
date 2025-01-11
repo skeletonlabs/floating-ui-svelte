@@ -9,10 +9,11 @@ import {
 } from "../internal/dom.js";
 import { isMac, isSafari } from "../internal/environment.js";
 import { isTypeableElement } from "../internal/is-typeable-element.js";
-import type { OpenChangeReason } from "../types.js";
+import type { MaybeGetter, OpenChangeReason } from "../types.js";
 import type { FloatingContext } from "./use-floating.svelte.js";
 import { on } from "svelte/events";
 import { executeCallbacks } from "../internal/execute-callbacks.js";
+import { extract } from "../internal/extract.js";
 
 interface UseFocusOptions {
 	/**
@@ -20,18 +21,18 @@ interface UseFocusOptions {
 	 * handlers.
 	 * @default true
 	 */
-	enabled?: boolean;
+	enabled?: MaybeGetter<boolean>;
 	/**
 	 * Whether the open state only changes if the focus event is considered
 	 * visible (`:focus-visible` CSS selector).
 	 * @default true
 	 */
-	visibleOnly?: boolean;
+	visibleOnly?: MaybeGetter<boolean>;
 }
 
 class FocusInteraction {
-	#enabled = $derived.by(() => this.options.enabled ?? true);
-	#visibleOnly = $derived.by(() => this.options.visibleOnly ?? true);
+	#enabled = $derived.by(() => extract(this.options.enabled, true));
+	#visibleOnly = $derived.by(() => extract(this.options.visibleOnly, true));
 	#blockFocus = false;
 	#timeout = -1;
 	#keyboardModality = true;
@@ -43,7 +44,7 @@ class FocusInteraction {
 		$effect(() => {
 			if (!this.#enabled) return;
 
-			const win = getWindow(this.context.elements.domReference);
+			const win = getWindow(this.context.domReference);
 
 			// If the domReference was focused and the user left the tab/window, and the
 			// floating element was not open, the focus should be blocked when they
@@ -51,9 +52,9 @@ class FocusInteraction {
 			const onBlur = () => {
 				if (
 					!open &&
-					isHTMLElement(context.elements.domReference) &&
-					context.elements.domReference ===
-						activeElement(getDocument(context.elements.domReference))
+					isHTMLElement(context.domReference) &&
+					context.domReference ===
+						activeElement(getDocument(context.domReference))
 				) {
 					this.#blockFocus = true;
 				}
@@ -139,14 +140,13 @@ class FocusInteraction {
 		// Wait for the window blur listener to fire.
 		this.#timeout = window.setTimeout(() => {
 			const activeEl = activeElement(
-				isElement(this.context.elements.domReference)
-					? this.context.elements.domReference.ownerDocument
+				isElement(this.context.domReference)
+					? this.context.domReference.ownerDocument
 					: document,
 			);
 
 			// Focus left the page, keep it open.
-			if (!relatedTarget && activeEl === this.context.elements.domReference)
-				return;
+			if (!relatedTarget && activeEl === this.context.domReference) return;
 
 			// When focusing the reference element (e.g. regular click), then
 			// clicking into the floating element, prevent it from hiding.
@@ -156,8 +156,8 @@ class FocusInteraction {
 			// and not the element that actually has received focus if it is located
 			// inside a shadow root.
 			if (
-				contains(this.context.elements.floating, activeEl) ||
-				contains(this.context.elements.domReference, activeEl) ||
+				contains(this.context.floating, activeEl) ||
+				contains(this.context.domReference, activeEl) ||
 				movedToFocusGuard
 			) {
 				return;
