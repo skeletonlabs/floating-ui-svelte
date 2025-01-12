@@ -20,20 +20,16 @@
 	// Use Floating
 	const floating = useFloating({
 		whileElementsMounted: autoUpdate,
-		get open() {
-			return open;
-		},
+		open: () => open,
 		onOpenChange: (v) => {
 			open = v;
 		},
 		placement: "top",
-		get middleware() {
-			return [
-				offset(10),
-				flip(),
-				elemArrow && arrow({ element: elemArrow }),
-			];
-		},
+		middleware: () => [
+			offset(10),
+			flip(),
+			elemArrow && arrow({ element: elemArrow }),
+		],
 	});
 
 	// Interactions

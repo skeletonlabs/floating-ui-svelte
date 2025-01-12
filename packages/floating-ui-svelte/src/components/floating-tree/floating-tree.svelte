@@ -14,20 +14,14 @@
 
 	let nodes: FloatingNodeType[] = $state.raw([]);
 
-	const addNode = (node: FloatingNodeType) => {
-		nodes = [...nodes, node];
-	};
-
-	const removeNode = (node: FloatingNodeType) => {
-		nodes = nodes.filter((n) => n !== node);
-	};
-
-	const events = createPubSub();
-
 	FloatingTreeContext.set({
-		addNode,
-		removeNode,
-		events,
+		addNode: (node: FloatingNodeType) => {
+			nodes = [...nodes, node];
+		},
+		removeNode: (node: FloatingNodeType) => {
+			nodes = nodes.filter((n) => n !== node);
+		},
+		events: createPubSub(),
 		get nodes() {
 			return nodes;
 		},

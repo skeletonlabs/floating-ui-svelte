@@ -19,10 +19,10 @@ import type { FloatingTreeType, MaybeGetter } from "../types.js";
 import { useFloatingTree } from "../components/floating-tree/hooks.svelte.js";
 import { getChildren } from "../internal/get-children.js";
 import { on } from "svelte/events";
-import { executeCallbacks } from "../internal/execute-callbacks.js";
 import { extract } from "../internal/extract.js";
 import { watch } from "../internal/watch.svelte.js";
 import type { ElementProps } from "./use-interactions.svelte.js";
+import { untrack } from "svelte";
 
 const bubbleHandlerKeys = {
 	pointerdown: "onpointerdown",
@@ -164,10 +164,11 @@ class DismissInteraction implements ElementProps {
 
 		$effect(() => {
 			if (!this.context.open || !this.#enabled) return;
-
-			this.context.data.__escapeKeyBubbles = this.#bubbleOptions.escapeKey;
-			this.context.data.__outsidePressBubbles =
-				this.#bubbleOptions.outsidePress;
+			untrack(() => {
+				this.context.data.__escapeKeyBubbles = this.#bubbleOptions.escapeKey;
+				this.context.data.__outsidePressBubbles =
+					this.#bubbleOptions.outsidePress;
+			});
 
 			let compositionTimeout = -1;
 
@@ -206,6 +207,7 @@ class DismissInteraction implements ElementProps {
 						this.#captureOptions.escapeKey
 							? this.#closeOnEscapeKeyDownCapture
 							: this.#closeOnEscapeKeyDown,
+						{ capture: this.#captureOptions.escapeKey },
 					),
 					on(doc, "compositionstart", handleCompositionStart),
 					on(doc, "compositionend", handleCompositionEnd),
@@ -220,6 +222,7 @@ class DismissInteraction implements ElementProps {
 						this.#captureOptions.outsidePress
 							? this.#closeOnPressOutsideCapture
 							: this.#closeOnPressOutside,
+						{ capture: this.#captureOptions.outsidePress },
 					),
 				);
 			}
@@ -260,7 +263,9 @@ class DismissInteraction implements ElementProps {
 			}
 
 			return () => {
-				executeCallbacks(...listenersToRemove);
+				for (const removeListener of listenersToRemove) {
+					removeListener();
+				}
 				window.clearTimeout(compositionTimeout);
 			};
 		});
@@ -270,7 +275,7 @@ class DismissInteraction implements ElementProps {
 		});
 	}
 
-	#closeOnEscapeKeyDown(event: KeyboardEvent) {
+	#closeOnEscapeKeyDown = (event: KeyboardEvent) => {
 		if (
 			!this.context.open ||
 			!this.#enabled ||
@@ -290,31 +295,27 @@ class DismissInteraction implements ElementProps {
 			event.stopPropagation();
 
 			if (children.length > 0) {
-				let shouldDismiss = true;
+				const hasOpenChild = children.some(
+					(child) =>
+						child.context?.open && !child.context.data.__escapeKeyBubbles,
+				);
 
-				for (const child of children) {
-					if (child.context?.open && !child.context.data.__escapeKeyBubbles) {
-						shouldDismiss = false;
-						break;
-					}
-				}
-
-				if (!shouldDismiss) return;
+				if (hasOpenChild) return;
 			}
 		}
 
 		this.context.onOpenChange(false, event, "escape-key");
-	}
+	};
 
-	#closeOnEscapeKeyDownCapture(event: KeyboardEvent) {
+	#closeOnEscapeKeyDownCapture = (event: KeyboardEvent) => {
 		const callback = () => {
 			this.#closeOnEscapeKeyDown(event);
 			getTarget(event)?.removeEventListener("keydown", callback);
 		};
 		getTarget(event)?.addEventListener("keydown", callback);
-	}
+	};
 
-	#closeOnPressOutside(event: MouseEvent) {
+	#closeOnPressOutside = (event: MouseEvent) => {
 		const localInsideTree = this.#insideTree;
 		this.#insideTree = false;
 
@@ -373,7 +374,7 @@ class DismissInteraction implements ElementProps {
 		}
 
 		// Check if the click occurred on the scrollbar
-		if (isHTMLElement(target)) {
+		if (isHTMLElement(target) && this.context.floating) {
 			const lastTraversableNode = isLastTraversableNode(target);
 			const style = getComputedStyle(target);
 			const scrollRe = /auto|scroll/;
@@ -431,28 +432,24 @@ class DismissInteraction implements ElementProps {
 		}
 
 		if (children.length > 0) {
-			let shouldDismiss = true;
+			const hasOpenChild = children.some(
+				(child) =>
+					child.context?.open && !child.context.data.__outsidePressBubbles,
+			);
 
-			for (const child of children) {
-				if (child.context?.open && !child.context.data.__outsidePressBubbles) {
-					shouldDismiss = false;
-					break;
-				}
-			}
-
-			if (!shouldDismiss) return;
+			if (hasOpenChild) return;
 		}
 
 		this.context.onOpenChange(false, event, "outside-press");
-	}
+	};
 
-	#closeOnPressOutsideCapture(event: MouseEvent) {
+	#closeOnPressOutsideCapture = (event: MouseEvent) => {
 		const callback = () => {
 			this.#closeOnPressOutside(event);
 			getTarget(event)?.removeEventListener(this.#outsidePressEvent, callback);
 		};
 		getTarget(event)?.addEventListener(this.#outsidePressEvent, callback);
-	}
+	};
 
 	#reference = $derived.by(() => {
 		if (!this.#enabled) return {};

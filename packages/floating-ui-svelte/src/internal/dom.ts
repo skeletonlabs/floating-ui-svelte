@@ -79,12 +79,12 @@ function getTarget(event: Event) {
 }
 
 function isEventTargetWithin(event: Event, node: Node | null | undefined) {
-	if (node == null) {
-		return false;
-	}
+	if (node == null) return false;
 
 	if ("composedPath" in event) {
-		return event.composedPath().includes(node);
+		return (
+			event.composedPath().includes(node) || node.contains(event.target as Node)
+		);
 	}
 
 	// TS thinks `event` is of type never as it assumes all browsers support composedPath, but browsers without shadow dom don't

@@ -42,8 +42,8 @@
 <div>
 	<!-- Reference Element -->
 	<button
-		bind:this={floating.reference}
 		{...interactions.getReferenceProps()}
+		bind:this={floating.reference}
 		class="btn-gradient">
 		Hover Me
 	</button>
