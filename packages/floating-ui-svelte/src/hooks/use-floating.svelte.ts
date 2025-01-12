@@ -96,6 +96,10 @@ interface UseFloatingOptions<RT extends ReferenceType = ReferenceType> {
 	nodeId?: MaybeGetter<string>;
 }
 
+/**
+ * Reactive options for the `useFloating` hook.
+ */
+// This enables us to not have to pass around a bunch of getters and setters internally.
 class FloatingOptions<RT extends ReferenceType = ReferenceType> {
 	open: ReadableBox<boolean>;
 	placement: ReadableBox<Placement>;
@@ -155,21 +159,16 @@ class FloatingOptions<RT extends ReferenceType = ReferenceType> {
 		this.reference.current = this.referenceProp;
 		this.floating.current = this.floatingProp;
 
-		$effect(() => {
-			console.log("REFERENCE IN FLOATING OPTIONS", this.reference.current);
-			console.log("REFERENCE PROP IN FLOATING OPTIONS", this.referenceProp);
+		$effect.pre(() => {
+			if (this.floatingProp) {
+				this.floating.current = this.floatingProp;
+			}
 		});
 
-		$effect(() => {
-			this.floating.current = this.floatingProp;
-		});
-
-		$effect(() => {
-			this.reference.current = this.referenceProp;
-		});
-
-		$effect(() => {
-			console.log("OPEN STATE:", this.open.current);
+		$effect.pre(() => {
+			if (this.referenceProp) {
+				this.reference.current = this.referenceProp;
+			}
 		});
 	}
 }
@@ -288,11 +287,10 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 	#rootContext: FloatingRootContext<RT>;
 	#position: PositionState<RT>;
 	#positionReference = $state<ReferenceType | null>(null);
-	#_domReference = $state<NarrowedElement<RT> | null>(null);
 	#derivedDomReference = $derived.by(
 		() =>
 			(this.#rootContext.domReference ||
-				this.#_domReference) as NarrowedElement<RT>,
+				this.options.reference.current) as NarrowedElement<RT>,
 	);
 	#tree: FloatingTreeType<RT> | null;
 	context: FloatingContext<RT>;
@@ -302,6 +300,7 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 			open: () => options.open.current ?? true,
 			reference: () => options.reference.current,
 			floating: () => options.floating.current,
+			onOpenChange: options.onOpenChange,
 		});
 
 		this.#rootContext =
@@ -342,7 +341,6 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 	}
 
 	set reference(node: RT | null) {
-		console.log("setting reference!", node);
 		if (isElement(node) || node === null) {
 			this.options.reference.current = node;
 		}

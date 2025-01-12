@@ -109,6 +109,12 @@ function isMouseLikePointerType(
 	return values.includes(pointerType);
 }
 
+const pointerTypes = ["mouse", "pen", "touch"] as const;
+type PointerType = (typeof pointerTypes)[number];
+function isPointerType(str: string): str is PointerType {
+	return pointerTypes.includes(str as PointerType);
+}
+
 export {
 	getDocument,
 	activeElement,
@@ -119,4 +125,7 @@ export {
 	isEventTargetWithin,
 	isRootElement,
 	isMouseLikePointerType,
+	isPointerType,
 };
+
+export type { PointerType };

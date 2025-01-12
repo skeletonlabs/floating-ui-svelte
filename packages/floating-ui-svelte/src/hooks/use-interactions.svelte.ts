@@ -44,7 +44,7 @@ function mergeProps<Key extends keyof ElementProps>(
 	}
 
 	return {
-		...(elementKey === "floating" && { tabIndex: -1 }),
+		...(elementKey === "floating" && { tabindex: -1 }),
 		...domUserProps,
 		...propsList
 			.map((value) => {

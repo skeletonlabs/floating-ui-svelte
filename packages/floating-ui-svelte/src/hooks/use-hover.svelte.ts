@@ -4,6 +4,8 @@ import {
 	createAttribute,
 	getDocument,
 	isMouseLikePointerType,
+	isPointerType,
+	type PointerType,
 } from "../internal/dom.js";
 import { noop } from "../internal/noop.js";
 import type { FloatingTreeType, OpenChangeReason } from "../types.js";
@@ -18,6 +20,8 @@ import {
 import { on } from "svelte/events";
 import { executeCallbacks } from "../internal/execute-callbacks.js";
 import { snapshotFloatingContext } from "../internal/snapshot.svelte.js";
+import { watch } from "../internal/watch.svelte.js";
+import type { ElementProps } from "./use-interactions.svelte.js";
 
 interface DelayOptions {
 	/**
@@ -89,7 +93,7 @@ const safePolygonIdentifier = createAttribute("safe-polygon");
 function getDelay(
 	value: UseHoverOptions["delay"],
 	prop: "open" | "close",
-	pointerType?: PointerEvent["pointerType"],
+	pointerType?: PointerType,
 ) {
 	if (pointerType && !isMouseLikePointerType(pointerType)) {
 		return 0;
@@ -102,16 +106,16 @@ function getDelay(
 	return value?.[prop];
 }
 
-class HoverInteraction {
+class HoverInteraction implements ElementProps {
 	#enabled = $derived.by(() => this.options.enabled ?? true);
 	#mouseOnly = $derived.by(() => this.options.mouseOnly ?? false);
 	#delay = $derived.by(() => this.options.delay ?? 0);
 	#restMs = $derived.by(() => this.options.restMs ?? 0);
 	#move = $derived.by(() => this.options.move ?? true);
-	#handleClose = $derived.by(() => this.options.handleClose ?? null);
+	#handleClose = $state<HandleCloseFn | undefined | null>(null);
 	#tree: FloatingTreeType | null = null;
 	#parentId: string | null = null;
-	#pointerType: string | undefined = undefined;
+	#pointerType: PointerType | undefined = undefined;
 	#timeout = -1;
 	#handler: ((event: MouseEvent) => void) | undefined = undefined;
 	#restTimeout = -1;
@@ -133,40 +137,61 @@ class HoverInteraction {
 		private readonly context: FloatingContext,
 		private readonly options: UseHoverOptions = {},
 	) {
+		this.#handleClose = options.handleClose;
+
+		$effect.pre(() => {
+			this.#handleClose = options.handleClose;
+		});
+
 		this.#tree = useFloatingTree();
 		this.#parentId = useFloatingParentNodeId();
 
-		$effect(() => {
-			if (!this.#enabled) return;
+		watch(
+			[() => this.#enabled, () => this.context.events],
+			([enabled, events]) => {
+				if (!enabled) return;
 
-			const onOpenChange = ({ open }: { open: boolean }) => {
-				if (open) return;
-				window.clearTimeout(this.#timeout);
-				window.clearTimeout(this.#restTimeout);
-				this.#blockMouseMove = true;
-				this.#restTimeoutPending = true;
-			};
+				const onOpenChange = ({ open }: { open: boolean }) => {
+					if (!open) {
+						window.clearTimeout(this.#timeout);
+						window.clearTimeout(this.#restTimeout);
+						this.#blockMouseMove = true;
+						this.#restTimeoutPending = false;
+					}
+				};
 
-			this.context.events.on("openchange", onOpenChange);
+				events.on("openchange", onOpenChange);
 
-			return () => {
-				this.context.events.off("openchange", onOpenChange);
-			};
-		});
+				return () => {
+					events.off("openchange", onOpenChange);
+				};
+			},
+		);
 
-		$effect(() => {
-			if (!this.#enabled || !this.#handleClose || !this.context.open) return;
+		watch(
+			[
+				() => this.#enabled,
+				() => this.#handleClose,
+				() => this.context.open,
+				() => this.context.floating,
+				() => this.#isHoverOpen,
+			],
+			([enabled, handleClose, open, floating, isHoverOpen]) => {
+				if (!enabled || !handleClose || !open) return;
 
-			const onLeave = (event: MouseEvent) => {
-				if (!this.#isHoverOpen) return;
-				this.context.onOpenChange(false, event, "hover");
-			};
+				const onLeave = (event: MouseEvent) => {
+					if (!this.#isHoverOpen) return;
+					this.context.onOpenChange(false, event, "hover");
+				};
 
-			const html = getDocument(this.context.floating).documentElement;
+				const html = getDocument(floating).documentElement;
+				return on(html, "mouseleave", onLeave);
+			},
+		);
 
-			return on(html, "mouseleave", onLeave);
-		});
-
+		// Registering the mouse events on the reference directly to bypass Svelte's
+		// delegation system. If the cursor was on a disabled element and then entered
+		// the reference (no gap), `mouseenter` doesn't fire in the delegation system.
 		$effect(() => {
 			if (!this.#enabled) return;
 
@@ -185,12 +210,12 @@ class HoverInteraction {
 
 				if (openDelay) {
 					this.#timeout = window.setTimeout(() => {
-						if (!this.context.open) {
-							this.context.onOpenChange(true, event, "hover");
+						if (!context.open) {
+							context.onOpenChange(true, event, "hover");
 						}
 					}, openDelay);
-				} else if (!this.context.open) {
-					this.context.onOpenChange(true, event, "hover");
+				} else if (!context.open) {
+					context.onOpenChange(true, event, "hover");
 				}
 			};
 
@@ -198,18 +223,19 @@ class HoverInteraction {
 				if (this.#isClickLikeOpenEvent) return;
 
 				this.#unbindMouseMove();
-				const doc = getDocument(this.context.floating);
+
+				const doc = getDocument(context.floating);
 				window.clearTimeout(this.#restTimeout);
 				this.#restTimeoutPending = false;
 
-				if (this.#handleClose && this.context.data.floatingContext) {
-					// prevent clearing `onScrollMouseLeave` timeout
-					if (!this.context.open) {
+				if (this.#handleClose && context.data.floatingContext) {
+					// Prevent clearing `onScrollMouseLeave` timeout.
+					if (!context.open) {
 						window.clearTimeout(this.#timeout);
 					}
 
 					this.#handler = this.#handleClose({
-						...snapshotFloatingContext(this.context).current,
+						...snapshotFloatingContext(context).current,
 						tree: this.#tree,
 						x: event.clientX,
 						y: event.clientY,
@@ -224,23 +250,20 @@ class HoverInteraction {
 
 					const handler = this.#handler;
 
-					const removeListener = on(doc, "mousemove", handler);
-
+					doc.addEventListener("mousemove", handler);
 					this.#unbindMouseMove = () => {
-						removeListener();
+						doc.removeEventListener("mousemove", handler);
 					};
 
 					return;
 				}
+
 				// Allow interactivity without `safePolygon` on touch devices. With a
 				// pointer, a short close delay is an alternative, so it should work
 				// consistently.
 				const shouldClose =
 					this.#pointerType === "touch"
-						? !contains(
-								this.context.floating,
-								event.relatedTarget as Element | null,
-							)
+						? !contains(context.floating, event.relatedTarget as Element | null)
 						: true;
 				if (shouldClose) {
 					this.#closeWithDelay(event);
@@ -251,12 +274,11 @@ class HoverInteraction {
 			// did not move.
 			// https://github.com/floating-ui/floating-ui/discussions/1692
 			const onScrollMouseLeave = (event: MouseEvent) => {
-				if (!this.#isClickLikeOpenEvent || !this.context.data.floatingContext) {
-					return;
-				}
+				if (this.#isClickLikeOpenEvent) return;
+				if (!context.data.floatingContext) return;
 
 				this.#handleClose?.({
-					...snapshotFloatingContext(this.context).current,
+					...snapshotFloatingContext(context.data.floatingContext).current,
 					tree: this.#tree,
 					x: event.clientX,
 					y: event.clientY,
@@ -270,29 +292,24 @@ class HoverInteraction {
 				})(event);
 			};
 
-			if (isElement(this.context.domReference)) {
-				const domRef = this.context.domReference as HTMLElement;
-				const listenersToRemove: Array<() => void> = [];
-				if (this.context.open) {
-					listenersToRemove.push(on(domRef, "mouseleave", onScrollMouseLeave));
-				}
-				if (this.context.floating) {
-					listenersToRemove.push(
-						on(this.context.floating, "mouseleave", onScrollMouseLeave),
-					);
-				}
-				if (this.#move) {
-					listenersToRemove.push(
-						on(domRef, "mousemove", onMouseEnter, { once: true }),
-					);
-				}
-				listenersToRemove.push(
-					on(domRef, "mouseenter", onMouseEnter),
-					on(domRef, "mouseleave", onMouseLeave),
-				);
-
+			if (isElement(context.domReference)) {
+				const ref = context.domReference as unknown as HTMLElement;
+				context.open && ref.addEventListener("mouseleave", onScrollMouseLeave);
+				context.floating?.addEventListener("mouseleave", onScrollMouseLeave);
+				this.#move &&
+					ref.addEventListener("mousemove", onMouseEnter, { once: true });
+				ref.addEventListener("mouseenter", onMouseEnter);
+				ref.addEventListener("mouseleave", onMouseLeave);
 				return () => {
-					executeCallbacks(...listenersToRemove);
+					context.open &&
+						ref.removeEventListener("mouseleave", onScrollMouseLeave);
+					context.floating?.removeEventListener(
+						"mouseleave",
+						onScrollMouseLeave,
+					);
+					this.#move && ref.removeEventListener("mousemove", onMouseEnter);
+					ref.removeEventListener("mouseenter", onMouseEnter);
+					ref.removeEventListener("mouseleave", onMouseLeave);
 				};
 			}
 		});
@@ -301,24 +318,30 @@ class HoverInteraction {
 		// while the floating element is open and has a `handleClose` handler. Also
 		// handles nested floating elements.
 		// https://github.com/floating-ui/floating-ui/issues/1722
+		watch(
+			[
+				() => this.#enabled,
+				() => this.context.open,
+				() => this.context.floating,
+				() => this.context.domReference,
+				() => this.#handleClose,
+				() => this.#isHoverOpen,
+			],
+			([enabled, open, floating, domReference, handleClose, treeNodes]) => {
+				if (!enabled) return;
+				if (
+					open &&
+					handleClose?.__options.blockPointerEvents &&
+					this.#isHoverOpen
+				) {
+					this.#performedPointerEventsMutation = true;
+					const floatingEl = floating;
+					if (!isElement(domReference) || !floatingEl) return;
 
-		$effect(() => {
-			if (!this.#enabled) return;
-
-			if (
-				this.context.open &&
-				this.#handleClose?.__options.blockPointerEvents &&
-				this.#isHoverOpen
-			) {
-				this.#performedPointerEventsMutation = true;
-				const floatingEl = this.context.floating;
-				if (isElement(this.context.domReference) && floatingEl) {
-					const body = getDocument(floatingEl).body;
+					const body = getDocument(floating).body;
 					body.setAttribute(safePolygonIdentifier, "");
 
-					const ref = this.context.domReference as unknown as
-						| HTMLElement
-						| SVGSVGElement;
+					const ref = domReference as unknown as HTMLElement | SVGSVGElement;
 
 					const parentFloating = this.#tree?.nodes.find(
 						(node) => node.id === this.#parentId,
@@ -329,16 +352,17 @@ class HoverInteraction {
 					}
 
 					body.style.pointerEvents = "none";
-					ref.style.pointerEvents = "";
-					floatingEl.style.pointerEvents = "";
+					ref.style.pointerEvents = "auto";
+					floatingEl.style.pointerEvents = "auto";
+
 					return () => {
 						body.style.pointerEvents = "";
 						ref.style.pointerEvents = "";
 						floatingEl.style.pointerEvents = "";
 					};
 				}
-			}
-		});
+			},
+		);
 
 		$effect(() => {
 			if (!this.context.open) {
@@ -349,8 +373,7 @@ class HoverInteraction {
 			}
 		});
 
-		$effect(() => {
-			[this.#enabled, this.context.domReference];
+		watch([() => this.#enabled, () => this.context.domReference], () => {
 			return () => {
 				this.#cleanupMouseMoveHandler();
 				window.clearTimeout(this.#timeout);
@@ -393,6 +416,7 @@ class HoverInteraction {
 	};
 
 	#setPointerType = (event: PointerEvent) => {
+		if (!isPointerType(event.pointerType)) return;
 		this.#pointerType = event.pointerType;
 	};
 
@@ -433,7 +457,7 @@ class HoverInteraction {
 		this.#closeWithDelay(event, false);
 	};
 
-	reference = $derived.by(() => {
+	#reference = $derived.by(() => {
 		if (!this.#enabled) return {};
 		return {
 			onpointerdown: this.#setPointerType,
@@ -442,7 +466,7 @@ class HoverInteraction {
 		};
 	});
 
-	floating = $derived.by(() => {
+	#floating = $derived.by(() => {
 		if (!this.#enabled) return {};
 		return {
 			onmouseenter: this.#onFloatingMouseEnter,
@@ -450,8 +474,12 @@ class HoverInteraction {
 		};
 	});
 
-	get enabled() {
-		return this.#enabled;
+	get reference() {
+		return this.#reference;
+	}
+
+	get floating() {
+		return this.#floating;
 	}
 }
 

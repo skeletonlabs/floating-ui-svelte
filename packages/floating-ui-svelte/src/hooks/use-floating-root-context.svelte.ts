@@ -72,11 +72,6 @@ class FloatingRootContextOptions {
 		this.floating.current = this.floatingProp;
 
 		$effect.pre(() => {
-			console.log("REFERENCE IN FLOATING ROOT", this.reference.current);
-			console.log("REFERENCE PROP IN FLOATING ROOT", this.referenceProp);
-		});
-
-		$effect.pre(() => {
 			this.reference.current = this.referenceProp;
 		});
 

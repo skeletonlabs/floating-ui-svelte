@@ -21,6 +21,8 @@ import { getChildren } from "../internal/get-children.js";
 import { on } from "svelte/events";
 import { executeCallbacks } from "../internal/execute-callbacks.js";
 import { extract } from "../internal/extract.js";
+import { watch } from "../internal/watch.svelte.js";
+import type { ElementProps } from "./use-interactions.svelte.js";
 
 const bubbleHandlerKeys = {
 	pointerdown: "onpointerdown",
@@ -119,7 +121,7 @@ interface UseDismissOptions {
 	>;
 }
 
-class DismissInteraction {
+class DismissInteraction implements ElementProps {
 	#enabled = $derived.by(() => extract(this.options.enabled, true));
 	#escapeKey = $derived.by(() => extract(this.options.escapeKey, true));
 	#unstable_outsidePress = $derived.by(() => this.options.outsidePress ?? true);
@@ -137,7 +139,6 @@ class DismissInteraction {
 	);
 	#bubbles = $derived.by(() => extract(this.options.bubbles));
 	#capture = $derived.by(() => extract(this.options.capture));
-
 	#outsidePressFn = $derived.by(() =>
 		typeof this.#unstable_outsidePress === "function"
 			? this.#unstable_outsidePress
@@ -264,8 +265,7 @@ class DismissInteraction {
 			};
 		});
 
-		$effect(() => {
-			[this.#outsidePress, this.#outsidePressEvent];
+		watch([() => this.#outsidePress, () => this.#outsidePressEvent], () => {
 			this.#insideTree = false;
 		});
 	}
@@ -454,7 +454,7 @@ class DismissInteraction {
 		getTarget(event)?.addEventListener(this.#outsidePressEvent, callback);
 	}
 
-	readonly reference = $derived.by(() => {
+	#reference = $derived.by(() => {
 		if (!this.#enabled) return {};
 		return {
 			onkeydown: this.#closeOnEscapeKeyDown,
@@ -471,7 +471,7 @@ class DismissInteraction {
 		};
 	});
 
-	readonly floating = $derived.by(() => {
+	#floating = $derived.by(() => {
 		if (!this.#enabled) return {};
 		return {
 			onkeydown: this.#closeOnEscapeKeyDown,
@@ -487,8 +487,12 @@ class DismissInteraction {
 		};
 	});
 
-	get enabled() {
-		return this.#enabled;
+	get reference() {
+		return this.#reference;
+	}
+
+	get floating() {
+		return this.#floating;
 	}
 }
 

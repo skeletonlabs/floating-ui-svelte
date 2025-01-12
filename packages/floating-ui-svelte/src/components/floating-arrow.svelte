@@ -79,7 +79,7 @@
 
 	// https://github.com/floating-ui/floating-ui/issues/2932
 	watch(
-		() => context.elements.floating,
+		() => context.floating,
 		(floatingEl) => {
 			if (!floatingEl) return;
 			if (getComputedStyle(floatingEl).direction === "rtl") {
@@ -149,9 +149,7 @@
 	});
 </script>
 
-<!-- FIXME: extend styleObjectToString type to accept `rest.styles` -->
-
-{#if context.elements.floating}
+{#if context.floating}
 	<svg
 		bind:this={ref}
 		{...rest}

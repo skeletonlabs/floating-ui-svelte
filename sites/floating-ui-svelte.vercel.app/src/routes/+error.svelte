@@ -1,9 +1,9 @@
 <script lang="ts">
-import { page } from "$app/state";
-import Logo from "$lib/components/Logo/Logo.svelte";
+	import { page } from "$app/state";
+	import Logo from "$lib/components/Logo/Logo.svelte";
 
-const status = $derived(page.status);
-const message = $derived(page.error ? page.error.message : "Unknown error");
+	const status = $derived(page.status);
+	const message = $derived(page.error ? page.error.message : "Unknown error");
 </script>
 
 <svelte:head>

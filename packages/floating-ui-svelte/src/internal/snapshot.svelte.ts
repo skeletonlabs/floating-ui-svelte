@@ -13,11 +13,9 @@ function snapshotFloatingContext<RT extends ReferenceType = ReferenceType>(
 	return {
 		get current(): FloatingContextData<RT> {
 			return {
-				elements: {
-					domReference: context.elements.domReference,
-					floating: context.elements.floating,
-					reference: context.elements.reference,
-				},
+				domReference: context.domReference,
+				floating: context.floating,
+				reference: context.reference,
 				x: context.x,
 				y: context.y,
 				placement: context.placement,

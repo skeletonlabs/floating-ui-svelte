@@ -6,6 +6,7 @@
 	"scripts": {
 		"build": "vite build && pagefind",
 		"build:watch": "vite dev",
+		"dev": "vite dev",
 		"sync": "svelte-kit sync"
 	},
 	"devDependencies": {

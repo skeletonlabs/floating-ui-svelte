@@ -42,7 +42,7 @@ const componentRoleToAriaRoleMap = new Map<
 	["label", false],
 ]);
 
-class RoleInteraction {
+class RoleInteraction implements ElementProps {
 	#enabled = $derived.by(() => extract(this.options.enabled, true));
 	#role = $derived.by(() => extract(this.options.role, "dialog"));
 	#ariaRole = $derived(
@@ -63,7 +63,7 @@ class RoleInteraction {
 		this.#isNested = this.#parentId != null;
 	}
 
-	reference: ElementProps["reference"] = $derived.by(() => {
+	#reference: ElementProps["reference"] = $derived.by(() => {
 		if (!this.#enabled) return {};
 		if (this.#ariaRole === "tooltip" || this.#role === "label") {
 			return {
@@ -87,7 +87,7 @@ class RoleInteraction {
 		};
 	});
 
-	floating: ElementProps["floating"] = $derived.by(() => {
+	#floating: ElementProps["floating"] = $derived.by(() => {
 		if (!this.#enabled) return {};
 		const floatingProps = {
 			id: this.context.floatingId,
@@ -106,7 +106,7 @@ class RoleInteraction {
 		};
 	});
 
-	item: ElementProps["item"] = $derived.by(() => {
+	#item: ElementProps["item"] = $derived.by(() => {
 		return ({ active, selected }: ExtendedUserProps) => {
 			if (!this.#enabled) return {};
 			const commonProps = {
@@ -132,8 +132,16 @@ class RoleInteraction {
 		};
 	});
 
-	get enabled() {
-		return this.#enabled;
+	get reference() {
+		return this.#reference;
+	}
+
+	get floating() {
+		return this.#floating;
+	}
+
+	get item() {
+		return this.#item;
 	}
 }
 

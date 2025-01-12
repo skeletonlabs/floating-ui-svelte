@@ -160,9 +160,9 @@ class PositionState<RT extends ReferenceType = ReferenceType> {
 	) {
 		this.data.strategy = this.options.strategy.current;
 		this.data.placement = this.options.placement.current;
+
 		$effect.pre(() => {
 			if (this.rootContext.open || !this.data.isPositioned) return;
-
 			this.data.isPositioned = false;
 		});
 
