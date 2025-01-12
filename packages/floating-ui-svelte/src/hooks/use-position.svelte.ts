@@ -160,6 +160,7 @@ class PositionState<RT extends ReferenceType = ReferenceType> {
 	) {
 		this.data.strategy = this.options.strategy.current;
 		this.data.placement = this.options.placement.current;
+		this.update = this.update.bind(this);
 
 		$effect.pre(() => {
 			if (this.rootContext.open || !this.data.isPositioned) return;
@@ -172,7 +173,7 @@ class PositionState<RT extends ReferenceType = ReferenceType> {
 					return this.options.whileElementsMounted(
 						this.referenceEl,
 						this.options.floating.current,
-						() => this.update(),
+						this.update,
 					);
 				}
 

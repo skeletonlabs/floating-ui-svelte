@@ -10,7 +10,10 @@ import { type FloatingContext, useFloating } from "../../src/index.js";
 import { useId } from "../../src/index.js";
 import { withRunes } from "../internal/with-runes.svelte.js";
 
-function createElements(): { reference: HTMLElement; floating: HTMLElement } {
+function createElements(): {
+	reference: Element | null;
+	floating: HTMLElement | null;
+} {
 	const reference = document.createElement("div");
 	const floating = document.createElement("div");
 	reference.id = useId();
@@ -19,66 +22,69 @@ function createElements(): { reference: HTMLElement; floating: HTMLElement } {
 }
 
 describe("useFloating", () => {
+	vi.mock(import("svelte"), async (importOriginal) => {
+		const actual = await importOriginal();
+		return {
+			...actual,
+			getContext: vi.fn().mockReturnValue(null),
+		};
+	});
+
 	describe("elements", () => {
 		it(
 			"can be set",
 			withRunes(() => {
 				const elements = createElements();
-				const floating = useFloating({ elements });
-				expect(floating.elements).toEqual(elements);
+				const floating = useFloating(elements);
+				expect(floating.floating).toEqual(elements.floating);
+				expect(floating.reference).toEqual(elements.reference);
 			}),
 		);
 		it(
 			"can be set through the return value",
 			withRunes(() => {
 				const floating = useFloating();
-
 				const elements = createElements();
 
-				floating.elements.reference = elements.reference;
-				floating.elements.floating = elements.floating;
+				floating.reference = elements.reference;
+				floating.floating = elements.floating;
 
-				expect(floating.elements).toEqual(elements);
+				expect(floating.reference).toEqual(elements.reference);
+				expect(floating.floating).toEqual(elements.floating);
 			}),
 		);
 		it(
 			"is returned",
 			withRunes(() => {
 				const floating = useFloating();
-				expect(floating).toHaveProperty("elements");
+				expect(floating).toHaveProperty("reference");
+				expect(floating).toHaveProperty("floating");
 			}),
 		);
-		it(
-			"is an object",
-			withRunes(() => {
-				const floating = useFloating();
-				expect(floating.elements).toBeTypeOf("object");
-			}),
-		);
-		it(
-			"defaults to {}",
-			withRunes(() => {
-				const floating = useFloating();
-				expect(floating.elements).toEqual({});
-			}),
-		);
+
 		it(
 			"is reactive",
 			withRunes(async () => {
-				let elements = $state(createElements());
+				const elements = $state(createElements());
 
 				const floating = useFloating({
-					get elements() {
-						return elements;
-					},
+					reference: () => elements.reference,
+					floating: () => elements.floating,
 				});
 
-				expect(floating.elements).toEqual(elements);
+				console.log(floating.reference, floating.floating);
 
-				elements = createElements();
+				expect(floating.reference).toEqual(elements.reference);
+				expect(floating.floating).toEqual(elements.floating);
+
+				const newElements = createElements();
+
+				elements.reference = newElements.reference;
+				elements.floating = newElements.floating;
 
 				await vi.waitFor(() => {
-					expect(floating.elements).toEqual(elements);
+					expect(floating.reference).toEqual(newElements.reference);
+					expect(floating.floating).toEqual(newElements.floating);
 				});
 			}),
 		);
@@ -88,15 +94,20 @@ describe("useFloating", () => {
 				const elements = $state(createElements());
 
 				const floating = useFloating({
-					get elements() {
-						return elements;
+					reference: () => elements.reference,
+					onReferenceChange: (v) => {
+						elements.reference = v;
+					},
+					floating: () => elements.floating,
+					onFloatingChange: (v) => {
+						elements.floating = v;
 					},
 				});
 
 				const newElements = createElements();
 
-				floating.elements.reference = newElements.reference;
-				floating.elements.floating = newElements.floating;
+				floating.reference = newElements.reference;
+				floating.floating = newElements.floating;
 
 				expect(elements).toEqual(newElements);
 			}),
@@ -109,7 +120,7 @@ describe("useFloating", () => {
 			withRunes(async () => {
 				const transform = true;
 				const floating = useFloating({
-					elements: createElements(),
+					...createElements(),
 					transform,
 				});
 
@@ -124,7 +135,7 @@ describe("useFloating", () => {
 			'defaults to "true"',
 			withRunes(async () => {
 				const floating = useFloating({
-					elements: createElements(),
+					...createElements(),
 				});
 				await vi.waitFor(() => {
 					expect(floating.floatingStyles).contain(
@@ -139,10 +150,8 @@ describe("useFloating", () => {
 				let transform = $state(true);
 
 				const floating = useFloating({
-					elements: createElements(),
-					get transform() {
-						return transform;
-					},
+					...createElements(),
+					transform: () => transform,
 				});
 
 				await vi.waitFor(() => {
@@ -198,10 +207,8 @@ describe("useFloating", () => {
 				let strategy: Strategy = $state("absolute");
 
 				const floating = useFloating({
-					elements: createElements(),
-					get strategy() {
-						return strategy;
-					},
+					...createElements(),
+					strategy: () => strategy,
 				});
 
 				expect(floating.strategy).toBe(strategy);
@@ -251,10 +258,8 @@ describe("useFloating", () => {
 				let placement: Placement = $state("bottom");
 
 				const floating = useFloating({
-					elements: createElements(),
-					get placement() {
-						return placement;
-					},
+					...createElements(),
+					placement: () => placement,
 				});
 
 				expect(floating.placement).toBe(placement);
@@ -275,7 +280,7 @@ describe("useFloating", () => {
 				const middleware: Array<Middleware> = [offset(5)];
 
 				const floating = useFloating({
-					elements: createElements(),
+					...createElements(),
 					middleware,
 				});
 				await vi.waitFor(() => {
@@ -290,10 +295,8 @@ describe("useFloating", () => {
 				const middleware: Array<Middleware> = $state([]);
 
 				const floating = useFloating({
-					elements: createElements(),
-					get middleware() {
-						return middleware;
-					},
+					...createElements(),
+					middleware: () => middleware,
 				});
 
 				await vi.waitFor(() => {
@@ -323,7 +326,7 @@ describe("useFloating", () => {
 			"is returned",
 			withRunes(() => {
 				const floating = useFloating();
-				expect(floating).toHaveProperty("open");
+				expect(floating.context).toHaveProperty("open");
 			}),
 		);
 		it(
@@ -346,10 +349,8 @@ describe("useFloating", () => {
 				let open = $state(false);
 
 				const floating = useFloating({
-					elements: createElements(),
-					get open() {
-						return open;
-					},
+					...createElements(),
+					open: () => open,
 				});
 
 				expect(floating.context.open).toBe(open);
@@ -370,7 +371,7 @@ describe("useFloating", () => {
 				const whileElementsMounted = vi.fn();
 
 				useFloating({
-					elements: createElements(),
+					...createElements(),
 					whileElementsMounted,
 				});
 
@@ -385,7 +386,6 @@ describe("useFloating", () => {
 				const whileElementsMounted = vi.fn();
 
 				useFloating({
-					elements: undefined,
 					whileElementsMounted,
 				});
 
@@ -401,7 +401,7 @@ describe("useFloating", () => {
 				const whileElementsMounted = vi.fn(() => cleanup);
 
 				const floating = useFloating({
-					elements: createElements(),
+					...createElements(),
 					whileElementsMounted,
 				});
 
@@ -409,8 +409,8 @@ describe("useFloating", () => {
 					expect(whileElementsMounted).toHaveBeenCalled();
 				});
 
-				floating.elements.reference = null;
-				floating.elements.floating = null;
+				floating.reference = null;
+				floating.floating = null;
 
 				await vi.waitFor(() => {
 					expect(cleanup).toHaveBeenCalled();
@@ -424,7 +424,7 @@ describe("useFloating", () => {
 				const elements = createElements();
 
 				const floating = useFloating({
-					elements,
+					...elements,
 					whileElementsMounted,
 				});
 
@@ -446,7 +446,7 @@ describe("useFloating", () => {
 				const onOpenChange = vi.fn();
 
 				useFloating({
-					elements: createElements(),
+					...createElements(),
 					onOpenChange,
 				});
 
@@ -486,11 +486,9 @@ describe("useFloating", () => {
 				let placement: Placement = $state("left");
 
 				const floating = useFloating({
-					elements: createElements(),
+					...createElements(),
 					middleware: [offset(10)],
-					get placement() {
-						return placement;
-					},
+					placement: () => placement,
 				});
 
 				await vi.waitFor(() => {
@@ -534,11 +532,9 @@ describe("useFloating", () => {
 				let placement: Placement = $state("top");
 
 				const floating = useFloating({
-					elements: createElements(),
+					...createElements(),
 					middleware: [offset(10)],
-					get placement() {
-						return placement;
-					},
+					placement: () => placement,
 				});
 
 				await vi.waitFor(() => {
@@ -582,10 +578,8 @@ describe("useFloating", () => {
 				const middleware: Array<Middleware> = $state([]);
 
 				const floating = useFloating({
-					elements: createElements(),
-					get middleware() {
-						return middleware;
-					},
+					...createElements(),
+					middleware: () => middleware,
 				});
 
 				await vi.waitFor(() => {
@@ -631,10 +625,8 @@ describe("useFloating", () => {
 			withRunes(async () => {
 				const floating = useFloating({
 					open: false,
-					elements: {
-						reference: document.createElement("div"),
-						floating: document.createElement("div"),
-					},
+					reference: document.createElement("div"),
+					floating: document.createElement("div"),
 				});
 
 				expect(floating.isPositioned).toBe(false);
@@ -652,10 +644,8 @@ describe("useFloating", () => {
 				let open = $state(true);
 
 				const floating = useFloating({
-					elements: createElements(),
-					get open() {
-						return open;
-					},
+					...createElements(),
+					open: () => open,
 				});
 
 				await vi.waitFor(() => {
@@ -735,10 +725,8 @@ describe("useFloating", () => {
 				let open = $state(true);
 
 				const floating = useFloating({
-					elements: createElements(),
-					get open() {
-						return open;
-					},
+					...createElements(),
+					open: () => open,
 				});
 
 				expect(floating.context.open).toBe(true);
@@ -754,10 +742,8 @@ describe("useFloating", () => {
 				let placement: Placement = $state("left");
 
 				const floating = useFloating({
-					elements: createElements(),
-					get placement() {
-						return placement;
-					},
+					...createElements(),
+					placement: () => placement,
 				});
 
 				expect(floating.context.placement).toBe("left");
@@ -775,10 +761,8 @@ describe("useFloating", () => {
 				let strategy: Strategy = $state("absolute");
 
 				const floating = useFloating({
-					elements: createElements(),
-					get strategy() {
-						return strategy;
-					},
+					...createElements(),
+					strategy: () => strategy,
 				});
 
 				expect(floating.context.strategy).toBe("absolute");
@@ -796,11 +780,9 @@ describe("useFloating", () => {
 				const middleware: Array<Middleware> = $state([]);
 
 				const floating = useFloating({
-					elements: createElements(),
+					...createElements(),
 					placement: "right",
-					get middleware() {
-						return middleware;
-					},
+					middleware: () => middleware,
 				});
 
 				expect(floating.context.x).toBe(0);
@@ -818,11 +800,9 @@ describe("useFloating", () => {
 				const middleware: Array<Middleware> = $state([]);
 
 				const floating = useFloating({
-					elements: createElements(),
+					...createElements(),
 					placement: "bottom",
-					get middleware() {
-						return middleware;
-					},
+					middleware: () => middleware,
 				});
 
 				expect(floating.context.y).toBe(0);
@@ -840,10 +820,8 @@ describe("useFloating", () => {
 				let open = $state(true);
 
 				const floating = useFloating({
-					elements: createElements(),
-					get open() {
-						return open;
-					},
+					...createElements(),
+					open: () => open,
 				});
 
 				await vi.waitFor(() => {
@@ -864,10 +842,8 @@ describe("useFloating", () => {
 				const middleware: Array<Middleware> = $state([]);
 
 				const floating = useFloating({
-					elements: createElements(),
-					get middleware() {
-						return middleware;
-					},
+					...createElements(),
+					middleware: () => middleware,
 				});
 
 				expect(floating.context.middlewareData).toEqual({});
@@ -890,17 +866,17 @@ describe("useFloating", () => {
 				let elements = $state(createElements());
 
 				const floating = useFloating({
-					get elements() {
-						return elements;
-					},
+					reference: () => elements.reference,
+					floating: () => elements.floating,
 				});
-
-				expect(floating.context.elements).toEqual(elements);
+				expect(floating.context.reference).toEqual(elements.reference);
+				expect(floating.context.floating).toEqual(elements.floating);
 
 				elements = createElements();
 
 				await vi.waitFor(() => {
-					expect(floating.context.elements).toEqual(elements);
+					expect(floating.context.reference).toEqual(elements.reference);
+					expect(floating.context.floating).toEqual(elements.floating);
 				});
 			}),
 		);
@@ -909,9 +885,7 @@ describe("useFloating", () => {
 			withRunes(async () => {
 				let nodeId = $state(useId());
 				const floating = useFloating({
-					get nodeId() {
-						return nodeId;
-					},
+					nodeId: () => nodeId,
 				});
 
 				expect(floating.context.nodeId).toBe(nodeId);

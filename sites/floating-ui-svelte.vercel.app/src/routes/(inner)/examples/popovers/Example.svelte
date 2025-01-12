@@ -8,6 +8,7 @@
 		useClick,
 		useDismiss,
 		useFloating,
+		useFocus,
 		useInteractions,
 		useRole,
 	} from "@skeletonlabs/floating-ui-svelte";

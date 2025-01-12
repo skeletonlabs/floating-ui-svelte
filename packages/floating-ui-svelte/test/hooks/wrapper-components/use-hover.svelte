@@ -30,6 +30,12 @@
 	const interactions = useInteractions([hover]);
 </script>
 
+<button
+	data-testid="toggle-reference"
+	onclick={() => (showReference = !showReference)}>
+	toggle reference
+</button>
+
 {#if showReference}
 	<button
 		data-testid="reference"

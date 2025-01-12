@@ -145,15 +145,15 @@ describe("useHover", () => {
 		});
 	});
 
-	it.skip("does not show after delay when reference element changes mid delay", async () => {
-		const { rerender } = render(App, { delay: 100 });
+	it("does not show after delay when reference element changes mid delay", async () => {
+		render(App, { delay: 100 });
 		await fireEvent.mouseEnter(screen.getByTestId("reference"));
 
 		await act(async () => {
 			vi.advanceTimersByTime(50);
 		});
 
-		await rerender({ showReference: false });
+		await fireEvent.click(screen.getByTestId("toggle-reference"));
 
 		await act(async () => {
 			vi.advanceTimersByTime(50);

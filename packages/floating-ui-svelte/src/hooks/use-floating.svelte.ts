@@ -122,12 +122,12 @@ class FloatingOptions<RT extends ReferenceType = ReferenceType> {
 		reason?: OpenChangeReason,
 	) => void;
 	nodeId: ReadableBox<string | undefined>;
-	#stableReference = $state<Element | null>(null);
-	#stableFloating = $state<HTMLElement | null>(null);
-	reference: WritableBox<Element | null> = box(null);
-	floating: WritableBox<HTMLElement | null> = box(null);
 	floatingProp = $derived.by(() => extract(this.options.floating, null));
 	referenceProp = $derived.by(() => extract(this.options.reference, null));
+	#stableReference = $state<Element | null>(null);
+	#stableFloating = $state<HTMLElement | null>(null);
+	reference: WritableBox<Element | null>;
+	floating: WritableBox<HTMLElement | null>;
 	constructor(private readonly options: UseFloatingOptions<RT>) {
 		this.open = box.with(() => extract(options.open, true));
 		this.placement = box.with(() => extract(options.placement, "bottom"));
@@ -156,8 +156,8 @@ class FloatingOptions<RT extends ReferenceType = ReferenceType> {
 				this.onFloatingChange(node);
 			},
 		);
-		this.reference.current = this.referenceProp;
-		this.floating.current = this.floatingProp;
+		this.reference.current = extract(this.options.reference, null);
+		this.floating.current = extract(this.options.floating, null);
 
 		$effect.pre(() => {
 			if (this.floatingProp) {
@@ -296,6 +296,8 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 	context: FloatingContext<RT>;
 
 	constructor(private readonly options: FloatingOptions<RT>) {
+		console.log(options.reference.current);
+
 		const internalRootContext = useFloatingRootContext({
 			open: () => options.open.current ?? true,
 			reference: () => options.reference.current,
@@ -337,7 +339,7 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 	}
 
 	get reference() {
-		return this.#positionReference as RT | null;
+		return this.options.reference.current as RT | null;
 	}
 
 	set reference(node: RT | null) {
