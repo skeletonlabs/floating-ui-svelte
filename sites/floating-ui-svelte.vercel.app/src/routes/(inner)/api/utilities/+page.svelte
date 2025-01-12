@@ -1,5 +1,5 @@
 <script lang="ts">
-import CodeBlock from "$lib/components/CodeBlock/CodeBlock.svelte";
+	import CodeBlock from "$lib/components/CodeBlock/CodeBlock.svelte";
 </script>
 
 <div class="space-y-10">
@@ -12,8 +12,8 @@ import CodeBlock from "$lib/components/CodeBlock/CodeBlock.svelte";
 	<section class="space-y-8">
 		<h2 class="h2">useId</h2>
 		<p>
-			Generates a unique identifier string. This function combines a random string and an
-			incrementing counter to ensure uniqueness.
+			Generates a unique identifier string. This function combines a
+			random string and an incrementing counter to ensure uniqueness.
 		</p>
 		<CodeBlock
 			lang="ts"
@@ -21,8 +21,7 @@ import CodeBlock from "$lib/components/CodeBlock/CodeBlock.svelte";
 import { useId } from '@skeletonlabs/floating-ui-svelte';
 
 const id = useId();
-`}
-		/>
+`} />
 	</section>
 	<!-- Compare -->
 	<section class="space-y-8">

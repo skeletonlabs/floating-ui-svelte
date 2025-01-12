@@ -1,7 +1,7 @@
 <script lang="ts">
-import CodeBlock from "$lib/components/CodeBlock/CodeBlock.svelte";
-import Table from "$lib/components/Table/Table.svelte";
-import { tableReturns } from "./data.js";
+	import CodeBlock from "$lib/components/CodeBlock/CodeBlock.svelte";
+	import Table from "$lib/components/Table/Table.svelte";
+	import { tableReturns } from "./data.js";
 </script>
 
 <div class="space-y-10">
@@ -11,16 +11,16 @@ import { tableReturns } from "./data.js";
 		<p>A hook to merge or compose interaction event handlers together.</p>
 		<CodeBlock
 			lang="ts"
-			code={`import { useInteractions } from '@skeletonlabs/floating-ui-svelte';`}
-		/>
+			code={`import { useInteractions } from '@skeletonlabs/floating-ui-svelte';`} />
 	</header>
 	<!-- Usage -->
 	<section class="space-y-8">
 		<h2 class="h2">Usage</h2>
 		<p>
-			The <code class="code">useInteractions</code> Svelte hook allows you to consume multiple interactions.
-			It ensures that event listeners from different hooks are properly registered instead of being overruled
-			by one another.
+			The <code class="code">useInteractions</code> Svelte hook allows you
+			to consume multiple interactions. It ensures that event listeners from
+			different hooks are properly registered instead of being overruled by
+			one another.
 		</p>
 		<CodeBlock
 			lang="ts"
@@ -33,8 +33,7 @@ const hover = useHover(floating.context);
 const focus = useFocus(floating.context);
 
 const interactions = useInteractions([hover, focus]);
-`}
-		/>
+`} />
 		<CodeBlock
 			lang="svelte"
 			code={`
@@ -47,11 +46,11 @@ const interactions = useInteractions([hover, focus]);
 <div {...interactions.getFloatingProps()}>
 	Floating
 </div>
-		`}
-		/>
+		`} />
 		<p>
-			When you want to apply an event handler to an element that uses a props getter, make sure to
-			pass it through the getter instead of applying it directly:
+			When you want to apply an event handler to an element that uses a
+			props getter, make sure to pass it through the getter instead of
+			applying it directly:
 		</p>
 		<CodeBlock
 			lang="svelte"
@@ -61,10 +60,10 @@ const interactions = useInteractions([hover, focus]);
 
 <!-- Correct -->
 <div {...interactions.getReferenceProps({ onclick: /* event handler */})}>Reference</div>
-		`}
-		/>
+		`} />
 		<p>
-			This will ensure all event handlers will be registered rather being overruled by each-other.
+			This will ensure all event handlers will be registered rather being
+			overruled by each-other.
 		</p>
 	</section>
 	<!-- Table: Returns -->

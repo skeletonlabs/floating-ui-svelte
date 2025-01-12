@@ -1,7 +1,7 @@
 <script lang="ts">
-import CodeBlock from "$lib/components/CodeBlock/CodeBlock.svelte";
-import Table from "$lib/components/Table/Table.svelte";
-import { tableOptions } from "./data.js";
+	import CodeBlock from "$lib/components/CodeBlock/CodeBlock.svelte";
+	import Table from "$lib/components/Table/Table.svelte";
+	import { tableOptions } from "./data.js";
 </script>
 
 <div class="space-y-10">
@@ -9,14 +9,17 @@ import { tableOptions } from "./data.js";
 	<header class="card card-gradient space-y-8">
 		<h1 class="h1"><span>useRole</span></h1>
 		<p>
-			Adds base screen reader props to the reference and floating elements for a given
+			Adds base screen reader props to the reference and floating elements
+			for a given
 			<code class="code">role</code>.
 		</p>
-		<CodeBlock lang="ts" code={`import { useRole } from '@skeletonlabs/floating-ui-svelte';`} />
+		<CodeBlock
+			lang="ts"
+			code={`import { useRole } from '@skeletonlabs/floating-ui-svelte';`} />
 		<p>
-			This is useful to automatically apply ARIA props to the reference and floating elements to
-			ensure they’re accessible to assistive technology, including item elements if narrowly
-			specified.
+			This is useful to automatically apply ARIA props to the reference
+			and floating elements to ensure they’re accessible to assistive
+			technology, including item elements if narrowly specified.
 		</p>
 	</header>
 	<!-- Usage -->
@@ -30,8 +33,7 @@ import { useFloating, useInteractions, useRole } from '@skeletonlabs/floating-ui
 const floating = useFloating();
 const role = useRole(floating.context, { role: 'tooltip' });
 const interactions = useInteractions([role]);
-`}
-		/>
+`} />
 		<CodeBlock
 			lang="svelte"
 			code={`
@@ -51,8 +53,7 @@ const interactions = useInteractions([role]);
 >
 	Tooltip
 </div>
-		`}
-		/>
+		`} />
 	</section>
 	<!-- Table: Options -->
 	<section class="space-y-8">
