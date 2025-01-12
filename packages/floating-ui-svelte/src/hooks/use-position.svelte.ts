@@ -8,7 +8,7 @@ import {
 } from "@floating-ui/dom";
 import { getDPR, roundByDPR } from "../internal/dpr.js";
 import { styleObjectToString } from "../internal/style-object-to-string.js";
-import type { ReferenceType } from "../types.js";
+import type { ReferenceType, WhileElementsMounted } from "../types.js";
 import type { FloatingOptions } from "./use-floating.svelte.js";
 import type { FloatingRootContext } from "./use-floating-root-context.svelte.js";
 
@@ -66,11 +66,7 @@ interface UsePositionOptions<RT extends ReferenceType = ReferenceType> {
 	 * Callback to handle mounting/unmounting of the elements.
 	 * @default undefined
 	 */
-	whileElementsMounted?: (
-		reference: RT,
-		floating: HTMLElement,
-		update: () => void,
-	) => () => void;
+	whileElementsMounted?: WhileElementsMounted<RT>;
 }
 
 interface UsePositionData {

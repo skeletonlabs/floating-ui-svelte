@@ -25,26 +25,6 @@ interface FloatingEvents {
 	off(event: string, handler: (data: any) => void): void;
 }
 
-interface FloatingElements {
-	/**
-	 * The reference element.
-	 */
-	reference?: ReferenceType | null;
-
-	/**
-	 * The floating element.
-	 */
-	floating?: FloatingElement | null;
-}
-
-interface ExtendedElements<RT> extends Required<FloatingElements> {
-	/**
-	 * Some hooks require the reference element to be a DOM element,
-	 * not a VirtualElement.
-	 */
-	domReference: NarrowedElement<RT> | null;
-}
-
 interface ContextData<RT extends ReferenceType = ReferenceType> {
 	/**
 	 * The latest even that caused the open state to change.
@@ -89,15 +69,19 @@ interface FloatingTreeType<RT extends ReferenceType = ReferenceType> {
 	removeNode(node: FloatingNodeType): void;
 }
 
+type WhileElementsMounted<RT extends ReferenceType = ReferenceType> = (
+	reference: RT,
+	floating: HTMLElement,
+	update: () => void,
+) => () => void;
+
 type Getter<T> = () => T;
 type MaybeGetter<T> = T | Getter<T>;
 
 export type {
 	OpenChangeReason,
 	FloatingEvents,
-	FloatingElements,
 	ContextData,
-	ExtendedElements,
 	FloatingNodeType,
 	FloatingTreeType,
 	ReferenceType,
@@ -105,4 +89,5 @@ export type {
 	OnOpenChange,
 	Getter,
 	MaybeGetter,
+	WhileElementsMounted,
 };

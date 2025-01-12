@@ -5,8 +5,10 @@ import type {
 	FloatingTreeType,
 	MaybeGetter,
 	NarrowedElement,
+	OnOpenChange,
 	OpenChangeReason,
 	ReferenceType,
+	WhileElementsMounted,
 } from "../types.js";
 import {
 	type FloatingRootContext,
@@ -60,11 +62,7 @@ interface UseFloatingOptions<RT extends ReferenceType = ReferenceType> {
 	 * Callback to handle mounting/unmounting of the elements.
 	 * @default undefined
 	 */
-	whileElementsMounted?: (
-		reference: ReferenceType,
-		floating: HTMLElement,
-		update: () => void,
-	) => () => void;
+	whileElementsMounted?: WhileElementsMounted;
 
 	rootContext?: MaybeGetter<FloatingRootContext<RT>>;
 	/**
@@ -97,22 +95,19 @@ interface UseFloatingOptions<RT extends ReferenceType = ReferenceType> {
 }
 
 /**
- * Reactive options for the `useFloating` hook.
+ * An instance of `FloatingOptions` is created for each call to `useFloating`,
+ * and is used to store the reactive state of the various options passed to
+ * `useFloating`.
  */
-// This enables us to not have to pass around a bunch of getters and setters internally.
+// This enables us to not have to pass around a bunch of getters and setters internally
+// and can instead rely on the reactive state of the `FloatingOptions` instance.
 class FloatingOptions<RT extends ReferenceType = ReferenceType> {
 	open: ReadableBox<boolean>;
 	placement: ReadableBox<Placement>;
 	strategy: ReadableBox<Strategy>;
 	middleware: ReadableBox<Array<Middleware | undefined | null | false>>;
 	transform: ReadableBox<boolean>;
-	whileElementsMounted:
-		| ((
-				reference: ReferenceType,
-				floating: HTMLElement,
-				update: () => void,
-		  ) => () => void)
-		| undefined;
+	whileElementsMounted: WhileElementsMounted | undefined;
 	rootContext: ReadableBox<FloatingRootContext<RT> | undefined>;
 	onReferenceChange: (node: Element | null) => void;
 	onFloatingChange: (node: HTMLElement | null) => void;
@@ -122,13 +117,18 @@ class FloatingOptions<RT extends ReferenceType = ReferenceType> {
 		reason?: OpenChangeReason,
 	) => void;
 	nodeId: ReadableBox<string | undefined>;
-	floatingProp = $derived.by(() => extract(this.options.floating, null));
-	referenceProp = $derived.by(() => extract(this.options.reference, null));
+
 	#stableReference = $state<Element | null>(null);
 	#stableFloating = $state<HTMLElement | null>(null);
 	reference: WritableBox<Element | null>;
 	floating: WritableBox<HTMLElement | null>;
 	constructor(private readonly options: UseFloatingOptions<RT>) {
+		const floatingProp = $derived.by(() =>
+			extract(this.options.floating, null),
+		);
+		const referenceProp = $derived.by(() =>
+			extract(this.options.reference, null),
+		);
 		this.open = box.with(() => extract(options.open, true));
 		this.placement = box.with(() => extract(options.placement, "bottom"));
 		this.strategy = box.with(() => extract(options.strategy, "absolute"));
@@ -160,14 +160,14 @@ class FloatingOptions<RT extends ReferenceType = ReferenceType> {
 		this.floating.current = extract(this.options.floating, null);
 
 		$effect.pre(() => {
-			if (this.floatingProp) {
-				this.floating.current = this.floatingProp;
+			if (floatingProp) {
+				this.floating.current = floatingProp;
 			}
 		});
 
 		$effect.pre(() => {
-			if (this.referenceProp) {
-				this.reference.current = this.referenceProp;
+			if (referenceProp) {
+				this.reference.current = referenceProp;
 			}
 		});
 	}
@@ -191,11 +191,7 @@ interface FloatingContextData<RT extends ReferenceType = ReferenceType> {
 	isPositioned: boolean;
 	update: () => Promise<void>;
 	floatingStyles: string;
-	onOpenChange: (
-		open: boolean,
-		event?: Event,
-		reason?: OpenChangeReason,
-	) => void;
+	onOpenChange: OnOpenChange;
 	open: boolean;
 	data: ContextData<RT>;
 	floatingId: string;
@@ -206,11 +202,7 @@ interface FloatingContextData<RT extends ReferenceType = ReferenceType> {
 class FloatingContext<RT extends ReferenceType = ReferenceType>
 	implements FloatingContextData<RT>
 {
-	onOpenChange: (
-		open: boolean,
-		event?: Event,
-		reason?: OpenChangeReason,
-	) => void;
+	onOpenChange: OnOpenChange;
 	update: () => Promise<void>;
 
 	constructor(private readonly opts: FloatingContextOptions<RT>) {
@@ -296,8 +288,6 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 	context: FloatingContext<RT>;
 
 	constructor(private readonly options: FloatingOptions<RT>) {
-		console.log(options.reference.current);
-
 		const internalRootContext = useFloatingRootContext({
 			open: () => options.open.current ?? true,
 			reference: () => options.reference.current,

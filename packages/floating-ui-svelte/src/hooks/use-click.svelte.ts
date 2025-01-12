@@ -51,7 +51,7 @@ interface UseClickOptions {
 	 * reference element for the first time.
 	 * @default true
 	 */
-	stickIfOpen?: boolean;
+	stickIfOpen?: MaybeGetter<boolean>;
 }
 
 function isButtonTarget(event: KeyboardEvent) {

@@ -2,6 +2,7 @@ import type { ReferenceElement } from "@floating-ui/dom";
 import type {
 	ContextData,
 	MaybeGetter,
+	OnOpenChange,
 	OpenChangeReason,
 	ReferenceType,
 } from "../types.js";
@@ -21,11 +22,7 @@ import { noop } from "../internal/noop.js";
 
 interface UseFloatingRootContextOptions {
 	open?: MaybeGetter<boolean>;
-	onOpenChange?: (
-		open: boolean,
-		event?: Event,
-		reason?: OpenChangeReason,
-	) => void;
+	onOpenChange?: OnOpenChange;
 	reference: MaybeGetter<Element | null>;
 	floating: MaybeGetter<HTMLElement | null>;
 	onReferenceChange?: (node: Element | null) => void;
@@ -34,11 +31,7 @@ interface UseFloatingRootContextOptions {
 
 class FloatingRootContextOptions {
 	open: ReadableBox<boolean>;
-	onOpenChange: (
-		open: boolean,
-		event?: Event,
-		reason?: OpenChangeReason,
-	) => void;
+	onOpenChange: OnOpenChange;
 	onReferenceChange: (node: Element | null) => void;
 	onFloatingChange: (node: HTMLElement | null) => void;
 	#stableReference = $state<Element | null>(null);
@@ -113,6 +106,7 @@ class FloatingRootContext<RT extends ReferenceType = ReferenceType> {
 		}
 		this.#positionReference = this.options.reference.current;
 		this.onOpenChange = this.onOpenChange.bind(this);
+		this.setPositionReference = this.setPositionReference.bind(this);
 	}
 
 	onOpenChange(open: boolean, event?: Event, reason?: OpenChangeReason) {
