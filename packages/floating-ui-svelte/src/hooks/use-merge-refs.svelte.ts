@@ -1,19 +1,15 @@
-import type { ReferenceType } from "../types.js";
+import type { Boxed } from "../types.js";
 import { FloatingState } from "./use-floating.svelte.js";
-
-interface BoxedRef {
-	current: ReferenceType | null;
-}
 
 /**
  * Merges the references of either floating instances or refs into a single reference
  * that can be accessed and set via the `.current` property.
  */
-class MergeRefs {
-	#current = $state<ReferenceType | null>(null);
+class MergeRefs<T extends Element = Element> {
+	#current = $state<T | null>(null);
 	constructor(
 		private readonly floatingOrRef: Array<
-			FloatingState | BoxedRef | null | undefined
+			FloatingState | Boxed<T | null> | null | undefined
 		>,
 	) {}
 
@@ -21,7 +17,7 @@ class MergeRefs {
 		return this.#current;
 	}
 
-	set current(node: ReferenceType | null) {
+	set current(node: T | null) {
 		for (const arg of this.floatingOrRef) {
 			if (!arg) continue;
 			if (arg instanceof FloatingState) {
@@ -62,11 +58,10 @@ class MergeRefs {
  * @param floatingInstances
  * @returns
  */
-function useMergeRefs(
-	refLikes: Array<FloatingState | BoxedRef | null | undefined>,
+function useMergeRefs<T extends Element = Element>(
+	refLikes: Array<FloatingState | Boxed<T | null> | null | undefined>,
 ) {
 	return new MergeRefs(refLikes);
 }
 
 export { MergeRefs, useMergeRefs };
-export type { BoxedRef };

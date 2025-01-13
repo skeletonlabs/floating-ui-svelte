@@ -3,7 +3,12 @@
 	import type { FloatingRootContext } from "../../hooks/use-floating-root-context.svelte.js";
 	import type { FloatingContext } from "../../hooks/use-floating.svelte.js";
 	import { getNodeName, isHTMLElement } from "@floating-ui/utils/dom";
-	import { getTabbableOptions } from "../../internal/tabbable.js";
+	import {
+		getNextTabbable,
+		getPreviousTabbable,
+		getTabbableOptions,
+		isOutsideEvent,
+	} from "../../internal/tabbable.js";
 	import { isTabbable, tabbable, type FocusableElement } from "tabbable";
 	import { isTypeableCombobox } from "../../internal/is-typeable-element.js";
 	import { markOthers, supportsInert } from "../../internal/mark-others.js";
@@ -28,7 +33,7 @@
 	import type { Boxed, OpenChangeReason } from "../../types.js";
 	import { useMergeRefs } from "../../hooks/use-merge-refs.svelte.js";
 	import { watch } from "../../internal/watch.svelte.js";
-	import { HIDDEN_STYLES_STRING } from "../focus-guard.svelte";
+	import FocusGuard, { HIDDEN_STYLES_STRING } from "../focus-guard.svelte";
 
 	const LIST_LIMIT = 20;
 	let previouslyFocusedElements: Element[] = [];
@@ -141,11 +146,16 @@
 		outsideElementsInert?: boolean;
 	}
 
+	type DismissButtonSnippetProps = {
+		ref: Boxed<HTMLElement>;
+	};
+
 	export type { FloatingFocusManagerProps };
 </script>
 
 <script lang="ts">
 	import VisuallyHiddenDismiss from "./visually-hidden-dismiss.svelte";
+	import { box } from "../../internal/box.svelte.js";
 
 	let {
 		context,
@@ -183,8 +193,9 @@
 	const tree = useFloatingTree();
 	const portalContext = usePortalContext();
 
-	let startDismissButton = $state<HTMLButtonElement | null>(null);
-	let endDismissButton = $state<HTMLButtonElement | null>(null);
+	const startDismissButtonRef = box<HTMLElement>(null!);
+	const endDismissButtonRef = box<HTMLButtonElement>(null!);
+
 	let preventReturnFocus = $state(false);
 	let isPointerDown = $state(false);
 	let tabbableIndex = $state(-1);
@@ -378,12 +389,8 @@
 		}
 	});
 
-	let beforeGuardRef = $state<Boxed<HTMLSpanElement | null>>({
-		current: null,
-	});
-	let afterGuardRef = $state<Boxed<HTMLSpanElement | null>>({
-		current: null,
-	});
+	const beforeGuardRef = box<HTMLSpanElement | null>(null);
+	const afterGuardRef = box<HTMLSpanElement | null>(null);
 
 	const mergedBeforeGuardRef = useMergeRefs([
 		beforeGuardRef,
@@ -415,8 +422,8 @@
 			context.floating,
 			...portalNodes,
 			...ancestorFloatingNodes,
-			startDismissButton,
-			endDismissButton,
+			startDismissButtonRef,
+			endDismissButtonRef,
 			beforeGuardRef.current,
 			afterGuardRef.current,
 			portalContext?.beforeOutsideRef.current,
@@ -663,10 +670,82 @@
 		};
 	});
 
-	type DismissButtonSnippetProps = {
-		disabled: boolean;
-		visuallyHiddenDismiss: boolean;
-		modal: boolean;
-		location: "start" | "end";
-	};
+	const shouldRenderGuards = $derived(
+		!disabled &&
+			guards &&
+			(modal ? !isUntrappedTypeableCombobox : true) &&
+			(isInsidePortal || modal)
+	);
 </script>
+
+{#snippet DismissButton({ ref }: DismissButtonSnippetProps)}
+	{#if !disabled && visuallyHiddenDismiss && modal}
+		<VisuallyHiddenDismiss
+			bind:ref={ref.current}
+			onclick={(event) => context.onOpenChange(false, event)}>
+			{typeof visuallyHiddenDismiss === "string"
+				? visuallyHiddenDismiss
+				: "Dismiss"}
+		</VisuallyHiddenDismiss>
+	{/if}
+{/snippet}
+
+{#if shouldRenderGuards}
+	<FocusGuard
+		data-type="inside"
+		bind:ref={mergedBeforeGuardRef.current}
+		onfocus={(event) => {
+			if (modal) {
+				const els = getTabbableElements();
+				enqueueFocus(
+					order[0] === "reference" ? els[0] : els[els.length - 1]
+				);
+			} else if (
+				portalContext?.preserveTabOrder &&
+				portalContext.portalNode
+			) {
+				preventReturnFocus = false;
+				if (isOutsideEvent(event, portalContext.portalNode)) {
+					const nextTabbable =
+						getNextTabbable() || context.domReference;
+					nextTabbable?.focus();
+				} else {
+					portalContext.beforeOutsideRef.current?.focus();
+				}
+			}
+		}} />
+{/if}
+<!--
+Ensure the first swipe is the list item. The end of the listbox popup
+will have a dismiss button.
+-->
+{#if !isUntrappedTypeableCombobox}
+	{@render DismissButton({ ref: startDismissButtonRef })}
+{/if}
+{@render children?.()}
+{@render DismissButton({ ref: endDismissButtonRef })}
+{#if shouldRenderGuards}
+	<FocusGuard
+		data-type="inside"
+		bind:ref={mergedAfterGuardRef.current}
+		onfocus={(event) => {
+			if (modal) {
+				enqueueFocus(getTabbableElements()[0]);
+			} else if (
+				portalContext?.preserveTabOrder &&
+				portalContext.portalNode
+			) {
+				if (closeOnFocusOut) {
+					preventReturnFocus = true;
+				}
+
+				if (isOutsideEvent(event, portalContext.portalNode)) {
+					const prevTabbable =
+						getPreviousTabbable() || context.domReference;
+					prevTabbable?.focus();
+				} else {
+					portalContext.afterOutsideRef.current?.focus();
+				}
+			}
+		}} />
+{/if}

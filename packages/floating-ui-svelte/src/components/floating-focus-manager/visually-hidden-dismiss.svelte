@@ -5,7 +5,7 @@
 
 	interface VisuallyHiddenDismissProps
 		extends HTMLButtonAttributes,
-			WithRef<HTMLButtonElement> {}
+			WithRef<HTMLElement> {}
 
 	export type { VisuallyHiddenDismissProps };
 </script>
