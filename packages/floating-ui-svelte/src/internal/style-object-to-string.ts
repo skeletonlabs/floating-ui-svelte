@@ -15,7 +15,7 @@ function styleStringToObject(
 	try {
 		return parse(style) as PropertiesHyphen;
 	} catch (err) {
-		error("Invalid style string provided via `style` prop.");
+		error("Invalid style string provided via `style` prop. No styles applied.");
 		return {};
 	}
 }

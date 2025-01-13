@@ -9,12 +9,15 @@ type OpenChangeReason =
 	| "click"
 	| "hover"
 	| "focus"
+	| "focus-out"
 	| "list-navigation"
 	| "safe-polygon";
 
 type ReferenceType = Element | VirtualElement;
 
 type NarrowedElement<T> = T extends Element ? T : Element;
+
+type Boxed<T> = { current: T };
 
 interface FloatingEvents {
 	// biome-ignore lint/suspicious/noExplicitAny: From the port
@@ -78,6 +81,13 @@ type WhileElementsMounted<RT extends ReferenceType = ReferenceType> = (
 type Getter<T> = () => T;
 type MaybeGetter<T> = T | Getter<T>;
 
+interface WithRef<T extends Element = HTMLElement> {
+	/**
+	 * A bindable reference to the element.
+	 */
+	ref: T | null;
+}
+
 export type {
 	OpenChangeReason,
 	FloatingEvents,
@@ -90,4 +100,6 @@ export type {
 	Getter,
 	MaybeGetter,
 	WhileElementsMounted,
+	WithRef,
+	Boxed,
 };

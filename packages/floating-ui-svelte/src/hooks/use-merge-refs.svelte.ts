@@ -12,7 +12,9 @@ interface BoxedRef {
 class MergeRefs {
 	#current = $state<ReferenceType | null>(null);
 	constructor(
-		private readonly floatingOrRef: Array<FloatingState | BoxedRef>,
+		private readonly floatingOrRef: Array<
+			FloatingState | BoxedRef | null | undefined
+		>,
 	) {}
 
 	get current() {
@@ -21,6 +23,7 @@ class MergeRefs {
 
 	set current(node: ReferenceType | null) {
 		for (const arg of this.floatingOrRef) {
+			if (!arg) continue;
 			if (arg instanceof FloatingState) {
 				arg.reference = node;
 				continue;
@@ -59,7 +62,9 @@ class MergeRefs {
  * @param floatingInstances
  * @returns
  */
-function useMergeRefs(refLikes: Array<FloatingState | BoxedRef>) {
+function useMergeRefs(
+	refLikes: Array<FloatingState | BoxedRef | null | undefined>,
+) {
 	return new MergeRefs(refLikes);
 }
 

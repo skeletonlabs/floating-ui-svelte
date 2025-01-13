@@ -47,6 +47,7 @@
 		"@floating-ui/dom": "^1.6.12",
 		"@floating-ui/utils": "^0.2.8",
 		"esm-env": "^1.2.1",
-		"style-to-object": "^1.0.8"
+		"style-to-object": "^1.0.8",
+		"tabbable": "^6.2.0"
 	}
 }

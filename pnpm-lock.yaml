@@ -29,6 +29,9 @@ importers:
       style-to-object:
         specifier: ^1.0.8
         version: 1.0.8
+      tabbable:
+        specifier: ^6.2.0
+        version: 6.2.0
     devDependencies:
       '@sveltejs/kit':
         specifier: ^2.15.1

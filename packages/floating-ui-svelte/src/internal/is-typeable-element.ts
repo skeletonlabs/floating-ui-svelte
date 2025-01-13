@@ -8,4 +8,11 @@ function isTypeableElement(element: unknown): boolean {
 	return isHTMLElement(element) && element.matches(TYPEABLE_SELECTOR);
 }
 
-export { TYPEABLE_SELECTOR, isTypeableElement };
+function isTypeableCombobox(element: Element | null) {
+	if (!element) return false;
+	return (
+		element.getAttribute("role") === "combobox" && isTypeableElement(element)
+	);
+}
+
+export { TYPEABLE_SELECTOR, isTypeableElement, isTypeableCombobox };
