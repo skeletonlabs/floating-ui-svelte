@@ -1,20 +1,29 @@
 import { browser } from "$app/environment";
-import getLatestVersion from "latest-version";
 import type { Pagefind } from "vite-plugin-pagefind/types";
 
-export async function load() {
-	const version = await getLatestVersion("@skeletonlabs/floating-ui-svelte");
-	if (browser) {
-		// @ts-expect-error - Dynamic import
-		const pagefind: Pagefind = await import("/pagefind/pagefind.js");
-		await pagefind.init();
-		return {
-			version,
-			pagefind,
-		};
+async function getPageFind() {
+	if (!browser) {
+		return null;
 	}
+	// @ts-expect-error - File will be generated at build time
+	const pagefind: Pagefind = await import("/pagefind/pagefind.js");
+	await pagefind.init();
+	return pagefind;
+}
+
+async function getLatestVersion(fetcher: typeof fetch) {
+	const response = await fetcher("https://registry.npmjs.org/@skeletonlabs/floating-ui-svelte");
+	const data = await response.json();
+	const version = data["dist-tags"].latest;
+	return version;
+}
+
+export async function load({ fetch }) {
+	const version = getLatestVersion(fetch);
+	const pagefind = await getPageFind();
 	return {
-		version,
+		version: version,
+		pagefind: pagefind
 	};
 }
 
