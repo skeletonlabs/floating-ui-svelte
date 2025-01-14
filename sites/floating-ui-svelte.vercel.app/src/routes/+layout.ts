@@ -12,18 +12,20 @@ async function getPageFind() {
 }
 
 async function getLatestVersion(fetcher: typeof fetch) {
-	const response = await fetcher("https://registry.npmjs.org/@skeletonlabs/floating-ui-svelte");
+	const response = await fetcher(
+		"https://registry.npmjs.org/@skeletonlabs/floating-ui-svelte",
+	);
 	const data = await response.json();
-	const version = data["dist-tags"].latest;
+	const version = data["dist-tags"].latest as string;
 	return version;
 }
 
 export async function load({ fetch }) {
-	const version = getLatestVersion(fetch);
+	const version = await getLatestVersion(fetch);
 	const pagefind = await getPageFind();
 	return {
 		version: version,
-		pagefind: pagefind
+		pagefind: pagefind,
 	};
 }
 
