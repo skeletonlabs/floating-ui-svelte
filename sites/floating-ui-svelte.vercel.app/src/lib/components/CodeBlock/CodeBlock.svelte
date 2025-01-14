@@ -41,7 +41,7 @@ const highlightedLineNumbers = $derived(
 
 const renderedCode = $derived(
 	highlighter.codeToHtml(code.trim(), {
-		lang,
+		lang: lang,
 		theme: MoonlightDark as ThemeRegistration,
 		transformers: [
 			/**
