@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        node-version: latest
+        node-version: [latest]
     steps:
       - uses: actions/checkout@v4
       - name: Install pnpm
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        node-version: latest
+        node-version: [latest]
     steps:
       - uses: actions/checkout@v4
       - name: Install pnpm
@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        node-version: latest
+        node-version: [latest]
     steps:
       - uses: actions/checkout@v4
       - name: Install pnpm
