@@ -91,7 +91,7 @@ interface UseFloatingOptions<RT extends ReferenceType = ReferenceType> {
 	/**
 	 * Unique node id when using `FloatingTree`.
 	 */
-	nodeId?: MaybeGetter<string>;
+	nodeId?: MaybeGetter<string | undefined>;
 }
 
 /**

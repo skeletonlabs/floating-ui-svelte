@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/svelte";
 import { describe, expect, it } from "vitest";
 import FloatingArrow from "../../src/components/floating-arrow.svelte";
-import { useFloating } from "../../src/hooks/use-position.svelte.js";
 import { withRunes } from "../internal/with-runes.svelte.js";
+import { useFloating } from "../../src/index.js";
 
 describe("FloatingArrow", () => {
 	it(

@@ -4,6 +4,19 @@
 export * from "./components/floating-arrow.svelte";
 export { default as FloatingArrow } from "./components/floating-arrow.svelte";
 
+export * from "./components/floating-portal/floating-portal.svelte";
+export { default as FloatingPortal } from "./components/floating-portal/floating-portal.svelte";
+export * from "./components/floating-portal/hooks.svelte.js";
+
+export * from "./components/floating-tree/floating-tree.svelte";
+export { default as FloatingTree } from "./components/floating-tree/floating-tree.svelte";
+export * from "./components/floating-tree/floating-node.svelte";
+export { default as FloatingNode } from "./components/floating-tree/floating-node.svelte";
+export * from "./components/floating-tree/hooks.svelte.js";
+
+export * from "./components/floating-focus-manager/floating-focus-manager.svelte";
+export { default as FloatingFocusManager } from "./components/floating-focus-manager/floating-focus-manager.svelte";
+
 /**
  * Hooks
  */

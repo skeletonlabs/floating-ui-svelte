@@ -43,17 +43,14 @@ function useFloatingPortalNode(props: UseFloatingPortalNodeProps = {}) {
 
 	let portalNode = $state<HTMLElement | null>(null);
 
-	watch(
-		() => portalNode,
-		() => {
-			return () => {
-				portalNode?.remove();
-				queueMicrotask(() => {
-					portalNode = null;
-				});
-			};
-		},
-	);
+	$effect(() => {
+		return () => {
+			portalNode?.remove();
+			queueMicrotask(() => {
+				portalNode = null;
+			});
+		};
+	});
 
 	watch(
 		() => id,

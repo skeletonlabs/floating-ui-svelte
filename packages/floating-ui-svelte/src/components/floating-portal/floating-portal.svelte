@@ -41,12 +41,12 @@
 
 <script lang="ts">
 	import Portal from "./portal.svelte";
-	import type { Boxed } from "../../types.js";
+	import { box } from "../../internal/box.svelte.js";
 
 	let {
 		children,
 		id,
-		root = null,
+		root = typeof document === "undefined" ? null : document.body,
 		preserveTabOrder = true,
 	}: FloatingPortalProps = $props();
 
@@ -56,18 +56,10 @@
 	});
 
 	let focusManagerState = $state.raw<FocusManagerState>(null);
-	let beforeOutsideRef = $state<Boxed<HTMLSpanElement | null>>({
-		current: null,
-	});
-	let afterOutsideRef = $state<Boxed<HTMLSpanElement | null>>({
-		current: null,
-	});
-	let beforeInsideRef = $state<Boxed<HTMLSpanElement | null>>({
-		current: null,
-	});
-	let afterInsideRef = $state<Boxed<HTMLSpanElement | null>>({
-		current: null,
-	});
+	const beforeOutsideRef = box<HTMLSpanElement | null>(null);
+	const afterOutsideRef = box<HTMLSpanElement | null>(null);
+	const beforeInsideRef = box<HTMLSpanElement | null>(null);
+	const afterInsideRef = box<HTMLSpanElement | null>(null);
 
 	const modal = $derived(focusManagerState?.modal);
 	const open = $derived(focusManagerState?.open);
@@ -92,13 +84,13 @@
 			// portal has already been focused, either by tabbing into a focus trap
 			// element outside or using the mouse.
 			function onFocus(event: FocusEvent) {
-				if (!portalNode || !isOutsideEvent(event)) return;
-
-				const focusing = event.type === "focusin";
-				const manageFocus = focusing
-					? enableFocusInside
-					: disableFocusInside;
-				manageFocus(portalNode);
+				if (portalNode && isOutsideEvent(event)) {
+					const focusing = event.type === "focusin";
+					const manageFocus = focusing
+						? enableFocusInside
+						: disableFocusInside;
+					manageFocus(portalNode);
+				}
 			}
 
 			return executeCallbacks(
@@ -134,7 +126,7 @@
 {#if shouldRenderGuards && portalNode.current}
 	<FocusGuard
 		data-type="outside"
-		ref={beforeOutsideRef.current}
+		bind:ref={beforeOutsideRef.current}
 		onfocus={(event) => {
 			if (isOutsideEvent(event, portalNode.current)) {
 				beforeInsideRef.current?.focus();
@@ -155,7 +147,7 @@
 {#if shouldRenderGuards && portalNode.current}
 	<FocusGuard
 		data-type="outside"
-		ref={afterOutsideRef.current}
+		bind:ref={afterOutsideRef.current}
 		onfocus={(event) => {
 			if (isOutsideEvent(event, portalNode.current)) {
 				afterInsideRef.current?.focus();

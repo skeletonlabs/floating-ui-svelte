@@ -5,10 +5,11 @@
 		useFloatingParentNodeId,
 	} from "./hooks.svelte.js";
 
-	export interface FloatingNodeProps {
+	interface FloatingNodeProps {
 		children?: Snippet;
 		id: string | undefined;
 	}
+	export type { FloatingNodeProps };
 </script>
 
 <script lang="ts">

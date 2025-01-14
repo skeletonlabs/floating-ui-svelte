@@ -72,8 +72,6 @@ describe("useFloating", () => {
 					floating: () => elements.floating,
 				});
 
-				console.log(floating.reference, floating.floating);
-
 				expect(floating.reference).toEqual(elements.reference);
 				expect(floating.floating).toEqual(elements.floating);
 

@@ -201,6 +201,9 @@
 	let tabbableIndex = $state(-1);
 
 	const isInsidePortal = portalContext != null;
+
+	console.log("isInsidePortal", isInsidePortal);
+
 	const floatingFocusElement = $derived(
 		getFloatingFocusElement(context.floating)
 	);
@@ -422,8 +425,8 @@
 			context.floating,
 			...portalNodes,
 			...ancestorFloatingNodes,
-			startDismissButtonRef,
-			endDismissButtonRef,
+			startDismissButtonRef.current,
+			endDismissButtonRef.current,
 			beforeGuardRef.current,
 			afterGuardRef.current,
 			portalContext?.beforeOutsideRef.current,

@@ -4,9 +4,10 @@
 	import { createPubSub } from "../../internal/create-pub-sub.js";
 	import { FloatingTreeContext } from "./hooks.svelte.js";
 
-	export interface FloatingTreeProps {
+	interface FloatingTreeProps {
 		children?: Snippet;
 	}
+	export type { FloatingTreeProps };
 </script>
 
 <script lang="ts">
