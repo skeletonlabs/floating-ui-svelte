@@ -162,6 +162,65 @@ describe("useFloating", () => {
 		);
 	});
 
+	describe("translate", () => {
+		it(
+			"can be set",
+			withRunes(async () => {
+				const translate = true;
+				const floating = useFloating({
+					elements: createElements(),
+					translate,
+				});
+
+				await vi.waitFor(() => {
+					expect(floating.floatingStyles).contain(
+						"translate: 0px 0px",
+					);
+				});
+			}),
+		);
+		it(
+			'defaults to "false"',
+			withRunes(async () => {
+				const floating = useFloating({
+					elements: createElements(),
+				});
+				await vi.waitFor(() => {
+					expect(floating.floatingStyles).contain(
+						"transform: translate(0px, 0px)",
+					);
+				});
+			}),
+		);
+		it(
+			"is reactive",
+			withRunes(async () => {
+				let translate = $state(true);
+
+				const floating = useFloating({
+					elements: createElements(),
+					get translate() {
+						return translate;
+					},
+				});
+
+				await vi.waitFor(() => {
+					expect(floating.floatingStyles).contain(
+						"translate: 0px 0px",
+					);
+				});
+
+				translate = false;
+
+				await vi.waitFor(() => {
+					expect(floating.floatingStyles).not.contain(
+						"translate: 0px 0px",
+					);
+				});
+			}),
+		);
+	});
+
 	describe("strategy", () => {
 		it(
 			"can be set",

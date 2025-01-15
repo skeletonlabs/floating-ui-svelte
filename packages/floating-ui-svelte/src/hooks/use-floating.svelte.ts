@@ -69,6 +69,13 @@ interface UseFloatingOptions {
 	transform?: boolean;
 
 	/**
+	 * Whether to use 'translate' instead of 'transform' to position the floating element.
+	 *
+	 * @default false
+	 */
+	translate?: boolean;
+
+	/**
 	 * Object containing the floating and reference elements.
 	 * @default {}
 	 */
@@ -218,6 +225,7 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		strategy = "absolute",
 		middleware = [],
 		transform = true,
+		translate = false,
 		open = true,
 		onOpenChange: unstableOnOpenChange = noop,
 		whileElementsMounted,
@@ -236,6 +244,14 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 
 		const x = roundByDPR(elements.floating, state.x);
 		const y = roundByDPR(elements.floating, state.y);
+
+		if (translate) {
+			return styleObjectToString({
+				...initialStyles,
+				translate: `${x}px ${y}px`,
+				...(getDPR(elements.floating) >= 1.5 && { willChange: "transform" }),
+			});
+		}
 
 		if (transform) {
 			return styleObjectToString({
