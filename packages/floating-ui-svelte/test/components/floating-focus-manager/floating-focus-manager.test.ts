@@ -504,7 +504,6 @@ describe("non-modal + FloatingPortal", () => {
 		render(NonModalFloatingPortal, { order: ["reference", "content"] });
 
 		await userEvent.click(screen.getByTestId("reference"));
-
 		await waitFor(() => expect(screen.getByTestId("reference")).toHaveFocus());
 		await sleep(20);
 		await userEvent.tab();
