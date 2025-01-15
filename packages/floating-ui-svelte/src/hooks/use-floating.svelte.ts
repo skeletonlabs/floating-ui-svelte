@@ -231,6 +231,28 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		whileElementsMounted,
 		nodeId,
 	} = $derived(options);
+
+	const state: UseFloatingData = $state({
+		x: 0,
+		y: 0,
+		strategy,
+		placement,
+		middlewareData: {},
+		isPositioned: false,
+	});
+
+	const origin = $derived.by(() => {
+		if (state.placement.startsWith("top"))
+			return state.placement.replace("top", "bottom");
+		if (state.placement.startsWith("bottom"))
+			return state.placement.replace("bottom", "top");
+		if (state.placement.startsWith("left"))
+			return state.placement.replace("left", "right");
+		if (state.placement.startsWith("right"))
+			return state.placement.replace("right", "left");
+		return state.placement;
+	});
+
 	const floatingStyles = $derived.by(() => {
 		const initialStyles = {
 			position: strategy,
@@ -249,6 +271,7 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 			return styleObjectToString({
 				...initialStyles,
 				translate: `${x}px ${y}px`,
+				"transform-origin": origin,
 				...(getDPR(elements.floating) >= 1.5 && { willChange: "transform" }),
 			});
 		}
@@ -257,6 +280,7 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 			return styleObjectToString({
 				...initialStyles,
 				transform: `translate(${x}px, ${y}px)`,
+				"transform-origin": origin,
 				...(getDPR(elements.floating) >= 1.5 && { willChange: "transform" }),
 			});
 		}
@@ -280,15 +304,6 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		events.emit("openchange", { open, event, reason });
 		unstableOnOpenChange(open, event, reason);
 	};
-
-	const state: UseFloatingData = $state({
-		x: 0,
-		y: 0,
-		strategy,
-		placement,
-		middlewareData: {},
-		isPositioned: false,
-	});
 
 	const context: FloatingContext = $state({
 		data,

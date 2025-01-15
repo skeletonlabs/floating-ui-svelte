@@ -160,6 +160,35 @@ describe("useFloating", () => {
 				});
 			}),
 		);
+		it.each<{ placement: Placement; expected: Placement }>([
+			{ placement: "top", expected: "bottom" },
+			{ placement: "right", expected: "left" },
+			{ placement: "bottom", expected: "top" },
+			{ placement: "left", expected: "right" },
+
+			{ placement: "top-start", expected: "bottom-start" },
+			{ placement: "right-start", expected: "left-start" },
+			{ placement: "bottom-end", expected: "top-end" },
+			{ placement: "left-end", expected: "right-end" },
+		])("can be set to $placement", async ({ placement, expected }) => {
+			await withRunes(async () => {
+				const floating = useFloating({
+					placement,
+					elements: createElements(),
+				});
+
+				await vi.waitFor(() => {
+					expect(floating.floatingStyles).contain(
+						"transform: translate(0px, 0px)",
+					);
+				});
+
+				expect(floating.placement).toBe(placement);
+				expect(floating.floatingStyles).toContain(
+					`transform-origin: ${expected};`,
+				);
+			})();
+		});
 	});
 
 	describe("translate", () => {
@@ -173,9 +202,7 @@ describe("useFloating", () => {
 				});
 
 				await vi.waitFor(() => {
-					expect(floating.floatingStyles).contain(
-						"translate: 0px 0px",
-					);
+					expect(floating.floatingStyles).contain("translate: 0px 0px");
 				});
 			}),
 		);
@@ -205,17 +232,13 @@ describe("useFloating", () => {
 				});
 
 				await vi.waitFor(() => {
-					expect(floating.floatingStyles).contain(
-						"translate: 0px 0px",
-					);
+					expect(floating.floatingStyles).contain("translate: 0px 0px");
 				});
 
 				translate = false;
 
 				await vi.waitFor(() => {
-					expect(floating.floatingStyles).not.contain(
-						"translate: 0px 0px",
-					);
+					expect(floating.floatingStyles).not.contain("translate: 0px 0px");
 				});
 			}),
 		);
@@ -302,6 +325,7 @@ describe("useFloating", () => {
 			withRunes(() => {
 				const floating = useFloating();
 				expect(floating.placement).toBe("bottom");
+				expect(floating.floatingStyles).toContain("transform-origin: top;");
 			}),
 		);
 		it(
