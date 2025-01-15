@@ -22,7 +22,7 @@
 	// 		open = v;
 	// 	},
 	// });
-	import Main from "./(navigation)/main.svelte";
+	import Main from "./(drawer)/main.svelte";
 </script>
 
 <Main />

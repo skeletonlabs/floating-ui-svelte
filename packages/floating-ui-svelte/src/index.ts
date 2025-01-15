@@ -17,6 +17,9 @@ export * from "./components/floating-tree/hooks.svelte.js";
 export * from "./components/floating-focus-manager/floating-focus-manager.svelte";
 export { default as FloatingFocusManager } from "./components/floating-focus-manager/floating-focus-manager.svelte";
 
+export * from "./components/floating-overlay.svelte";
+export { default as FloatingOverlay } from "./components/floating-overlay.svelte";
+
 /**
  * Hooks
  */

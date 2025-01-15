@@ -14,6 +14,7 @@ import ToggleDisabled from "./components/toggle-disabled.svelte";
 import KeepMounted from "./components/keep-mounted.svelte";
 import NonModalFloatingPortal from "./components/non-modal-floating-portal.svelte";
 import Navigation from "../navigation/main.svelte";
+import Drawer from "../drawer/main.svelte";
 
 describe("initialFocus", () => {
 	it("handles numbers", async () => {
@@ -582,5 +583,73 @@ describe("Navigation", () => {
 		await sleep(20);
 
 		await waitFor(() => expect(screen.getByText("Product")).toHaveFocus());
+	});
+
+	it("does not re-open after closing via escape key", async () => {
+		render(Navigation);
+		await userEvent.hover(screen.getByText("Product"));
+		await userEvent.keyboard(testKbd.ESCAPE);
+		expect(screen.queryByText("Link 1")).not.toBeInTheDocument();
+	});
+
+	it("closes when unhovering floating element even when focus is inside it", async () => {
+		render(Navigation);
+		await userEvent.hover(screen.getByText("Product"));
+		await userEvent.click(screen.getByTestId("subnavigation"));
+		await userEvent.unhover(screen.getByTestId("subnavigation"));
+		await userEvent.hover(screen.getByText("Product"));
+		await userEvent.unhover(screen.getByText("Product"));
+		expect(screen.queryByTestId("subnavigation")).not.toBeInTheDocument();
+	});
+});
+
+describe("Drawer", () => {
+	window.matchMedia = vi.fn().mockImplementation((query) => ({
+		matches: true,
+		media: query,
+		onchange: null,
+		addListener: vi.fn(),
+		removeListener: vi.fn(),
+		addEventListener: vi.fn(),
+		removeEventListener: vi.fn(),
+		dispatchEvent: vi.fn(),
+	}));
+	it("does not close when clicking another button outside", async () => {
+		render(Drawer);
+
+		await userEvent.click(screen.getByText("My button"));
+		expect(screen.queryByText("Close")).toBeInTheDocument();
+		await userEvent.click(screen.getByText("Next button"));
+		await waitFor(() =>
+			expect(screen.queryByText("Close")).toBeInTheDocument(),
+		);
+	});
+
+	it("closeOnFocusOut=false - does not close when tabbing out", async () => {
+		render(Drawer);
+
+		await userEvent.click(screen.getByText("My button"));
+		await sleep(20);
+		expect(screen.queryByText("Close")).toBeInTheDocument();
+		await userEvent.keyboard(testKbd.TAB);
+		await waitFor(() =>
+			expect(document.activeElement).toBe(screen.getByText("Next button")),
+		);
+		expect(screen.queryByText("Close")).toBeInTheDocument();
+	});
+
+	it.only("returns focus when tabbing out then back to close button", async () => {
+		render(Drawer);
+
+		await userEvent.click(screen.getByText("My button"));
+		await sleep(20);
+		expect(screen.queryByText("Close")).toBeInTheDocument();
+		await userEvent.keyboard(testKbd.TAB);
+		await waitFor(() => expect(screen.getByText("Next button")).toHaveFocus());
+		await userEvent.keyboard("{Shift>}{Tab}{/Shift}");
+		await sleep(20);
+		await waitFor(() => expect(screen.getByText("Close")).toHaveFocus());
+		await userEvent.click(screen.getByText("Close"));
+		await waitFor(() => expect(screen.getByText("My button")).toHaveFocus());
 	});
 });
