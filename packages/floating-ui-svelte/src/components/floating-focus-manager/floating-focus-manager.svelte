@@ -399,7 +399,7 @@
 	]);
 	const mergedAfterGuardRef = useMergeRefs([
 		afterGuardRef,
-		portalContext?.beforeInsideRef,
+		portalContext?.afterInsideRef,
 	]);
 
 	$effect(() => {
@@ -709,6 +709,7 @@
 				if (isOutsideEvent(event, portalContext.portalNode)) {
 					const nextTabbable =
 						getNextTabbable() || context.domReference;
+
 					nextTabbable?.focus();
 				} else {
 					portalContext.beforeOutsideRef.current?.focus();

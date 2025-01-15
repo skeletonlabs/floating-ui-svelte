@@ -506,6 +506,28 @@ describe("non-modal + FloatingPortal", () => {
 		await userEvent.click(screen.getByTestId("reference"));
 
 		await waitFor(() => expect(screen.getByTestId("reference")).toHaveFocus());
+		await sleep(20);
+		await userEvent.tab();
+
+		await waitFor(() => expect(screen.getByTestId("inside")).toHaveFocus());
+
+		await userEvent.tab();
+
+		await waitFor(() => expect(screen.getByTestId("last")).toHaveFocus());
+	});
+
+	it("handles order: [reference, floating, content] focuses reference, then floating, then inside, then, last document element", async () => {
+		render(NonModalFloatingPortal, {
+			order: ["reference", "floating", "content"],
+		});
+
+		await userEvent.click(screen.getByTestId("reference"));
+		await waitFor(() => expect(screen.getByTestId("reference")).toHaveFocus());
+		await sleep(20);
+
+		await userEvent.tab();
+
+		await waitFor(() => expect(screen.getByTestId("floating")).toHaveFocus());
 
 		await userEvent.tab();
 

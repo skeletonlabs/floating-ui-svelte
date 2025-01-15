@@ -24,7 +24,8 @@
 	});
 </script>
 
-<span id="first" tabIndex={0} data-testid="first"></span>
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+<span id="first" tabindex={0} data-testid="first"></span>
 <button
 	id="reference"
 	data-testid="reference"
@@ -35,15 +36,17 @@
 		<FloatingFocusManager
 			context={f.context}
 			modal={false}
-			order={["reference", "content"]}>
+			order={["reference", "floating", "content"]}>
 			<div
 				id="floating"
 				data-testid="floating"
 				bind:this={f.floating}
 				class="bg-blue-800 w-48 z-[1000] fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
-				<span id="inside" tabIndex={0} data-testid="inside"></span>
+				<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+				<span id="inside" tabindex={0} data-testid="inside"></span>
 			</div>
 		</FloatingFocusManager>
 	</FloatingPortal>
 {/if}
-<span tabIndex={0} data-testid="last" id="last"></span>
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+<span tabindex={0} data-testid="last" id="last"></span>
