@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import type { Snippet } from "svelte";
+	import { tick, type Snippet } from "svelte";
 	import {
 		type FocusManagerState,
 		PortalContext,
@@ -125,7 +125,8 @@
 
 {#if shouldRenderGuards && portalNode.current}
 	<FocusGuard
-		data-type="outside"
+		type="outside"
+		data-name="before"
 		bind:ref={beforeOutsideRef.current}
 		onfocus={(event) => {
 			if (isOutsideEvent(event, portalNode.current)) {
@@ -146,7 +147,8 @@
 
 {#if shouldRenderGuards && portalNode.current}
 	<FocusGuard
-		data-type="outside"
+		type="outside"
+		data-name="after"
 		bind:ref={afterOutsideRef.current}
 		onfocus={(event) => {
 			if (isOutsideEvent(event, portalNode.current)) {

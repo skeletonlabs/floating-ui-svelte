@@ -2,7 +2,6 @@
 	import type { HTMLAttributes } from "svelte/elements";
 	import type { PropertiesHyphen } from "csstype";
 	import { styleObjectToString } from "../internal/style-object-to-string.js";
-	import type { WithRef } from "../types.js";
 	import { isSafari } from "../internal/environment.js";
 	import { on } from "svelte/events";
 	import { createAttribute } from "../internal/dom.js";
@@ -33,9 +32,10 @@
 		}
 	}
 
-	interface FocusGuardProps
-		extends HTMLAttributes<HTMLSpanElement>,
-			WithRef<HTMLSpanElement> {}
+	interface FocusGuardProps extends HTMLAttributes<HTMLSpanElement> {
+		ref: HTMLElement | null;
+		type: "inside" | "outside";
+	}
 
 	export type { FocusGuardProps };
 </script>
@@ -44,6 +44,7 @@
 	let {
 		ref = $bindable(null),
 		children,
+		type,
 		...rest
 	}: FocusGuardProps = $props();
 
@@ -69,6 +70,7 @@
 		"aria-hidden": role ? undefined : "true",
 		[createAttribute("focus-guard")]: "",
 		style: HIDDEN_STYLES_STRING,
+		"data-type": type,
 	});
 </script>
 

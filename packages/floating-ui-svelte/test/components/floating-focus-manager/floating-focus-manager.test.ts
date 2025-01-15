@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/svelte";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, test, vi } from "vitest";
 import Main from "./components/main.svelte";
 import NestedNested from "./components/nested-nested.svelte";
 import DialogNonFocusableRef from "./components/dialog-non-focusable-ref.svelte";
@@ -12,6 +12,8 @@ import MixedModMain from "./components/mixed-mod-main.svelte";
 import OutsideNodes from "./components/outside-nodes.svelte";
 import ToggleDisabled from "./components/toggle-disabled.svelte";
 import KeepMounted from "./components/keep-mounted.svelte";
+import NonModalFloatingPortal from "./components/non-modal-floating-portal.svelte";
+import { tick } from "svelte";
 
 describe("initialFocus", () => {
 	it("handles numbers", async () => {
@@ -401,5 +403,116 @@ describe("disabled", () => {
 		await userEvent.keyboard(testKbd.ESCAPE);
 
 		await waitFor(() => expect(screen.getByTestId("reference")).toHaveFocus());
+	});
+});
+
+describe("order", () => {
+	it("handles [reference, content]", async () => {
+		render(Main, { order: ["reference", "content"] });
+		await fireEvent.click(screen.getByTestId("reference"));
+
+		await waitFor(() => expect(screen.getByTestId("reference")).toHaveFocus());
+
+		await userEvent.tab();
+		await waitFor(() => expect(screen.getByTestId("one")).toHaveFocus());
+
+		await userEvent.tab();
+		await waitFor(() => expect(screen.getByTestId("two")).toHaveFocus());
+	});
+
+	it("handles [floating, content]", async () => {
+		render(Main, { order: ["floating", "content"] });
+
+		await fireEvent.click(screen.getByTestId("reference"));
+
+		await waitFor(() => expect(screen.getByTestId("floating")).toHaveFocus());
+
+		await userEvent.tab();
+		await waitFor(() => expect(screen.getByTestId("one")).toHaveFocus());
+
+		await userEvent.tab();
+		await waitFor(() => expect(screen.getByTestId("two")).toHaveFocus());
+
+		await userEvent.tab();
+		await waitFor(() => expect(screen.getByTestId("three")).toHaveFocus());
+
+		await userEvent.tab();
+		await waitFor(() => expect(screen.getByTestId("floating")).toHaveFocus());
+
+		await userEvent.tab({ shift: true });
+		await waitFor(() => expect(screen.getByTestId("three")).toHaveFocus());
+
+		await userEvent.tab({ shift: true });
+		await waitFor(() => expect(screen.getByTestId("two")).toHaveFocus());
+
+		await userEvent.tab({ shift: true });
+		await waitFor(() => expect(screen.getByTestId("one")).toHaveFocus());
+
+		await userEvent.tab({ shift: true });
+		await waitFor(() => expect(screen.getByTestId("floating")).toHaveFocus());
+	});
+
+	it("handles [reference, floating, content]", async () => {
+		render(Main, { order: ["reference", "floating", "content"] });
+		await fireEvent.click(screen.getByTestId("reference"));
+
+		await waitFor(() => expect(screen.getByTestId("reference")).toHaveFocus());
+
+		await userEvent.tab();
+		await waitFor(() => expect(screen.getByTestId("floating")).toHaveFocus());
+
+		await userEvent.tab();
+		await waitFor(() => expect(screen.getByTestId("one")).toHaveFocus());
+
+		await userEvent.tab();
+		await waitFor(() => expect(screen.getByTestId("two")).toHaveFocus());
+
+		await userEvent.tab();
+		await waitFor(() => expect(screen.getByTestId("three")).toHaveFocus());
+
+		await userEvent.tab();
+		await waitFor(() => expect(screen.getByTestId("reference")).toHaveFocus());
+
+		await userEvent.tab({ shift: true });
+		await waitFor(() => expect(screen.getByTestId("three")).toHaveFocus());
+
+		await userEvent.tab({ shift: true });
+		await userEvent.tab({ shift: true });
+		await userEvent.tab({ shift: true });
+		await userEvent.tab({ shift: true });
+
+		await waitFor(() => expect(screen.getByTestId("reference")).toHaveFocus());
+	});
+});
+
+describe("non-modal + FloatingPortal", () => {
+	it("focuses inside element, tabbing out focuses last document element", async () => {
+		render(NonModalFloatingPortal);
+		await userEvent.click(screen.getByTestId("reference"));
+
+		await waitFor(() => expect(screen.getByTestId("inside")).toHaveFocus());
+
+		await userEvent.tab();
+
+		await waitFor(() =>
+			expect(screen.queryByTestId("floating")).not.toBeInTheDocument(),
+		);
+		await waitFor(() => expect(screen.getByTestId("last")).toHaveFocus());
+	});
+
+	it("handles order: [reference, content] focuses reference, then inside, then, last document element", async () => {
+		render(NonModalFloatingPortal, { order: ["reference", "content"] });
+
+		await userEvent.click(screen.getByTestId("reference"));
+
+		await waitFor(() => expect(screen.getByTestId("reference")).toHaveFocus());
+
+		await userEvent.tab();
+
+		await waitFor(() => expect(screen.getByTestId("inside")).toHaveFocus());
+
+		await userEvent.tab();
+
+		await waitFor(() => expect(screen.getByTestId("last")).toHaveFocus());
 	});
 });

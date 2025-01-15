@@ -186,7 +186,6 @@
 	);
 
 	const inertSupported = supportsInert();
-	console.log("INERT SUPPORTED", inertSupported);
 	const guards = $derived(inertSupported ? _guards : true);
 	const useInert = $derived(
 		!guards || (inertSupported && outsideElementsInert)
@@ -203,8 +202,6 @@
 
 	const isInsidePortal = portalContext != null;
 
-	console.log("isInsidePortal", isInsidePortal);
-
 	const floatingFocusElement = $derived(
 		getFloatingFocusElement(context.floating)
 	);
@@ -216,7 +213,7 @@
 	}
 
 	function getTabbableElements(container?: Element) {
-		const content = getTabbableContent();
+		const content = getTabbableContent(container);
 		return order
 			.map((type) => {
 				if (context.domReference && type === "reference") {
@@ -398,11 +395,11 @@
 
 	const mergedBeforeGuardRef = useMergeRefs([
 		beforeGuardRef,
-		portalContext?.beforeOutsideRef,
+		portalContext?.beforeInsideRef,
 	]);
 	const mergedAfterGuardRef = useMergeRefs([
 		afterGuardRef,
-		portalContext?.afterOutsideRef,
+		portalContext?.beforeInsideRef,
 	]);
 
 	$effect(() => {
@@ -696,7 +693,7 @@
 
 {#if shouldRenderGuards}
 	<FocusGuard
-		data-type="inside"
+		type="inside"
 		bind:ref={mergedBeforeGuardRef.current}
 		onfocus={(event) => {
 			if (modal) {
@@ -730,7 +727,7 @@ will have a dismiss button.
 {@render DismissButton({ ref: endDismissButtonRef })}
 {#if shouldRenderGuards}
 	<FocusGuard
-		data-type="inside"
+		type="inside"
 		bind:ref={mergedAfterGuardRef.current}
 		onfocus={(event) => {
 			if (modal) {
