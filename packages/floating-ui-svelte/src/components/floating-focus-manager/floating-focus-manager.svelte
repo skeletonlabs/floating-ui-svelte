@@ -186,6 +186,7 @@
 	);
 
 	const inertSupported = supportsInert();
+	console.log("INERT SUPPORTED", inertSupported);
 	const guards = $derived(inertSupported ? _guards : true);
 	const useInert = $derived(
 		!guards || (inertSupported && outsideElementsInert)

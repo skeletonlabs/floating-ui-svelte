@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
-	import FloatingNode from "../../../src/components/floating-tree/floating-node.svelte";
+	import FloatingNode from "../../../../src/components/floating-tree/floating-node.svelte";
 	import {
 		useClick,
 		useDismiss,
@@ -8,10 +8,10 @@
 		useFloatingNodeId,
 		useInteractions,
 		type Boxed,
-	} from "../../../src/index.js";
-	import { box } from "../../../src/internal/box.svelte.js";
-	import FloatingPortal from "../../../src/components/floating-portal/floating-portal.svelte";
-	import FloatingFocusManager from "../../../src/components/floating-focus-manager/floating-focus-manager.svelte";
+	} from "../../../../src/index.js";
+	import { box } from "../../../../src/internal/box.svelte.js";
+	import FloatingPortal from "../../../../src/components/floating-portal/floating-portal.svelte";
+	import FloatingFocusManager from "../../../../src/components/floating-focus-manager/floating-focus-manager.svelte";
 
 	let {
 		open: passedOpen = false,

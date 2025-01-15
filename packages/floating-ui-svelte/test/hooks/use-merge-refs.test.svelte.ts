@@ -1,10 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { useFloating } from "../../src/index.js";
 import { withRunes } from "../internal/with-runes.svelte.js";
-import {
-	useMergeRefs,
-	type BoxedRef,
-} from "../../src/hooks/use-merge-refs.svelte.js";
+import { useMergeRefs } from "../../src/hooks/use-merge-refs.svelte.js";
 
 describe("useMergeRefs", () => {
 	vi.mock(import("svelte"), async (importOriginal) => {
@@ -20,7 +17,7 @@ describe("useMergeRefs", () => {
 		withRunes(() => {
 			const ref1 = useFloating();
 			const ref2 = useFloating();
-			const ref3: BoxedRef = $state({ current: null });
+			const ref3 = $state({ current: null });
 
 			const mergedRef = useMergeRefs([ref1, ref2, ref3]);
 			expect(mergedRef.current).toBe(null);

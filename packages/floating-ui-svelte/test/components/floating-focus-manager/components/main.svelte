@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { FloatingFocusManagerProps } from "../../../src/components/floating-focus-manager/floating-focus-manager.svelte";
-	import FloatingFocusManager from "../../../src/components/floating-focus-manager/floating-focus-manager.svelte";
-	import { useFloating } from "../../../src/index.js";
+	import type { FloatingFocusManagerProps } from "../../../../src/components/floating-focus-manager/floating-focus-manager.svelte";
+	import FloatingFocusManager from "../../../../src/components/floating-focus-manager/floating-focus-manager.svelte";
+	import { useFloating } from "../../../../src/index.js";
 
 	let {
 		renderInput = false,
