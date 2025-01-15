@@ -205,17 +205,6 @@
 
 	const isInsidePortal = portalContext != null;
 
-	const isFocusInsideFloatingTree = $derived(
-		contains(context.floating, reactiveActiveElement.current) ||
-			(tree &&
-				getChildren(tree.nodes, nodeId).some((node) =>
-					contains(
-						node.context?.floating,
-						reactiveActiveElement.current
-					)
-				))
-	);
-
 	$effect(() => {
 		if (reactiveActiveElement.current === null) return;
 		prevActiveElement = reactiveActiveElement.current;
