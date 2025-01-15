@@ -8,7 +8,11 @@ import {
 	type PointerType,
 } from "../internal/dom.js";
 import { noop } from "../internal/noop.js";
-import type { FloatingTreeType, OpenChangeReason } from "../types.js";
+import type {
+	FloatingTreeType,
+	MaybeGetter,
+	OpenChangeReason,
+} from "../types.js";
 import type {
 	FloatingContext,
 	FloatingContextData,
@@ -22,6 +26,7 @@ import { executeCallbacks } from "../internal/execute-callbacks.js";
 import { snapshotFloatingContext } from "../internal/snapshot.svelte.js";
 import { watch } from "../internal/watch.svelte.js";
 import type { ElementProps } from "./use-interactions.svelte.js";
+import { extract } from "../internal/extract.js";
 
 interface DelayOptions {
 	/**
@@ -55,31 +60,31 @@ interface UseHoverOptions {
 	 * Enables/disables the hook.
 	 * @default true
 	 */
-	enabled?: boolean;
+	enabled?: MaybeGetter<boolean>;
 
 	/**
 	 * Only allow pointers of type mouse to trigger the hover (thus excluding pens and touchscreens).
 	 * @default false
 	 */
-	mouseOnly?: boolean;
+	mouseOnly?: MaybeGetter<boolean>;
 
 	/**
 	 * Time in ms that will delay the change of the open state.
 	 * @default 0
 	 */
-	delay?: number | DelayOptions;
+	delay?: MaybeGetter<number | DelayOptions>;
 
 	/**
 	 * Time in ms that the pointer must rest on the reference element before the open state is set to true.
 	 * @default 0
 	 */
-	restMs?: number;
+	restMs?: MaybeGetter<number>;
 
 	/**
 	 * Whether moving the pointer over the floating element will open it, without a regular hover event required.
 	 * @default true
 	 */
-	move?: boolean;
+	move?: MaybeGetter<boolean>;
 
 	/**
 	 * Callback to handle the closing of the floating element.
@@ -91,7 +96,7 @@ interface UseHoverOptions {
 const safePolygonIdentifier = createAttribute("safe-polygon");
 
 function getDelay(
-	value: UseHoverOptions["delay"],
+	value: number | DelayOptions,
 	prop: "open" | "close",
 	pointerType?: PointerType,
 ) {
@@ -107,11 +112,11 @@ function getDelay(
 }
 
 class HoverInteraction implements ElementProps {
-	#enabled = $derived.by(() => this.options.enabled ?? true);
-	#mouseOnly = $derived.by(() => this.options.mouseOnly ?? false);
-	#delay = $derived.by(() => this.options.delay ?? 0);
-	#restMs = $derived.by(() => this.options.restMs ?? 0);
-	#move = $derived.by(() => this.options.move ?? true);
+	#enabled = $derived.by(() => extract(this.options.enabled ?? true));
+	#mouseOnly = $derived.by(() => extract(this.options.mouseOnly ?? false));
+	#delay = $derived.by(() => extract(this.options.delay ?? 0));
+	#restMs = $derived.by(() => extract(this.options.restMs ?? 0));
+	#move = $derived.by(() => extract(this.options.move ?? true));
 	#handleClose = $state<HandleCloseFn | undefined | null>(null);
 	#tree: FloatingTreeType | null = null;
 	#parentId: string | null = null;
@@ -176,7 +181,7 @@ class HoverInteraction implements ElementProps {
 				() => this.context.floating,
 				() => this.#isHoverOpen,
 			],
-			([enabled, handleClose, open, floating, isHoverOpen]) => {
+			([enabled, handleClose, open, floating]) => {
 				if (!enabled || !handleClose || !open) return;
 
 				const onLeave = (event: MouseEvent) => {
@@ -487,5 +492,5 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}) {
 	return new HoverInteraction(context, options);
 }
 
-export type { UseHoverOptions };
+export type { UseHoverOptions, HandleCloseFn };
 export { useHover, HoverInteraction };

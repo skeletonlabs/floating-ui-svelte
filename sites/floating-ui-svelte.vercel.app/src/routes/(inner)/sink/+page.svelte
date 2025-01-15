@@ -1,31 +1,33 @@
 <script lang="ts">
-	import {
-		FloatingFocusManager,
-		FloatingPortal,
-		useFloating,
-	} from "@skeletonlabs/floating-ui-svelte";
+	// import {
+	// 	FloatingFocusManager,
+	// 	FloatingPortal,
+	// 	useFloating,
+	// } from "@skeletonlabs/floating-ui-svelte";
 
-	//bg-blue-800 w-48 z-[1000] fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]
-	import type { ComponentProps } from "svelte";
+	// //bg-blue-800 w-48 z-[1000] fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]
+	// import type { ComponentProps } from "svelte";
 
-	let {
-		order,
-	}: Omit<
-		ComponentProps<typeof FloatingFocusManager>,
-		"context" | "children"
-	> = $props();
+	// let {
+	// 	order,
+	// }: Omit<
+	// 	ComponentProps<typeof FloatingFocusManager>,
+	// 	"context" | "children"
+	// > = $props();
 
-	let open = $state(false);
-	const f = useFloating({
-		open: () => open,
-		onOpenChange: (v) => {
-			open = v;
-		},
-	});
+	// let open = $state(false);
+	// const f = useFloating({
+	// 	open: () => open,
+	// 	onOpenChange: (v) => {
+	// 		open = v;
+	// 	},
+	// });
+	import Main from "./(navigation)/main.svelte";
 </script>
 
-<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-<span id="first" tabindex={0} data-testid="first"></span>
+<Main />
+
+<!-- <span id="first" tabindex={0} data-testid="first"></span>
 <button
 	id="reference"
 	data-testid="reference"
@@ -42,11 +44,9 @@
 				data-testid="floating"
 				bind:this={f.floating}
 				class="bg-blue-800 w-48 z-[1000] fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
-				<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 				<span id="inside" tabindex={0} data-testid="inside"></span>
 			</div>
 		</FloatingFocusManager>
 	</FloatingPortal>
 {/if}
-<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-<span tabindex={0} data-testid="last" id="last"></span>
+<span tabindex={0} data-testid="last" id="last"></span> -->

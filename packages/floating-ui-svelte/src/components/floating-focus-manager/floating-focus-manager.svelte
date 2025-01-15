@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import type { Snippet } from "svelte";
+	import { type Snippet } from "svelte";
 	import type { FloatingRootContext } from "../../hooks/use-floating-root-context.svelte.js";
 	import type { FloatingContext } from "../../hooks/use-floating.svelte.js";
 	import { getNodeName, isHTMLElement } from "@floating-ui/utils/dom";
@@ -156,6 +156,7 @@
 <script lang="ts">
 	import VisuallyHiddenDismiss from "./visually-hidden-dismiss.svelte";
 	import { box } from "../../internal/box.svelte.js";
+	import { reactiveActiveElement } from "../../internal/active-element.svelte.js";
 
 	let {
 		context,
@@ -176,6 +177,7 @@
 	const ignoreInitialFocus = $derived(
 		typeof initialFocus === "number" && initialFocus < 0
 	);
+
 	// If the reference is a combobox and is typeable (e.g. input/textarea),
 	// there are different focus semantics. The guards should not be rendered, but
 	// aria-hidden should be applied to all nodes still. Further, the visually
@@ -199,8 +201,25 @@
 	let preventReturnFocus = $state(false);
 	let isPointerDown = $state(false);
 	let tabbableIndex = $state(-1);
+	let prevActiveElement: Element | null = null;
 
 	const isInsidePortal = portalContext != null;
+
+	const isFocusInsideFloatingTree = $derived(
+		contains(context.floating, reactiveActiveElement.current) ||
+			(tree &&
+				getChildren(tree.nodes, nodeId).some((node) =>
+					contains(
+						node.context?.floating,
+						reactiveActiveElement.current
+					)
+				))
+	);
+
+	$effect(() => {
+		if (reactiveActiveElement.current === null) return;
+		prevActiveElement = reactiveActiveElement.current;
+	});
 
 	const floatingFocusElement = $derived(
 		getFloatingFocusElement(context.floating)
@@ -559,12 +578,11 @@
 		return () => {
 			context.events.off("openchange", onOpenChange);
 
-			const activeEl = activeElement(doc);
 			const isFocusInsideFloatingTree =
-				contains(context.floating, activeEl) ||
+				contains(context.floating, prevActiveElement) ||
 				(tree &&
 					getChildren(tree.nodes, nodeId).some((node) =>
-						contains(node.context?.floating, activeEl)
+						contains(node.context?.floating, prevActiveElement)
 					));
 			const shouldFocusReference =
 				isFocusInsideFloatingTree ||
@@ -588,7 +606,8 @@
 					// If the focus moved somewhere else after mount, avoid returning focus
 					// since it likely entered a different element which should be
 					// respected: https://github.com/floating-ui/floating-ui/issues/2607
-					(tabbableReturnElement !== activeEl && activeEl !== doc.body
+					(tabbableReturnElement !== prevActiveElement &&
+					prevActiveElement !== doc.body
 						? isFocusInsideFloatingTree
 						: true)
 				) {

@@ -18,13 +18,13 @@ interface ElementProps {
 
 interface UseInteractionsReturn {
 	getReferenceProps: (
-		userProps?: HTMLAttributes<Element>,
+		userProps?: Record<string, unknown>,
 	) => Record<string, unknown>;
 	getFloatingProps: (
-		userProps?: HTMLAttributes<Element>,
+		userProps?: Record<string, unknown>,
 	) => Record<string, unknown>;
 	getItemProps: (
-		userProps?: Omit<HTMLAttributes<Element>, "selected" | "active"> &
+		userProps?: Omit<Record<string, unknown>, "selected" | "active"> &
 			ExtendedUserProps,
 	) => Record<string, unknown>;
 }

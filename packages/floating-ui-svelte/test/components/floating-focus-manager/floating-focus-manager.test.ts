@@ -13,7 +13,7 @@ import OutsideNodes from "./components/outside-nodes.svelte";
 import ToggleDisabled from "./components/toggle-disabled.svelte";
 import KeepMounted from "./components/keep-mounted.svelte";
 import NonModalFloatingPortal from "./components/non-modal-floating-portal.svelte";
-import { tick } from "svelte";
+import Navigation from "../navigation/main.svelte";
 
 describe("initialFocus", () => {
 	it("handles numbers", async () => {
@@ -535,5 +535,52 @@ describe("non-modal + FloatingPortal", () => {
 		await userEvent.tab();
 
 		await waitFor(() => expect(screen.getByTestId("last")).toHaveFocus());
+	});
+
+	it("handles shift + tab", async () => {
+		render(NonModalFloatingPortal);
+
+		await userEvent.click(screen.getByTestId("reference"));
+		await waitFor(() =>
+			expect(screen.queryByTestId("floating")).toBeInTheDocument(),
+		);
+		await sleep(20);
+		await userEvent.tab({ shift: true });
+
+		expect(screen.queryByTestId("floating")).toBeInTheDocument();
+
+		await userEvent.tab({ shift: true });
+
+		expect(screen.queryByTestId("floating")).not.toBeInTheDocument();
+	});
+});
+
+describe("Navigation", () => {
+	it("does not focus reference when hovering it", async () => {
+		render(Navigation);
+		await userEvent.hover(screen.getByText("Product"));
+		await userEvent.unhover(screen.getByText("Product"));
+		expect(screen.getByText("Product")).not.toHaveFocus();
+	});
+
+	it("returns focus to reference when floating element was opened by hover but is closed by esc key", async () => {
+		render(Navigation);
+		await userEvent.hover(screen.getByText("Product"));
+		await userEvent.keyboard(testKbd.ESCAPE);
+		expect(screen.getByText("Product")).toHaveFocus();
+	});
+
+	it("returns focus to reference when floating element was opened by hover but is closed by an explicit close action", async () => {
+		render(Navigation);
+		await userEvent.hover(screen.getByText("Product"));
+
+		// biome-ignore lint/style/noNonNullAssertion: <explanation>
+		await userEvent.click(screen.getByText("Close").parentElement!);
+		await userEvent.keyboard(testKbd.TAB);
+		await waitFor(() => expect(screen.getByText("Close")).toHaveFocus());
+		await userEvent.keyboard(testKbd.ENTER);
+		await sleep(20);
+
+		await waitFor(() => expect(screen.getByText("Product")).toHaveFocus());
 	});
 });

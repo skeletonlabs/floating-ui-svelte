@@ -1,4 +1,4 @@
-import type { FloatingElement, VirtualElement } from "@floating-ui/dom";
+import type { Axis, Length, Side, VirtualElement } from "@floating-ui/dom";
 import type { FloatingContext } from "./hooks/use-floating.svelte.js";
 
 type OpenChangeReason =
@@ -18,6 +18,10 @@ type ReferenceType = Element | VirtualElement;
 type NarrowedElement<T> = T extends Element ? T : Element;
 
 type Boxed<T> = { current: T };
+
+type Coords = { [key in Axis]: number };
+type Dimensions = { [key in Length]: number };
+type Rect = Coords & Dimensions;
 
 interface FloatingEvents {
 	// biome-ignore lint/suspicious/noExplicitAny: From the port
@@ -102,4 +106,8 @@ export type {
 	WhileElementsMounted,
 	WithRef,
 	Boxed,
+	Rect,
+	Coords,
+	Dimensions,
+	Side,
 };
