@@ -22,10 +22,13 @@ function getTabbableIn(container: HTMLElement, direction: "next" | "prev") {
 		allTabbable.reverse();
 	}
 
+	console.log("all tabbable", allTabbable);
+
 	const activeIndex = allTabbable.indexOf(
 		activeElement(getDocument(container)) as HTMLElement,
 	);
 	const nextTabbableElements = allTabbable.slice(activeIndex + 1);
+	console.log("next tabbable elements", nextTabbableElements);
 	return nextTabbableElements[0];
 }
 
@@ -52,11 +55,12 @@ function disableFocusInside(container: HTMLElement) {
 }
 
 function enableFocusInside(container: HTMLElement) {
-	const elements = container.querySelectorAll<HTMLElement>("[data-tabindex]");
+	const elements = Array.from(
+		container.querySelectorAll<HTMLElement>("[data-tabindex]"),
+	);
 	for (const element of elements) {
 		const tabindex = element.dataset.tabindex;
 		delete element.dataset.tabindex;
-		element.removeAttribute("data-tabindex");
 		if (tabindex) {
 			element.setAttribute("tabindex", tabindex);
 		} else {

@@ -20,16 +20,12 @@ function createAttribute(name: string) {
 }
 
 function contains(parent?: Element | null, child?: Element | null) {
-	if (!parent || !child) {
-		return false;
-	}
+	if (!parent || !child) return false;
 
 	const rootNode = child.getRootNode?.();
 
 	// First, attempt with faster native method
-	if (parent.contains(child)) {
-		return true;
-	}
+	if (parent.contains(child)) return true;
 
 	// then fallback to custom implementation with Shadow DOM support
 	if (rootNode && isShadowRoot(rootNode)) {

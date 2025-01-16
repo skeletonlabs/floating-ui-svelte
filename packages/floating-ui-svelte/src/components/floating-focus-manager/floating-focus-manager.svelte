@@ -829,6 +829,7 @@ will have a dismiss button.
 		bind:ref={() => afterGuardRef.current,
 		(v) => (afterGuardRef.current = v)}
 		onfocus={(event) => {
+			console.log("inside-after");
 			if (modal) {
 				enqueueFocus(getTabbableElements()[0]);
 			} else if (
@@ -840,8 +841,11 @@ will have a dismiss button.
 				}
 
 				if (isOutsideEvent(event, portalContext.portalNode)) {
+					console.log("isOutsideEvent", event);
+
 					const prevTabbable =
 						getPreviousTabbable() || context.domReference;
+					console.log("focusing prev tabbable", prevTabbable);
 					prevTabbable?.focus();
 				} else {
 					portalContext.afterOutsideRef.current?.focus();
