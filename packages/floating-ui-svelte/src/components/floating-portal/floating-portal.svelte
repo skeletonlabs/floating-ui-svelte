@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { tick, type Snippet } from "svelte";
+	import type { Snippet } from "svelte";
 	import {
 		type FocusManagerState,
 		PortalContext,
@@ -126,8 +126,10 @@
 	<FocusGuard
 		type="outside"
 		data-name="before"
-		bind:ref={beforeOutsideRef.current}
+		bind:ref={() => beforeOutsideRef.current,
+		(v) => (beforeOutsideRef.current = v)}
 		onfocus={(event) => {
+			console.log("outside-before");
 			if (isOutsideEvent(event, portalNode.current)) {
 				beforeInsideRef.current?.focus();
 			} else {
@@ -136,7 +138,9 @@
 				prevTabbable?.focus();
 			}
 		}} />
+{/if}
 
+{#if shouldRenderGuards && portalNode.current}
 	<span aria-owns={portalNode.current.id} style={HIDDEN_STYLES_STRING}></span>
 {/if}
 
@@ -148,8 +152,10 @@
 	<FocusGuard
 		type="outside"
 		data-name="after"
-		bind:ref={afterOutsideRef.current}
+		bind:ref={() => afterOutsideRef.current,
+		(v) => (afterOutsideRef.current = v)}
 		onfocus={(event) => {
+			console.log("outside-after");
 			if (isOutsideEvent(event, portalNode.current)) {
 				afterInsideRef.current?.focus();
 			} else {
@@ -157,8 +163,9 @@
 					getNextTabbable() || focusManagerState?.domReference;
 				nextTabbable?.focus();
 
-				focusManagerState?.closeOnFocusOut &&
+				if (focusManagerState?.closeOnFocusOut) {
 					focusManagerState?.onOpenChange(false, event, "focus-out");
+				}
 			}
 		}} />
 {/if}

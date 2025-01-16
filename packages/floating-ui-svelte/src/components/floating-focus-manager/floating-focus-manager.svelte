@@ -31,29 +31,27 @@
 	import { getAncestors } from "../../internal/get-ancestors.js";
 	import { executeCallbacks } from "../../internal/execute-callbacks.js";
 	import type { Boxed, OpenChangeReason } from "../../types.js";
-	import { useMergeRefs } from "../../hooks/use-merge-refs.svelte.js";
 	import { watch } from "../../internal/watch.svelte.js";
 	import FocusGuard, { HIDDEN_STYLES_STRING } from "../focus-guard.svelte";
 
 	const LIST_LIMIT = 20;
-	let previouslyFocusedElements: Element[] = [];
+	globalThis.fuiPrevFocusedElements ??= [];
 
 	function addPreviouslyFocusedElement(element: Element | null) {
-		previouslyFocusedElements = previouslyFocusedElements.filter(
-			(el) => el.isConnected
-		);
+		globalThis.fuiPrevFocusedElements =
+			globalThis.fuiPrevFocusedElements.filter((el) => el.isConnected);
 
 		if (element && getNodeName(element) !== "body") {
-			previouslyFocusedElements.push(element);
-			if (previouslyFocusedElements.length > LIST_LIMIT) {
-				previouslyFocusedElements =
-					previouslyFocusedElements.slice(-LIST_LIMIT);
+			globalThis.fuiPrevFocusedElements.push(element);
+			if (globalThis.fuiPrevFocusedElements.length > LIST_LIMIT) {
+				globalThis.fuiPrevFocusedElements =
+					globalThis.fuiPrevFocusedElements.slice(-LIST_LIMIT);
 			}
 		}
 	}
 
 	function getPreviouslyFocusedElement() {
-		return previouslyFocusedElements
+		return globalThis.fuiPrevFocusedElements
 			.slice()
 			.reverse()
 			.find((el) => el.isConnected);
@@ -198,8 +196,8 @@
 	const startDismissButtonRef = box<HTMLElement>(null!);
 	const endDismissButtonRef = box<HTMLButtonElement>(null!);
 
-	let preventReturnFocus = $state(false);
-	let isPointerDown = $state(false);
+	let preventReturnFocus = false;
+	let isPointerDown = false;
 	let tabbableIndex = $state(-1);
 	let prevActiveElement: Element | null = null;
 
@@ -338,6 +336,7 @@
 			}
 
 			function handleFocusOutside(event: FocusEvent) {
+				console.log("focus outside");
 				const relatedTarget = event.relatedTarget as HTMLElement | null;
 
 				queueMicrotask(() => {
@@ -430,14 +429,20 @@
 	const beforeGuardRef = box<HTMLSpanElement | null>(null);
 	const afterGuardRef = box<HTMLSpanElement | null>(null);
 
-	const mergedBeforeGuardRef = useMergeRefs([
-		beforeGuardRef,
-		portalContext?.beforeInsideRef,
-	]);
-	const mergedAfterGuardRef = useMergeRefs([
-		afterGuardRef,
-		portalContext?.afterInsideRef,
-	]);
+	watch.pre(
+		() => beforeGuardRef.current,
+		() => {
+			if (!portalContext) return;
+			portalContext.beforeInsideRef.current = beforeGuardRef.current;
+		}
+	);
+	watch.pre(
+		() => afterGuardRef.current,
+		() => {
+			if (!portalContext) return;
+			portalContext.afterInsideRef.current = afterGuardRef.current;
+		}
+	);
 
 	watch(
 		[
@@ -495,7 +500,7 @@
 		}
 	);
 
-	watch(
+	watch.pre(
 		[
 			() => disabled,
 			() => context.open,
@@ -535,7 +540,7 @@
 		}
 	);
 
-	watch(
+	watch.pre(
 		[
 			() => disabled,
 			() => context.floating,
@@ -682,7 +687,7 @@
 		}
 	);
 
-	watch(
+	watch.pre(
 		[
 			() => disabled,
 			() => portalContext,
@@ -708,7 +713,7 @@
 		}
 	);
 
-	watch(
+	watch.pre(
 		[
 			() => disabled,
 			() => context.floating,
@@ -722,7 +727,6 @@
 			if (!floatingFocusElement) return;
 			if (typeof MutationObserver !== "function") return;
 			if (ignoreInitialFocus) return;
-			tabbableIndex;
 
 			const handleMutation = () => {
 				const tabIndex = floatingFocusElement.getAttribute("tabindex");
@@ -786,8 +790,10 @@
 {#if shouldRenderGuards}
 	<FocusGuard
 		type="inside"
-		bind:ref={mergedBeforeGuardRef.current}
+		bind:ref={() => beforeGuardRef.current,
+		(v) => (beforeGuardRef.current = v)}
 		onfocus={(event) => {
+			console.log("inside-before");
 			if (modal) {
 				const els = getTabbableElements();
 				enqueueFocus(
@@ -820,7 +826,8 @@ will have a dismiss button.
 {#if shouldRenderGuards}
 	<FocusGuard
 		type="inside"
-		bind:ref={mergedAfterGuardRef.current}
+		bind:ref={() => afterGuardRef.current,
+		(v) => (afterGuardRef.current = v)}
 		onfocus={(event) => {
 			if (modal) {
 				enqueueFocus(getTabbableElements()[0]);

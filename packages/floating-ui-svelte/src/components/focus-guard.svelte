@@ -50,7 +50,7 @@
 
 	let role = $state<"button">();
 
-	$effect(() => {
+	$effect.pre(() => {
 		if (isSafari()) {
 			// Unlike other screen readers such as NVDA and JAWS, the virtual cursor
 			// on VoiceOver does trigger the onFocus event, so we can use the focus

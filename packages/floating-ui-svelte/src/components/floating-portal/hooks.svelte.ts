@@ -43,7 +43,7 @@ function useFloatingPortalNode(props: UseFloatingPortalNodeProps = {}) {
 
 	let portalNode = $state<HTMLElement | null>(null);
 
-	$effect(() => {
+	$effect.pre(() => {
 		return () => {
 			portalNode?.remove();
 			queueMicrotask(() => {
@@ -52,12 +52,11 @@ function useFloatingPortalNode(props: UseFloatingPortalNodeProps = {}) {
 		};
 	});
 
-	watch(
+	watch.pre(
 		() => id,
 		(id) => {
 			if (portalNode) return;
 			const existingIdRoot = id ? document.getElementById(id) : null;
-			console.log(existingIdRoot);
 			if (!existingIdRoot) return;
 
 			const subRoot = document.createElement("div");
@@ -68,7 +67,7 @@ function useFloatingPortalNode(props: UseFloatingPortalNodeProps = {}) {
 		},
 	);
 
-	watch(
+	watch.pre(
 		[() => id, () => root, () => portalContext?.portalNode],
 		([id, root, portalContextNode]) => {
 			// Wait for the root to exist before creating the portal node.

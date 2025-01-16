@@ -5,8 +5,8 @@
 
 	// So we can use the same object even if multiple libs with different versions
 	// that use floating UI are loaded :)
-	globalThis.fui_lock_count ??= { current: 0 };
-	globalThis.fui_lock_cleanup ??= { current: () => {} };
+	globalThis.fuiLockCount ??= { current: 0 };
+	globalThis.fuiLockCleanup ??= { current: () => {} };
 
 	interface FloatingOverlayProps
 		extends Partial<WithRef>,
@@ -94,15 +94,15 @@
 	$effect(() => {
 		if (!lockScroll) return;
 
-		globalThis.fui_lock_count.current++;
-		if (globalThis.fui_lock_count.current === 1) {
-			globalThis.fui_lock_cleanup.current = enableScrollLock();
+		globalThis.fuiLockCount.current++;
+		if (globalThis.fuiLockCount.current === 1) {
+			globalThis.fuiLockCleanup.current = enableScrollLock();
 		}
 
 		return () => {
-			globalThis.fui_lock_count.current--;
-			if (globalThis.fui_lock_count.current === 0) {
-				globalThis.fui_lock_cleanup.current();
+			globalThis.fuiLockCount.current--;
+			if (globalThis.fuiLockCount.current === 0) {
+				globalThis.fuiLockCleanup.current();
 			}
 		};
 	});
