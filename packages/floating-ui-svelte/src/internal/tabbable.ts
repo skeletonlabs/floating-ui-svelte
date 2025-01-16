@@ -56,6 +56,7 @@ function enableFocusInside(container: HTMLElement) {
 	for (const element of elements) {
 		const tabindex = element.dataset.tabindex;
 		delete element.dataset.tabindex;
+		element.removeAttribute("data-tabindex");
 		if (tabindex) {
 			element.setAttribute("tabindex", tabindex);
 		} else {

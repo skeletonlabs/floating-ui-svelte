@@ -80,7 +80,7 @@
 {@render reference?.(ref, ints.getReferenceProps())}
 
 {#if open}
-	<FloatingPortal id="drawer-root">
+	<FloatingPortal>
 		{#if modal}
 			<FloatingOverlay
 				lockScroll

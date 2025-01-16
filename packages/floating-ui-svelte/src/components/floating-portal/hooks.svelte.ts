@@ -57,6 +57,7 @@ function useFloatingPortalNode(props: UseFloatingPortalNodeProps = {}) {
 		(id) => {
 			if (portalNode) return;
 			const existingIdRoot = id ? document.getElementById(id) : null;
+			console.log(existingIdRoot);
 			if (!existingIdRoot) return;
 
 			const subRoot = document.createElement("div");
