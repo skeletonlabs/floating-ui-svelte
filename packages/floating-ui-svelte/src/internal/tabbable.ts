@@ -22,13 +22,10 @@ function getTabbableIn(container: HTMLElement, direction: "next" | "prev") {
 		allTabbable.reverse();
 	}
 
-	console.log("all tabbable", allTabbable);
-
 	const activeIndex = allTabbable.indexOf(
 		activeElement(getDocument(container)) as HTMLElement,
 	);
 	const nextTabbableElements = allTabbable.slice(activeIndex + 1);
-	console.log("next tabbable elements", nextTabbableElements);
 	return nextTabbableElements[0];
 }
 
@@ -49,7 +46,8 @@ function isOutsideEvent(event: FocusEvent, container?: Element | null) {
 function disableFocusInside(container: HTMLElement) {
 	const tabbableElements = tabbable(container, getTabbableOptions());
 	for (const element of tabbableElements) {
-		element.dataset.tabindex = element.getAttribute("tabindex") || "";
+		element.dataset.tabindex =
+			element.getAttribute("tabindex") ?? (element.tabIndex === 0 ? "0" : "");
 		element.setAttribute("tabindex", "-1");
 	}
 }

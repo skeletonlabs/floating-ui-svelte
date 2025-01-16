@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import type { Snippet } from "svelte";
+	import { tick, type Snippet } from "svelte";
 	import {
 		type FocusManagerState,
 		PortalContext,
@@ -86,11 +86,6 @@
 			function onFocus(event: FocusEvent) {
 				if (portalNode.current && isOutsideEvent(event)) {
 					const focusing = event.type === "focusin";
-					console.log(
-						"focusing focus inside portal",
-						focusing,
-						"if true, enable focus inside, else disable focus inside"
-					);
 					const manageFocus = focusing
 						? enableFocusInside
 						: disableFocusInside;
@@ -163,12 +158,10 @@
 		onfocus={(event) => {
 			console.log("outside-after");
 			if (isOutsideEvent(event, portalNode.current)) {
-				console.log("isOutsideEvent", event);
 				afterInsideRef.current?.focus();
 			} else {
 				const nextTabbable =
 					getNextTabbable() || focusManagerState?.domReference;
-				console.log("next tabbable", nextTabbable);
 				nextTabbable?.focus();
 
 				if (focusManagerState?.closeOnFocusOut) {

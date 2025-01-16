@@ -336,7 +336,6 @@
 			}
 
 			function handleFocusOutside(event: FocusEvent) {
-				console.log("focus outside");
 				const relatedTarget = event.relatedTarget as HTMLElement | null;
 
 				queueMicrotask(() => {
@@ -455,7 +454,7 @@
 			() => isUntrappedTypeableCombobox,
 			() => guards,
 			() => useInert,
-			() => tree,
+			() => tree?.nodes,
 		],
 		() => {
 			if (disabled || !context.floating) return;
@@ -841,11 +840,8 @@ will have a dismiss button.
 				}
 
 				if (isOutsideEvent(event, portalContext.portalNode)) {
-					console.log("isOutsideEvent", event);
-
 					const prevTabbable =
 						getPreviousTabbable() || context.domReference;
-					console.log("focusing prev tabbable", prevTabbable);
 					prevTabbable?.focus();
 				} else {
 					portalContext.afterOutsideRef.current?.focus();
