@@ -35,6 +35,7 @@ export * from "./hooks/use-hover.svelte.js";
 export * from "./hooks/use-id.js";
 export * from "./hooks/use-interactions.svelte.js";
 export * from "./hooks/use-role.svelte.js";
+export * from "./hooks/use-transition.svelte.js";
 export * from "./safe-polygon.js";
 
 /**

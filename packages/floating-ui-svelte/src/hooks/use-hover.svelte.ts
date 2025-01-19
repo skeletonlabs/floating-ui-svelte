@@ -112,11 +112,11 @@ function getDelay(
 }
 
 class HoverInteraction implements ElementProps {
-	#enabled = $derived.by(() => extract(this.options.enabled ?? true));
-	#mouseOnly = $derived.by(() => extract(this.options.mouseOnly ?? false));
-	#delay = $derived.by(() => extract(this.options.delay ?? 0));
-	#restMs = $derived.by(() => extract(this.options.restMs ?? 0));
-	#move = $derived.by(() => extract(this.options.move ?? true));
+	#enabled = $derived.by(() => extract(this.options.enabled, true));
+	#mouseOnly = $derived.by(() => extract(this.options.mouseOnly, false));
+	#delay = $derived.by(() => extract(this.options.delay, 0));
+	#restMs = $derived.by(() => extract(this.options.restMs, 0));
+	#move = $derived.by(() => extract(this.options.move, true));
 	#handleClose = $state<HandleCloseFn | undefined | null>(null);
 	#tree: FloatingTreeType | null = null;
 	#parentId: string | null = null;
