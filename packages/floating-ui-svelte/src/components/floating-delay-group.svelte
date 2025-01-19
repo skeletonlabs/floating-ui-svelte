@@ -8,9 +8,10 @@
 	} from "../internal/box.svelte.js";
 	import { Context } from "../internal/context.js";
 	import type { MaybeGetter } from "../types.js";
-	import type { FloatingRootContext } from "../hooks/use-floating-root-context.svelte.js";
 	import { extract } from "../internal/extract.js";
 	import { getDelay } from "../hooks/use-hover.svelte.js";
+	import type { FloatingContext } from "../hooks/use-floating.svelte.js";
+	import type { FloatingRootContext } from "../hooks/use-floating-root-context.svelte.js";
 
 	type Delay = number | Partial<{ open: number; close: number }>;
 
@@ -82,7 +83,7 @@
 	 * @see https://floating-ui-svelte.vercel.app/docs/FloatingDelayGroup
 	 */
 	function useDelayGroup(
-		context: FloatingRootContext,
+		context: FloatingContext | FloatingRootContext,
 		options: UseDelayGroupOptions = {}
 	): DelayGroupState {
 		const enabled = $derived.by(() => extract(options.enabled, true));
@@ -175,17 +176,27 @@
 	let { children, delay, timeoutMs = 0 }: FloatingDelayGroupProps = $props();
 
 	let initialCurrentId: any = null;
+	let stableDelay = $state(delay);
+	let stableInitialDelay = $state(delay);
+
+	watch.pre(
+		() => delay,
+		() => {
+			stableDelay = delay;
+			stableInitialDelay = delay;
+		}
+	);
 
 	const delayGroupState = new DelayGroupState({
 		delay: box.with(
-			() => delay,
-			(v) => (delay = v)
+			() => stableDelay,
+			(v) => (stableDelay = v)
 		),
 		timeoutMs: box.with(
 			() => timeoutMs,
 			(v) => (timeoutMs = v)
 		),
-		initialDelay: box.with(() => delay),
+		initialDelay: box.with(() => stableInitialDelay),
 	});
 
 	watch.pre(
