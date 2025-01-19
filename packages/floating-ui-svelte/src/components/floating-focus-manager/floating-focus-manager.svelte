@@ -155,6 +155,7 @@
 	import VisuallyHiddenDismiss from "./visually-hidden-dismiss.svelte";
 	import { box } from "../../internal/box.svelte.js";
 	import { reactiveActiveElement } from "../../internal/active-element.svelte.js";
+	import { sleep } from "../../../test/internal/utils.js";
 
 	let {
 		context,
@@ -507,12 +508,12 @@
 			() => ignoreInitialFocus,
 			() => initialFocus,
 		],
-		([disabled, open, floatingFocusElement, ignoreInitialFocus]) => {
+		() => {
 			if (disabled || !isHTMLElement(floatingFocusElement)) return;
 
 			const doc = getDocument(floatingFocusElement);
 			const previouslyFocusedElement = activeElement(doc);
-			// Wait for any layout effect state setters to execute to set `tabIndex`.
+			// Wait for any effect state setters to execute to set `tabindex`.
 			queueMicrotask(() => {
 				const focusableElements =
 					getTabbableElements(floatingFocusElement);
@@ -529,7 +530,7 @@
 				if (
 					!ignoreInitialFocus &&
 					!focusAlreadyInsideFloatingEl &&
-					open
+					context.open
 				) {
 					enqueueFocus(elToFocus, {
 						preventScroll: elToFocus === floatingFocusElement,
@@ -547,7 +548,7 @@
 			() => returnFocus,
 			() => context.data,
 			() => context.events,
-			() => tree,
+			() => tree?.nodes,
 			() => isInsidePortal,
 			() => context.domReference,
 		],
@@ -791,21 +792,24 @@
 		type="inside"
 		bind:ref={() => beforeGuardRef, (v) => (beforeGuardRef = v)}
 		onfocus={(event) => {
-			console.log("inside-before");
 			if (modal) {
-				const els = getTabbableElements();
-				enqueueFocus(
-					order[0] === "reference" ? els[0] : els[els.length - 1]
-				);
+				sleep().then(() => {
+					const els = getTabbableElements();
+					enqueueFocus(
+						order[0] === "reference" ? els[0] : els[els.length - 1]
+					);
+				});
 			} else if (
 				portalContext?.preserveTabOrder &&
 				portalContext.portalNode
 			) {
 				preventReturnFocus = false;
 				if (isOutsideEvent(event, portalContext.portalNode)) {
-					const nextTabbable =
-						getNextTabbable() || context.domReference;
-					nextTabbable?.focus();
+					sleep().then(() => {
+						const nextTabbable =
+							getNextTabbable() || context.domReference;
+						nextTabbable?.focus();
+					});
 				} else {
 					portalContext.beforeOutsideRef?.focus();
 				}
@@ -826,9 +830,10 @@ will have a dismiss button.
 		type="inside"
 		bind:ref={() => afterGuardRef, (v) => (afterGuardRef = v)}
 		onfocus={(event) => {
-			console.log("inside-after");
 			if (modal) {
-				enqueueFocus(getTabbableElements()[0]);
+				sleep().then(() => {
+					enqueueFocus(getTabbableElements()[0]);
+				});
 			} else if (
 				portalContext?.preserveTabOrder &&
 				portalContext.portalNode
@@ -838,10 +843,14 @@ will have a dismiss button.
 				}
 
 				if (isOutsideEvent(event, portalContext.portalNode)) {
-					const prevTabbable =
-						getPreviousTabbable() || context.domReference;
-					prevTabbable?.focus();
+					sleep(0).then(() => {
+						const prevTabbable =
+							getPreviousTabbable() || context.domReference;
+
+						prevTabbable?.focus();
+					});
 				} else {
+					console.log("inside-after - not outside event");
 					portalContext.afterOutsideRef?.focus();
 				}
 			}

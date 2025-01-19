@@ -41,6 +41,7 @@
 
 <script lang="ts">
 	import Portal from "./portal.svelte";
+	import { sleep } from "../../../test/internal/utils.js";
 
 	let {
 		children,
@@ -142,13 +143,15 @@
 		data-name="before"
 		bind:ref={() => beforeOutsideRef, (v) => (beforeOutsideRef = v)}
 		onfocus={(event) => {
-			console.log("outside-before");
 			if (isOutsideEvent(event, portalNode.current)) {
 				beforeInsideRef?.focus();
 			} else {
-				const prevTabbable =
-					getPreviousTabbable() || focusManagerState?.domReference;
-				prevTabbable?.focus();
+				sleep().then(() => {
+					const prevTabbable =
+						getPreviousTabbable() ||
+						focusManagerState?.domReference;
+					prevTabbable?.focus();
+				});
 			}
 		}} />
 {/if}
@@ -167,17 +170,23 @@
 		data-name="after"
 		bind:ref={() => afterOutsideRef, (v) => (afterOutsideRef = v)}
 		onfocus={(event) => {
-			console.log("outside-after");
 			if (isOutsideEvent(event, portalNode.current)) {
 				afterInsideRef?.focus();
 			} else {
-				const nextTabbable =
-					getNextTabbable() || focusManagerState?.domReference;
-				nextTabbable?.focus();
+				sleep().then(() => {
+					const nextTabbable =
+						getNextTabbable() || focusManagerState?.domReference;
 
-				if (focusManagerState?.closeOnFocusOut) {
-					focusManagerState?.onOpenChange(false, event, "focus-out");
-				}
+					nextTabbable?.focus();
+
+					if (focusManagerState?.closeOnFocusOut) {
+						focusManagerState?.onOpenChange(
+							false,
+							event,
+							"focus-out"
+						);
+					}
+				});
 			}
 		}} />
 {/if}
