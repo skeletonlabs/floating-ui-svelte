@@ -1,12 +1,18 @@
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import { svelteTesting } from "@testing-library/svelte/vite";
 import { defineConfig } from "vitest/config";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-	plugins: [svelte(), svelteTesting()],
+	server: {
+		port: 1234,
+	},
+	root: "./test/visual",
+	plugins: [svelte(), tailwindcss(), svelteTesting()],
 	test: {
-		include: ["./test/**/*.test.ts"],
-		setupFiles: ["./test/setup.ts"],
+		root: "./test/unit",
+		include: ["./**/*.test.ts"],
+		setupFiles: ["./setup.ts"],
 		environment: "jsdom",
 	},
 });
