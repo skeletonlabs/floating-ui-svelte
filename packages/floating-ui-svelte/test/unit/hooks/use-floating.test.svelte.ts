@@ -6,9 +6,9 @@ import {
 	offset,
 } from "@floating-ui/dom";
 import { describe, expect, expectTypeOf, it, vi } from "vitest";
-import { type FloatingContext, useFloating } from "../../src/index.js";
-import { useId } from "../../src/index.js";
-import { withRunes } from "../internal/with-runes.svelte.js";
+import { type FloatingContext, useFloating } from "../../../src/index.js";
+import { useId } from "../../../src/index.js";
+import { withRunes } from "../../with-runes.svelte.js";
 
 function createElements(): {
 	reference: Element | null;

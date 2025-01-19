@@ -3,7 +3,7 @@
 		useClientPoint,
 		useFloating,
 		useInteractions,
-	} from "../../../src/index.js";
+	} from "../../../../src/index.js";
 
 	let {
 		enabled = true,

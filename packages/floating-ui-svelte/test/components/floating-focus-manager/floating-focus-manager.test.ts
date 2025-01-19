@@ -4,7 +4,7 @@ import { userEvent } from "@testing-library/user-event";
 import Main from "./components/main.svelte";
 import NestedNested from "./components/nested-nested.svelte";
 import DialogNonFocusableRef from "./components/dialog-non-focusable-ref.svelte";
-import { sleep, testKbd } from "../../internal/utils.js";
+import { sleep, testKbd } from "../../utils.js";
 import DialogFallbackRef from "./components/dialog-fallback-ref.svelte";
 import Combobox from "./components/combobox.svelte";
 import FloatingFallback from "./components/floating-fallback.svelte";

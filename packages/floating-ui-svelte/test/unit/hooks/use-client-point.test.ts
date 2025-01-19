@@ -1,8 +1,8 @@
-import type { Coords } from "../../src/types.js";
-import { screen, fireEvent, render, waitFor } from "@testing-library/svelte";
+import type { Coords } from "../../../src/types.js";
+import { screen, fireEvent, render } from "@testing-library/svelte";
 import { expect, it } from "vitest";
 import UseClientPoint from "./wrapper-components/use-client-point.svelte";
-import { sleep } from "../internal/utils.js";
+import { sleep } from "../../utils.js";
 
 function expectLocation({ x, y }: Coords) {
 	expect(Number(screen.getByTestId("x")?.textContent)).toBe(x);

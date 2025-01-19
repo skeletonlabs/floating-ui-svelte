@@ -3,9 +3,9 @@
 	import {
 		type UseDismissOptions,
 		useDismiss,
-	} from "../../../src/hooks/use-dismiss.svelte";
-	import { useFloating } from "../../../src/hooks/use-floating.svelte";
-	import { useInteractions } from "../../../src/hooks/use-interactions.svelte";
+	} from "../../../../src/hooks/use-dismiss.svelte";
+	import { useFloating } from "../../../../src/hooks/use-floating.svelte";
+	import { useInteractions } from "../../../../src/hooks/use-interactions.svelte";
 
 	interface Props extends UseDismissOptions {
 		open?: boolean;

@@ -155,7 +155,7 @@
 	import VisuallyHiddenDismiss from "./visually-hidden-dismiss.svelte";
 	import { box } from "../../internal/box.svelte.js";
 	import { reactiveActiveElement } from "../../internal/active-element.svelte.js";
-	import { sleep } from "../../../test/internal/utils.js";
+	import { sleep } from "../../internal/sleep.js";
 
 	let {
 		context,

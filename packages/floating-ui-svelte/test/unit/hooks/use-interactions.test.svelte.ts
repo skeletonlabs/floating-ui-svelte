@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { type ElementProps, useInteractions } from "../../src/index.js";
-import { withRunes } from "../internal/with-runes.svelte";
+import { type ElementProps, useInteractions } from "../../../src/index.js";
+import { withRunes } from "../../with-runes.svelte";
 
 describe("useInteractions", () => {
 	it("returns props to the corresponding getter", () => {

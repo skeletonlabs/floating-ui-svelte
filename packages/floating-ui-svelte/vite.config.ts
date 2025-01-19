@@ -6,7 +6,7 @@ export default defineConfig({
 	plugins: [svelte(), svelteTesting()],
 	test: {
 		include: ["./test/**/*.test.ts"],
-		setupFiles: ["./test/internal/setup.ts"],
+		setupFiles: ["./test/setup.ts"],
 		environment: "jsdom",
 	},
 });

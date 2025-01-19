@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { useFloating } from "../../src/index.js";
-import { withRunes } from "../internal/with-runes.svelte.js";
-import { useMergeRefs } from "../../src/hooks/use-merge-refs.svelte.js";
+import { useFloating } from "../../../src/index.js";
+import { withRunes } from "../../with-runes.svelte.js";
+import { useMergeRefs } from "../../../src/hooks/use-merge-refs.svelte.js";
 
 describe("useMergeRefs", () => {
 	vi.mock(import("svelte"), async (importOriginal) => {
