@@ -746,7 +746,7 @@ it("returns focus to the last connected element", async () => {
 	);
 });
 
-it.only("places focus on an element with floating props when floating element is a wrapper", async () => {
+it("places focus on an element with floating props when floating element is a wrapper", async () => {
 	render(FloatingWrapper);
 
 	await userEvent.click(screen.getByRole("button"));
