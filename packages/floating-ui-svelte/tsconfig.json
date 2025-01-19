@@ -13,5 +13,22 @@
 		"moduleResolution": "NodeNext",
 		"types": ["svelte"]
 	},
-	"include": ["src", "test"]
+	"include": [
+		"ambient.d.ts",
+		"non-ambient.d.ts",
+		"./.svelte-kit/types/**/$types.d.ts",
+		"./vite.config.js",
+		"./vite.config.ts",
+		"./test/visual/routes/**/*.js",
+		"./test/visual/routes/**/*.ts",
+		"./test/visual/routes/**/*.svelte",
+		"./src/**/*.js",
+		"./src/**/*.ts",
+		"./src/**/*.svelte",
+		"./tests/**/*.js",
+		"./tests/**/*.ts",
+		"./tests/**/*.svelte",
+		"src",
+		"test"
+	]
 }

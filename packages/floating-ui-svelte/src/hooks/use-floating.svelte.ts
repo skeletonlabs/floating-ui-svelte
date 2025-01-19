@@ -37,7 +37,7 @@ interface UseFloatingOptions<RT extends ReferenceType = ReferenceType> {
 	 * Where to place the floating element relative to its reference element.
 	 * @default 'bottom'
 	 */
-	placement?: MaybeGetter<Placement>;
+	placement?: MaybeGetter<Placement | undefined>;
 
 	/**
 	 * The type of CSS position property to use.
