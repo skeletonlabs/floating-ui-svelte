@@ -15,6 +15,11 @@ import KeepMounted from "./components/keep-mounted.svelte";
 import NonModalFloatingPortal from "./components/non-modal-floating-portal.svelte";
 import Navigation from "../navigation/main.svelte";
 import Drawer from "../drawer/main.svelte";
+import RestoreFocus from "./components/restore-focus.svelte";
+import TrappedCombobox from "./components/trapped-combobox.svelte";
+import UntrappedCombobox from "./components/untrapped-combobox.svelte";
+import Connected from "./components/connected.svelte";
+import FloatingWrapper from "./components/floating-wrapper.svelte";
 
 describe("initialFocus", () => {
 	it("handles numbers", async () => {
@@ -652,4 +657,99 @@ describe("Drawer", () => {
 		await userEvent.click(screen.getByText("Close"));
 		await waitFor(() => expect(screen.getByText("My button")).toHaveFocus());
 	});
+});
+
+describe("restoreFocus", () => {
+	it("true: restores focus to nearest tabbable element if currently focused element is removed", async () => {
+		render(RestoreFocus);
+
+		await userEvent.click(screen.getByTestId("reference"));
+
+		const one = screen.getByRole("button", { name: "one" });
+		const two = screen.getByRole("button", { name: "two" });
+		const three = screen.getByRole("button", { name: "three" });
+		const floating = screen.getByTestId("floating");
+
+		await waitFor(() => expect(one).toHaveFocus());
+		await fireEvent.click(one);
+		await fireEvent.focusOut(floating);
+
+		expect(two).toHaveFocus();
+		await fireEvent.click(two);
+		await fireEvent.focusOut(floating);
+
+		expect(three).toHaveFocus();
+		await fireEvent.click(three);
+		await fireEvent.focusOut(floating);
+
+		expect(floating).toHaveFocus();
+	});
+
+	it("false: does not restore focus to nearest tabbable element if currently focused element is removed", async () => {
+		render(RestoreFocus, { restoreFocus: false });
+
+		await userEvent.click(screen.getByTestId("reference"));
+
+		const one = screen.getByRole("button", { name: "one" });
+		const floating = screen.getByTestId("floating");
+
+		await waitFor(() => expect(one).toHaveFocus());
+		await fireEvent.click(one);
+		await fireEvent.focusOut(floating);
+
+		expect(document.body).toHaveFocus();
+	});
+});
+
+it("trapped combobox prevents focus moving outside floating element", async () => {
+	render(TrappedCombobox);
+	await userEvent.click(screen.getByTestId("input"));
+	await waitFor(() => expect(screen.getByTestId("input")).not.toHaveFocus());
+	await waitFor(() =>
+		expect(screen.getByRole("button", { name: "one" })).toHaveFocus(),
+	);
+	await userEvent.tab();
+	await waitFor(() =>
+		expect(screen.getByRole("button", { name: "two" })).toHaveFocus(),
+	);
+	await userEvent.tab();
+	await waitFor(() =>
+		expect(screen.getByRole("button", { name: "one" })).toHaveFocus(),
+	);
+});
+
+it("untrapped combobox creates non-modal focus management", async () => {
+	render(UntrappedCombobox);
+	await userEvent.click(screen.getByTestId("input"));
+	await waitFor(() => expect(screen.getByTestId("input")).toHaveFocus());
+	await userEvent.tab();
+	await waitFor(() =>
+		expect(screen.getByRole("button", { name: "one" })).toHaveFocus(),
+	);
+	await userEvent.tab({ shift: true });
+	await waitFor(() => expect(screen.getByTestId("input")).toHaveFocus());
+});
+
+it("returns focus to the last connected element", async () => {
+	render(Connected);
+	await userEvent.click(screen.getByTestId("parent-reference"));
+	await waitFor(() =>
+		expect(screen.getByTestId("parent-floating-reference")).toHaveFocus(),
+	);
+	await userEvent.click(screen.getByTestId("parent-floating-reference"));
+	await waitFor(() =>
+		expect(screen.getByTestId("child-reference")).toHaveFocus(),
+	);
+	await userEvent.keyboard(testKbd.ESCAPE);
+	await waitFor(() =>
+		expect(screen.getByTestId("parent-reference")).toHaveFocus(),
+	);
+});
+
+it.only("places focus on an element with floating props when floating element is a wrapper", async () => {
+	render(FloatingWrapper);
+
+	await userEvent.click(screen.getByRole("button"));
+
+	await waitFor(() => expect(screen.getByTestId("inner")).toHaveFocus());
 });

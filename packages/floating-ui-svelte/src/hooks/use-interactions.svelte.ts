@@ -1,4 +1,5 @@
 import type { HTMLAttributes } from "svelte/elements";
+import { FOCUSABLE_ATTRIBUTE } from "../internal/get-floating-focus-element.js";
 
 const ACTIVE_KEY = "active";
 const SELECTED_KEY = "selected";
@@ -44,7 +45,10 @@ function mergeProps<Key extends keyof ElementProps>(
 	}
 
 	return {
-		...(elementKey === "floating" && { tabindex: -1 }),
+		...(elementKey === "floating" && {
+			tabindex: -1,
+			[FOCUSABLE_ATTRIBUTE]: "",
+		}),
 		...domUserProps,
 		...propsList
 			.map((value) => {

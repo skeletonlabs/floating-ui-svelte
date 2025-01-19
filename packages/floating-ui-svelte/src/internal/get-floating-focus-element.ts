@@ -8,8 +8,10 @@ export function getFloatingFocusElement(
 	// This indicates the floating element is acting as a positioning wrapper, and
 	// so focus should be managed on the child element with the event handlers and
 	// aria props.
-	return floatingElement.hasAttribute(FOCUSABLE_ATTRIBUTE)
+	const res = floatingElement.hasAttribute(FOCUSABLE_ATTRIBUTE)
 		? floatingElement
 		: floatingElement.querySelector(`[${FOCUSABLE_ATTRIBUTE}]`) ||
-				floatingElement;
+			floatingElement;
+	console.log(res);
+	return res as HTMLElement;
 }

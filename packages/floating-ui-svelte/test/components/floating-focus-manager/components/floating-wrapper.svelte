@@ -1,10 +1,10 @@
 <script lang="ts">
+	import FloatingFocusManager from "../../../../src/components/floating-focus-manager/floating-focus-manager.svelte";
 	import {
-		FloatingFocusManager,
 		useFloating,
 		useInteractions,
 		useRole,
-	} from "@skeletonlabs/floating-ui-svelte";
+	} from "../../../../src/index.js";
 
 	let open = $state(false);
 
