@@ -23,8 +23,6 @@ function getTabbableIn(container: HTMLElement, direction: "next" | "prev") {
 	}
 
 	const activeEl = activeElement(getDocument(container)) as HTMLElement;
-	console.log(allTabbable);
-	console.log(activeEl);
 
 	const activeIndex = allTabbable.indexOf(activeEl);
 	const nextTabbableElements = allTabbable.slice(activeIndex + 1);

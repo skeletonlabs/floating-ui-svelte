@@ -850,7 +850,6 @@ will have a dismiss button.
 						prevTabbable?.focus();
 					});
 				} else {
-					console.log("inside-after - not outside event");
 					portalContext.afterOutsideRef?.focus();
 				}
 			}

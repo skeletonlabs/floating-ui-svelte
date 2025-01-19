@@ -20,6 +20,8 @@ import TrappedCombobox from "./components/trapped-combobox.svelte";
 import UntrappedCombobox from "./components/untrapped-combobox.svelte";
 import Connected from "./components/connected.svelte";
 import FloatingWrapper from "./components/floating-wrapper.svelte";
+import ModalCombobox from "./components/modal-combobox.svelte";
+import Hover from "./components/hover.svelte";
 
 describe("initialFocus", () => {
 	it("handles numbers", async () => {
@@ -752,4 +754,44 @@ it("places focus on an element with floating props when floating element is a wr
 	await userEvent.click(screen.getByRole("button"));
 
 	await waitFor(() => expect(screen.getByTestId("inner")).toHaveFocus());
+});
+
+it("closes the floating element upon tabbing out of a modal combobox", async () => {
+	render(ModalCombobox);
+
+	await userEvent.click(screen.getByTestId("input"));
+	await waitFor(() => expect(screen.getByTestId("input")).toHaveFocus());
+	await userEvent.tab();
+	await waitFor(() => expect(screen.getByTestId("after")).toHaveFocus());
+});
+
+it("does not return focus to the reference when floating element is triggered by hover", async () => {
+	render(Hover);
+
+	const reference = screen.getByTestId("reference");
+	reference.focus();
+	await waitFor(() => expect(reference).toHaveFocus());
+
+	await userEvent.hover(reference);
+
+	await waitFor(() => expect(screen.getByTestId("floating")).toHaveFocus());
+
+	await userEvent.unhover(screen.getByTestId("floating"));
+
+	await waitFor(() =>
+		expect(screen.getByTestId("reference")).not.toHaveFocus(),
+	);
+});
+
+it("uses aria-hidden instead of inert on outside nodes if opened with hover and modal=true", async () => {
+	render(Hover);
+
+	await userEvent.hover(screen.getByTestId("reference"));
+
+	await waitFor(() =>
+		expect(screen.getByText("outside")).not.toHaveAttribute("inert"),
+	);
+	await waitFor(() =>
+		expect(screen.getByText("outside")).toHaveAttribute("aria-hidden", "true"),
+	);
 });
