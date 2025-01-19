@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { MediaQuery } from "svelte/reactivity";
 	import {
 		useClick,
 		useDismiss,
@@ -31,7 +30,7 @@
 
 	const ref = box<Element | null>(null);
 
-	const isLargeScreen = new MediaQuery("min-width: 1400px");
+	const isLargeScreen = true;
 	const f = useFloating({
 		reference: () => ref.current,
 		onReferenceChange: (v) => {
@@ -48,7 +47,7 @@
 	const labelId = `${id}-label`;
 	const descriptionId = `${id}-description`;
 
-	const modal = $derived(!isLargeScreen.current);
+	const modal = !isLargeScreen;
 
 	const ints = useInteractions([
 		useClick(f.context),
@@ -80,7 +79,7 @@
 {@render reference?.(ref, ints.getReferenceProps())}
 
 {#if open}
-	<FloatingPortal>
+	<FloatingPortal id="drawer-root">
 		{#if modal}
 			<FloatingOverlay
 				lockScroll

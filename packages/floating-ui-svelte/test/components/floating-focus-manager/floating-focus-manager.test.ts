@@ -638,7 +638,6 @@ describe("Drawer", () => {
 		expect(screen.queryByText("Close")).toBeInTheDocument();
 	});
 
-	// TODO: fix this test... focus is going to the floating content instead of the close button
 	it("returns focus when tabbing out then back to close button", async () => {
 		render(Drawer);
 

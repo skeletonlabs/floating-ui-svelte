@@ -201,6 +201,9 @@
 	let tabbableIndex = $state(-1);
 	let prevActiveElement: Element | null = null;
 
+	let beforeGuardRef = $state<HTMLSpanElement | null>(null);
+	let afterGuardRef = $state<HTMLSpanElement | null>(null);
+
 	const isInsidePortal = portalContext != null;
 
 	$effect(() => {
@@ -425,21 +428,18 @@
 		}
 	);
 
-	const beforeGuardRef = box<HTMLSpanElement | null>(null);
-	const afterGuardRef = box<HTMLSpanElement | null>(null);
-
 	watch.pre(
-		() => beforeGuardRef.current,
+		() => beforeGuardRef,
 		() => {
 			if (!portalContext) return;
-			portalContext.beforeInsideRef.current = beforeGuardRef.current;
+			portalContext.beforeInsideRef = beforeGuardRef;
 		}
 	);
 	watch.pre(
-		() => afterGuardRef.current,
+		() => afterGuardRef,
 		() => {
 			if (!portalContext) return;
-			portalContext.afterInsideRef.current = afterGuardRef.current;
+			portalContext.afterInsideRef = afterGuardRef;
 		}
 	);
 
@@ -479,10 +479,10 @@
 				...ancestorFloatingNodes,
 				startDismissButtonRef.current,
 				endDismissButtonRef.current,
-				beforeGuardRef.current,
-				afterGuardRef.current,
-				portalContext?.beforeOutsideRef.current,
-				portalContext?.afterOutsideRef.current,
+				beforeGuardRef,
+				afterGuardRef,
+				portalContext?.beforeOutsideRef,
+				portalContext?.afterOutsideRef,
 				order.includes("reference") || isUntrappedTypeableCombobox
 					? context.domReference
 					: null,
@@ -789,8 +789,7 @@
 {#if shouldRenderGuards}
 	<FocusGuard
 		type="inside"
-		bind:ref={() => beforeGuardRef.current,
-		(v) => (beforeGuardRef.current = v)}
+		bind:ref={() => beforeGuardRef, (v) => (beforeGuardRef = v)}
 		onfocus={(event) => {
 			console.log("inside-before");
 			if (modal) {
@@ -808,7 +807,7 @@
 						getNextTabbable() || context.domReference;
 					nextTabbable?.focus();
 				} else {
-					portalContext.beforeOutsideRef.current?.focus();
+					portalContext.beforeOutsideRef?.focus();
 				}
 			}
 		}} />
@@ -825,8 +824,7 @@ will have a dismiss button.
 {#if shouldRenderGuards}
 	<FocusGuard
 		type="inside"
-		bind:ref={() => afterGuardRef.current,
-		(v) => (afterGuardRef.current = v)}
+		bind:ref={() => afterGuardRef, (v) => (afterGuardRef = v)}
 		onfocus={(event) => {
 			console.log("inside-after");
 			if (modal) {
@@ -844,7 +842,7 @@ will have a dismiss button.
 						getPreviousTabbable() || context.domReference;
 					prevTabbable?.focus();
 				} else {
-					portalContext.afterOutsideRef.current?.focus();
+					portalContext.afterOutsideRef?.focus();
 				}
 			}
 		}} />
