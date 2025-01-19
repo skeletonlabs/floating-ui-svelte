@@ -9,7 +9,6 @@ import type { ContextData, MaybeGetter } from "../types.js";
 import type { FloatingContext } from "./use-floating.svelte.js";
 import type { ElementProps } from "./use-interactions.svelte.js";
 import { watch } from "../internal/watch.svelte.js";
-import { on } from "svelte/events";
 
 function createVirtualElement(
 	domElement: Element | null | undefined,
@@ -122,8 +121,14 @@ class ClientPointInteraction implements ElementProps {
 	#y = $derived.by(() => extract(this.options?.y, null));
 	#initial = false;
 	#cleanupListener: (() => void) | null = null;
+
 	#pointerType = $state<string | undefined>();
-	#addListenerDeps = $state<number>(0);
+	#listenerDeps = $state.raw<never[]>([]);
+
+	// If the pointer is a mouse-like pointer, we want to continue following the
+	// mouse even if the floating element is transitioning out. On touch
+	// devices, this is undesirable because the floating element will move to
+	// the dismissal touch point.
 	#openCheck = $derived.by(() =>
 		isMouseLikePointerType(this.#pointerType)
 			? this.context.floating
@@ -135,7 +140,7 @@ class ClientPointInteraction implements ElementProps {
 		private readonly options: UseClientPointOptions = {},
 	) {
 		watch(
-			() => this.#addListenerDeps,
+			() => this.#listenerDeps,
 			() => {
 				return this.#addListener();
 			},
@@ -153,12 +158,27 @@ class ClientPointInteraction implements ElementProps {
 			}
 		});
 
-		watch([() => this.#enabled, () => this.#x, () => this.#y], () => {
+		watch.pre([() => this.#enabled, () => this.#x, () => this.#y], () => {
 			if (this.#enabled && (this.#x != null || this.#y != null)) {
 				this.#initial = false;
 				this.#setReference(this.#x, this.#y);
 			}
 		});
+
+		watch([() => this.#enabled, () => this.context.open], () => {
+			if (this.#enabled && this.context.open) {
+				this.#listenerDeps = [];
+			}
+		});
+
+		watch(
+			() => this.#openCheck,
+			() => {
+				if (!this.#openCheck && this.#cleanupListener) {
+					this.#cleanupListener();
+				}
+			},
+		);
 	}
 
 	#setReference = (x: number | null, y: number | null) => {
@@ -194,29 +214,39 @@ class ClientPointInteraction implements ElementProps {
 			// If there's no cleanup, there's no listener, but we want to ensure
 			// we add the listener if the cursor landed on the floating element and
 			// then back on the reference (i.e. it's interactive).
-			this.#addListenerDeps++;
+			this.#listenerDeps = [];
 		}
 	};
 
-	#addListener = () => {
-		// Explicitly specified `x`/`y` coordinates shouldn't add a listener.
+	#addListener() {
 		if (
 			!this.#openCheck ||
 			!this.#enabled ||
 			this.#x != null ||
 			this.#y != null
-		)
-			return () => {};
+		) {
+			// Clear existing listener when conditions change
+			if (this.#cleanupListener) {
+				this.#cleanupListener();
+				this.#cleanupListener = null;
+			}
+			return;
+		}
+
+		// Clear existing listener before adding new one
+		if (this.#cleanupListener) {
+			this.#cleanupListener();
+			this.#cleanupListener = null;
+		}
 
 		const win = getWindow(this.context.floating);
 
 		const handleMouseMove = (event: MouseEvent) => {
 			const target = getTarget(event) as Element | null;
-
 			if (!contains(this.context.floating, target)) {
 				this.#setReference(event.clientX, event.clientY);
 			} else {
-				this.#cleanupListener?.();
+				win.removeEventListener("mousemove", handleMouseMove);
 				this.#cleanupListener = null;
 			}
 		};
@@ -225,9 +255,9 @@ class ClientPointInteraction implements ElementProps {
 			!this.context.data.openEvent ||
 			isMouseBasedEvent(this.context.data.openEvent)
 		) {
-			const removeListener = on(win, "mousemove", handleMouseMove);
+			win.addEventListener("mousemove", handleMouseMove);
 			const cleanup = () => {
-				removeListener();
+				win.removeEventListener("mousemove", handleMouseMove);
 				this.#cleanupListener = null;
 			};
 			this.#cleanupListener = cleanup;
@@ -235,7 +265,7 @@ class ClientPointInteraction implements ElementProps {
 		}
 
 		this.context.setPositionReference(this.context.domReference);
-	};
+	}
 
 	#setPointerType = (event: PointerEvent) => {
 		this.#pointerType = event.pointerType;

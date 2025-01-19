@@ -29,7 +29,11 @@ it("renders at mouse event coords", async () => {
 
 	await fireEvent(
 		screen.getByTestId("reference"),
-		new MouseEvent("mousemove", { clientX: 500, clientY: 500, bubbles: true }),
+		new MouseEvent("mousemove", {
+			bubbles: true,
+			clientX: 500,
+			clientY: 500,
+		}),
 	);
 
 	expectLocation({ x: 500, y: 500 });
@@ -56,6 +60,30 @@ it("renders at mouse event coords", async () => {
 	);
 
 	expectLocation({ x: 1000, y: 1000 });
+
+	await fireEvent.click(screen.getByTestId("toggle-open"));
+
+	await fireEvent(
+		screen.getByTestId("reference"),
+		new MouseEvent("mousemove", {
+			bubbles: true,
+			clientX: 700,
+			clientY: 700,
+		}),
+	);
+
+	expectLocation({ x: 700, y: 700 });
+
+	await fireEvent(
+		document.body,
+		new MouseEvent("mousemove", {
+			bubbles: true,
+			clientX: 0,
+			clientY: 0,
+		}),
+	);
+
+	expectLocation({ x: 0, y: 0 });
 });
 
 it("ignores mouse when explicit coords are specified", async () => {
@@ -114,6 +142,74 @@ it("cleans up window listener when closing or disabling", async () => {
 	expectLocation({ x: 500, y: 500 });
 
 	await fireEvent.click(screen.getByTestId("toggle-enabled"));
+
+	await fireEvent(
+		document.body,
+		new MouseEvent("mousemove", {
+			bubbles: true,
+			clientX: 0,
+			clientY: 0,
+		}),
+	);
+
+	expectLocation({ x: 500, y: 500 });
+});
+
+it("respects axis x", async () => {
+	render(UseClientPoint, { axis: "x" });
+
+	await fireEvent.click(screen.getByTestId("toggle-open"));
+
+	await fireEvent(
+		screen.getByTestId("reference"),
+		new MouseEvent("mousemove", {
+			bubbles: true,
+			clientX: 500,
+			clientY: 500,
+		}),
+	);
+
+	expectLocation({ x: 500, y: 0 });
+});
+
+it("respects axis y", async () => {
+	render(UseClientPoint, { axis: "y" });
+
+	await fireEvent.click(screen.getByTestId("toggle-open"));
+
+	await fireEvent(
+		screen.getByTestId("reference"),
+		new MouseEvent("mousemove", {
+			bubbles: true,
+			clientX: 500,
+			clientY: 500,
+		}),
+	);
+
+	expectLocation({ x: 0, y: 500 });
+});
+
+it("removes window listener when cursor lands on floating element", async () => {
+	render(UseClientPoint);
+	await fireEvent.click(screen.getByTestId("toggle-open"));
+
+	await fireEvent(
+		screen.getByTestId("reference"),
+		new MouseEvent("mousemove", {
+			bubbles: true,
+			clientX: 500,
+			clientY: 500,
+		}),
+	);
+
+	await fireEvent(
+		screen.getByTestId("floating"),
+		new MouseEvent("mousemove", {
+			bubbles: true,
+			clientX: 500,
+			clientY: 500,
+		}),
+	);
 
 	await fireEvent(
 		document.body,
