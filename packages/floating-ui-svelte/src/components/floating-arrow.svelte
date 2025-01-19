@@ -2,7 +2,7 @@
 	import type { SVGAttributes } from "svelte/elements";
 	import type { FloatingContext } from "../hooks/use-floating.svelte.js";
 
-	export interface FloatingArrowProps extends SVGAttributes<SVGElement> {
+	interface FloatingArrowProps extends SVGAttributes<SVGElement> {
 		/** The bound HTML element reference. */
 		ref: Element | null;
 		/** The floating context. */
@@ -43,6 +43,8 @@
 		 */
 		strokeWidth?: number;
 	}
+
+	export type { FloatingArrowProps };
 </script>
 
 <script lang="ts">

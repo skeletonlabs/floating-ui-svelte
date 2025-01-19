@@ -493,4 +493,4 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}) {
 }
 
 export type { UseHoverOptions, HandleCloseFn };
-export { useHover, HoverInteraction };
+export { useHover, HoverInteraction, getDelay };

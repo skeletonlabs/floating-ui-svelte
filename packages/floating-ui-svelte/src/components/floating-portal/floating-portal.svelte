@@ -41,7 +41,7 @@
 
 <script lang="ts">
 	import Portal from "./portal.svelte";
-	import { sleep } from "../../../test/internal/utils.js";
+	import { sleep } from "../../internal/sleep.js";
 
 	let {
 		children,

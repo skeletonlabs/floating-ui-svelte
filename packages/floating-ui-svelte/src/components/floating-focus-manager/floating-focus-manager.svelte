@@ -843,7 +843,7 @@ will have a dismiss button.
 				}
 
 				if (isOutsideEvent(event, portalContext.portalNode)) {
-					sleep(0).then(() => {
+					sleep().then(() => {
 						const prevTabbable =
 							getPreviousTabbable() || context.domReference;
 

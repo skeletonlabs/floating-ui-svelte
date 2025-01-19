@@ -20,6 +20,9 @@ export { default as FloatingFocusManager } from "./components/floating-focus-man
 export * from "./components/floating-overlay.svelte";
 export { default as FloatingOverlay } from "./components/floating-overlay.svelte";
 
+export * from "./components/floating-delay-group.svelte";
+export { default as FloatingDelayGroup } from "./components/floating-delay-group.svelte";
+
 /**
  * Hooks
  */
