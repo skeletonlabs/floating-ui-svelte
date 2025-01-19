@@ -24,6 +24,7 @@ export { default as FloatingOverlay } from "./components/floating-overlay.svelte
  * Hooks
  */
 export * from "./hooks/use-click.svelte.js";
+export * from "./hooks/use-client-point.svelte.js";
 export * from "./hooks/use-dismiss.svelte.js";
 export * from "./hooks/use-floating.svelte.js";
 export * from "./hooks/use-focus.svelte.js";

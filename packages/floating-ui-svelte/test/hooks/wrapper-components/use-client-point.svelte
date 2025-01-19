@@ -3,7 +3,7 @@
 		useClientPoint,
 		useFloating,
 		useInteractions,
-	} from "@skeletonlabs/floating-ui-svelte";
+	} from "../../../src/index.js";
 
 	let {
 		enabled = true,
@@ -38,6 +38,10 @@
 	const rect = $derived(f.reference?.getBoundingClientRect());
 </script>
 
+<button onclick={() => (open = !open)} data-testid="toggle-open"
+	>toggle open</button>
+<button onclick={() => (enabled = !enabled)} data-testid="toggle-enabled"
+	>toggle enabled</button>
 <div
 	data-testid="reference"
 	bind:this={f.reference}
@@ -52,8 +56,6 @@
 		Floating
 	</div>
 {/if}
-<button onclick={() => (open = !open)} data-testid="toggle-open"
-	>toggle open</button>
 <span data-testid="x">{rect?.x}</span>
 <span data-testid="y">{rect?.y}</span>
 <span data-testid="width">{rect?.width}</span>

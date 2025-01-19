@@ -202,4 +202,4 @@ function useClick(context: FloatingContext, options: UseClickOptions = {}) {
 }
 
 export type { UseClickOptions };
-export { useClick };
+export { useClick, ClickInteraction };

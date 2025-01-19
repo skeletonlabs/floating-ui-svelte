@@ -197,6 +197,7 @@ interface FloatingContextData<RT extends ReferenceType = ReferenceType> {
 	floatingId: string;
 	events: FloatingEvents;
 	nodeId: string | undefined;
+	setPositionReference: (node: ReferenceType | null) => void;
 }
 
 class FloatingContext<RT extends ReferenceType = ReferenceType>
@@ -204,10 +205,12 @@ class FloatingContext<RT extends ReferenceType = ReferenceType>
 {
 	onOpenChange: OnOpenChange;
 	update: () => Promise<void>;
+	setPositionReference: (node: ReferenceType | null) => void;
 
 	constructor(private readonly opts: FloatingContextOptions<RT>) {
 		this.onOpenChange = this.opts.rootContext.onOpenChange;
 		this.update = this.opts.floating.update;
+		this.setPositionReference = this.opts.floating.setPositionReference;
 	}
 
 	get reference() {
@@ -324,12 +327,22 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 		});
 	}
 
+	setPositionReference = (node: ReferenceType | null) => {
+		const computedPositionReference = isElement(node)
+			? {
+					getBoundingClientRect: () => node.getBoundingClientRect(),
+					contextElement: node,
+				}
+			: node;
+		this.#positionReference = computedPositionReference;
+	};
+
 	get domReference() {
 		return this.#derivedDomReference;
 	}
 
 	get reference() {
-		return this.options.reference.current as RT | null;
+		return this.#position.referenceEl as RT | null;
 	}
 
 	set reference(node: RT | null) {
