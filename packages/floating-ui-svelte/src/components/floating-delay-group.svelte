@@ -168,7 +168,7 @@
 		timeoutMs?: number;
 	}
 
-	export type { FloatingDelayGroupProps, UseDelayGroupOptions };
+	export type { FloatingDelayGroupProps, UseDelayGroupOptions, Delay };
 	export { useDelayGroup };
 </script>
 
