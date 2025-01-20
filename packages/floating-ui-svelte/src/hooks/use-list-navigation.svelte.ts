@@ -316,7 +316,8 @@ class ListNavigationState {
 				() => this.#rtl,
 				() => this.#disabledIndices,
 			],
-			() => {
+			(_, [__, prevOpen, prevFloating]) => {
+				const prevMounted = !!prevFloating;
 				if (!this.#enabled) return;
 				if (!this.context.open) return;
 				if (!this.context.floating) return;
@@ -329,20 +330,25 @@ class ListNavigationState {
 					}
 
 					// Reset while the floating element was open (e.g. the list changed).
-					if (this.#mounted) {
+					if (prevMounted) {
 						this.#index = -1;
 						this.#focusItem();
 					}
 
 					// Initial sync.
+					console.log("focusItemOnOpen", this.#focusItemOnOpen);
 					if (
-						(!this.#previousOpen || !this.#mounted) &&
+						(!prevOpen || !prevMounted) &&
 						this.#focusItemOnOpen &&
 						(this.#key != null ||
-							(this.#focusItemOnOpen === true && this.#key == null))
+							((this.#focusItemOnOpen === true ||
+								this.#focusItemOnOpen === "auto") &&
+								this.#key == null))
 					) {
+						console.log("running stuff");
 						let runs = 0;
 						const waitForListPopulated = () => {
+							console.log("this list is null", this.#listRef[0] == null);
 							if (this.#listRef[0] == null) {
 								// Avoid letting the browser paint if possible on the first try,
 								// otherwise use rAF. Don't try more than twice, since something

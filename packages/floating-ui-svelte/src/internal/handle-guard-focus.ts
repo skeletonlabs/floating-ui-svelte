@@ -11,11 +11,14 @@ import { sleep } from "./sleep.js";
  * restoring the attribute.
  */
 
-function handleGuardFocus(guard: HTMLElement | null) {
+function handleGuardFocus(
+	guard: HTMLElement | null,
+	focusOptions?: Parameters<HTMLElement["focus"]>[0],
+) {
 	if (!guard) return;
 	const ariaHidden = guard.getAttribute("aria-hidden");
 	guard.removeAttribute("aria-hidden");
-	guard.focus();
+	guard.focus(focusOptions);
 	sleep().then(() => {
 		if (ariaHidden === null) {
 			guard.setAttribute("aria-hidden", "");

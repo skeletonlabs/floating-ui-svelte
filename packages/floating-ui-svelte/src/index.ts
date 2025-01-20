@@ -23,6 +23,9 @@ export { default as FloatingOverlay } from "./components/floating-overlay.svelte
 export * from "./components/floating-delay-group.svelte";
 export { default as FloatingDelayGroup } from "./components/floating-delay-group.svelte";
 
+export * from "./components/floating-list/floating-list.svelte";
+export { default as FloatingList } from "./components/floating-list/floating-list.svelte";
+
 /**
  * Hooks
  */

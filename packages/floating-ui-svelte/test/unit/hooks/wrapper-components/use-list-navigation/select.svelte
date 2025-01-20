@@ -1,13 +1,13 @@
 <script lang="ts">
+	import FloatingFocusManager from "../../../../../src/components/floating-focus-manager/floating-focus-manager.svelte";
+	import FloatingList from "../../../../../src/components/floating-list/floating-list.svelte";
 	import {
 		useClick,
 		useFloating,
 		useInteractions,
 		useListNavigation,
-	} from "../../../../src/index.js";
-	import FloatingFocusManager from "../../../../src/components/floating-focus-manager/floating-focus-manager.svelte";
-	import FloatingList from "../../../../src/components/floating-list/floating-list.svelte";
-	import SelectOption from "../../../unit/hooks/wrapper-components/use-list-navigation/select-option.svelte";
+	} from "../../../../../src/index.js";
+	import SelectOption from "./select-option.svelte";
 
 	let activeIndex = $state<number | null>(null);
 	let selectedIndex = $state<number | null>(2);

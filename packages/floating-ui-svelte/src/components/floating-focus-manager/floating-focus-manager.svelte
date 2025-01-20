@@ -411,7 +411,6 @@
 						relatedTarget &&
 						movedToUnrelatedNode &&
 						!isPointerDown &&
-						// Fix React 18 Strict Mode returnFocus due to double rendering.
 						relatedTarget !== getPreviouslyFocusedElement()
 					) {
 						preventReturnFocus = true;

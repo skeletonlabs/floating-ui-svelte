@@ -330,9 +330,7 @@ class DismissInteraction implements ElementProps {
 			return;
 		}
 
-		if (localInsideTree) {
-			return;
-		}
+		if (localInsideTree) return;
 
 		if (
 			typeof this.#outsidePress === "function" &&
