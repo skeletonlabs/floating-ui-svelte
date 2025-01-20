@@ -17,10 +17,10 @@ const PortalContext = new Context<{
 	preserveTabOrder: boolean;
 	portalNode: HTMLElement | null;
 	setFocusManagerState: (state: FocusManagerState) => void;
-	beforeInsideRef: HTMLSpanElement | null;
-	afterInsideRef: HTMLSpanElement | null;
-	beforeOutsideRef: HTMLSpanElement | null;
-	afterOutsideRef: HTMLSpanElement | null;
+	beforeInsideGuard: HTMLSpanElement | null;
+	afterInsideGuard: HTMLSpanElement | null;
+	beforeOutsideGuard: HTMLSpanElement | null;
+	afterOutsideGuard: HTMLSpanElement | null;
 } | null>("PortalContext");
 
 const attr = createAttribute("portal");

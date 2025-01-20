@@ -156,6 +156,7 @@
 	import { box } from "../../internal/box.svelte.js";
 	import { reactiveActiveElement } from "../../internal/active-element.svelte.js";
 	import { sleep } from "../../internal/sleep.js";
+	import { handleGuardFocus } from "../../internal/handle-guard-focus.js";
 
 	let {
 		context,
@@ -433,14 +434,14 @@
 		() => beforeGuardRef,
 		() => {
 			if (!portalContext) return;
-			portalContext.beforeInsideRef = beforeGuardRef;
+			portalContext.beforeInsideGuard = beforeGuardRef;
 		}
 	);
 	watch.pre(
 		() => afterGuardRef,
 		() => {
 			if (!portalContext) return;
-			portalContext.afterInsideRef = afterGuardRef;
+			portalContext.afterInsideGuard = afterGuardRef;
 		}
 	);
 
@@ -482,8 +483,8 @@
 				endDismissButtonRef.current,
 				beforeGuardRef,
 				afterGuardRef,
-				portalContext?.beforeOutsideRef,
-				portalContext?.afterOutsideRef,
+				portalContext?.beforeOutsideGuard,
+				portalContext?.afterOutsideGuard,
 				order.includes("reference") || isUntrappedTypeableCombobox
 					? context.domReference
 					: null,
@@ -811,7 +812,7 @@
 						nextTabbable?.focus();
 					});
 				} else {
-					portalContext.beforeOutsideRef?.focus();
+					handleGuardFocus(portalContext.beforeOutsideGuard);
 				}
 			}
 		}} />
@@ -850,7 +851,7 @@ will have a dismiss button.
 						prevTabbable?.focus();
 					});
 				} else {
-					portalContext.afterOutsideRef?.focus();
+					handleGuardFocus(portalContext.afterOutsideGuard);
 				}
 			}
 		}} />

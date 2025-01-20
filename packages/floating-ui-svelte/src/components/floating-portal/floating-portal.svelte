@@ -42,6 +42,7 @@
 <script lang="ts">
 	import Portal from "./portal.svelte";
 	import { sleep } from "../../internal/sleep.js";
+	import { handleGuardFocus } from "../../internal/handle-guard-focus.js";
 
 	let {
 		children,
@@ -56,10 +57,10 @@
 	});
 
 	let focusManagerState = $state.raw<FocusManagerState>(null);
-	let beforeOutsideRef = $state<HTMLSpanElement | null>(null);
-	let afterOutsideRef = $state<HTMLSpanElement | null>(null);
-	let beforeInsideRef = $state<HTMLSpanElement | null>(null);
-	let afterInsideRef = $state<HTMLSpanElement | null>(null);
+	let beforeOutsideGuard = $state<HTMLSpanElement | null>(null);
+	let afterOutsideGuard = $state<HTMLSpanElement | null>(null);
+	let beforeInsideGuard = $state<HTMLSpanElement | null>(null);
+	let afterInsideGuard = $state<HTMLSpanElement | null>(null);
 
 	const modal = $derived(focusManagerState?.modal);
 	const open = $derived(focusManagerState?.open);
@@ -110,23 +111,23 @@
 		get preserveTabOrder() {
 			return preserveTabOrder;
 		},
-		get beforeInsideRef() {
-			return beforeInsideRef;
+		get beforeInsideGuard() {
+			return beforeInsideGuard;
 		},
-		set beforeInsideRef(value: HTMLSpanElement | null) {
-			beforeInsideRef = value;
+		set beforeInsideGuard(value: HTMLSpanElement | null) {
+			beforeInsideGuard = value;
 		},
-		get beforeOutsideRef() {
-			return beforeOutsideRef;
+		get beforeOutsideGuard() {
+			return beforeOutsideGuard;
 		},
-		get afterInsideRef() {
-			return afterInsideRef;
+		get afterInsideGuard() {
+			return afterInsideGuard;
 		},
-		set afterInsideRef(value: HTMLSpanElement | null) {
-			afterInsideRef = value;
+		set afterInsideGuard(value: HTMLSpanElement | null) {
+			afterInsideGuard = value;
 		},
-		get afterOutsideRef() {
-			return afterOutsideRef;
+		get afterOutsideGuard() {
+			return afterOutsideGuard;
 		},
 		get portalNode() {
 			return portalNode.current;
@@ -141,10 +142,10 @@
 	<FocusGuard
 		type="outside"
 		data-name="before"
-		bind:ref={() => beforeOutsideRef, (v) => (beforeOutsideRef = v)}
+		bind:ref={() => beforeOutsideGuard, (v) => (beforeOutsideGuard = v)}
 		onfocus={(event) => {
 			if (isOutsideEvent(event, portalNode.current)) {
-				beforeInsideRef?.focus();
+				handleGuardFocus(beforeInsideGuard);
 			} else {
 				sleep().then(() => {
 					const prevTabbable =
@@ -168,10 +169,10 @@
 	<FocusGuard
 		type="outside"
 		data-name="after"
-		bind:ref={() => afterOutsideRef, (v) => (afterOutsideRef = v)}
+		bind:ref={() => afterOutsideGuard, (v) => (afterOutsideGuard = v)}
 		onfocus={(event) => {
 			if (isOutsideEvent(event, portalNode.current)) {
-				afterInsideRef?.focus();
+				handleGuardFocus(afterInsideGuard);
 			} else {
 				sleep().then(() => {
 					const nextTabbable =

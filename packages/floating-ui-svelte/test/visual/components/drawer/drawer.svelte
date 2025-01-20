@@ -13,14 +13,14 @@
 	import { box } from "../../../../src/internal/box.svelte.js";
 	import FloatingPortal from "../../../../src/components/floating-portal/floating-portal.svelte";
 	import FloatingOverlay from "../../../../src/components/floating-overlay.svelte";
+	import type { ReferenceSnippetProps } from "../../types.js";
+	import { MediaQuery } from "svelte/reactivity";
 
 	let {
 		reference,
 		content,
 	}: {
-		reference: Snippet<
-			[reference: Boxed<Element | null>, props: Record<string, unknown>]
-		>;
+		reference: Snippet<ReferenceSnippetProps>;
 		content: Snippet<
 			[{ labelId: string; descriptionId: string; close: () => void }]
 		>;
@@ -30,7 +30,8 @@
 
 	const ref = box<Element | null>(null);
 
-	const isLargeScreen = true;
+	const isLargeScreen = new MediaQuery("min-width: 1400px");
+
 	const f = useFloating({
 		reference: () => ref.current,
 		onReferenceChange: (v) => {
@@ -47,7 +48,7 @@
 	const labelId = `${id}-label`;
 	const descriptionId = `${id}-description`;
 
-	const modal = !isLargeScreen;
+	const modal = $derived(!isLargeScreen);
 
 	const ints = useInteractions([
 		useClick(f.context),
