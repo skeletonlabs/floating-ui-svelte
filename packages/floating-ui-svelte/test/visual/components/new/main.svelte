@@ -1,12 +1,56 @@
 <script lang="ts">
-	import { useFloating } from "../../../../src/index.js";
+	import {
+		useClick,
+		useFloating,
+		useInteractions,
+		useListNavigation,
+		type UseListNavigationOptions,
+	} from "../../../../src/index.js";
 
-	const f = useFloating();
+	let props: Omit<Partial<UseListNavigationOptions>, "listRef"> = $props();
+
+	let open = $state(false);
+	let listRef = $state<Array<HTMLLIElement | null>>([]);
+	let activeIndex = $state<number | null>(null);
+
+	const f = useFloating({
+		open: () => open,
+		onOpenChange: (v) => (open = v),
+	});
+
+	const ints = useInteractions([
+		useClick(f.context),
+		useListNavigation(f.context, {
+			...props,
+			allowEscape: true,
+			virtual: true,
+			loop: true,
+			listRef: () => listRef,
+			activeIndex: () => activeIndex,
+			onNavigate: (index) => {
+				activeIndex = index;
+				console.log("onNavigateCalled");
+				props.onNavigate?.(index);
+			},
+		}),
+	]);
 </script>
 
-<h1 class="text-5xl font-bold mb-8">New</h1>
-<div
-	class="grid place-items-center border border-slate-400 rounded lg:w-[40rem] h-[20rem] mb-4">
-	<div bind:this={f.reference}>Reference</div>
-	<div bind:this={f.floating} style={f.floatingStyles}>Floating</div>
-</div>
+<button {...ints.getReferenceProps()} bind:this={f.reference}> Open </button>
+{#if open}
+	<div role="menu" {...ints.getFloatingProps()} bind:this={f.floating}>
+		<ul>
+			{#each ["one", "two", "three"] as str, index (str)}
+				<li
+					role="option"
+					data-testid={`item-${index}`}
+					aria-selected={activeIndex === index}
+					tabIndex={-1}
+					{...ints.getItemProps()}
+					bind:this={listRef[index]}>
+					{str}
+				</li>
+			{/each}
+		</ul>
+	</div>
+{/if}

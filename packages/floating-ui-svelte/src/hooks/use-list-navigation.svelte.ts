@@ -221,6 +221,7 @@ class ListNavigationState {
 	#parentId: string | null = null;
 	#tree: FloatingTreeType | null = null;
 	#index = $state(this.#selectedIndex ?? -1);
+
 	#typeableComboboxReference = $derived.by(() =>
 		isTypeableCombobox(this.context.domReference),
 	);
@@ -232,9 +233,8 @@ class ListNavigationState {
 
 	#activeId = $state<string | undefined>();
 	#virtualId = $state<string | undefined>();
-	#previousMounted: boolean;
-	#previousOpen: boolean;
-	#previousOnNavigate: () => void;
+	#mounted = false;
+	#previousOpen = false;
 	#hasActiveIndex = $derived.by(() => this.#activeIndex != null);
 
 	#ariaActiveDescendantProp = $derived.by(() => {
@@ -273,9 +273,7 @@ class ListNavigationState {
 		this.#virtualItemRef = this.opts.virtualItemRef;
 		this.#parentId = useFloatingParentNodeId();
 		this.#tree = useFloatingTree();
-		this.#previousMounted = !!this.context.floating;
-		this.#previousOpen = this.context.open;
-		this.#previousOnNavigate = this.#onNavigate;
+		this.#mounted = !!this.context.floating;
 
 		// Sync `selectedIndex` to be the `activeIndex` upon opening the floating
 		// element. Also, reset `activeIndex` upon closing the floating element.
@@ -296,7 +294,7 @@ class ListNavigationState {
 						this.#index = this.#selectedIndex;
 						this.#onNavigate();
 					}
-				} else if (this.#previousMounted) {
+				} else if (this.#mounted) {
 					this.#index = -1;
 					this.#onNavigate();
 				}
@@ -331,14 +329,14 @@ class ListNavigationState {
 					}
 
 					// Reset while the floating element was open (e.g. the list changed).
-					if (this.#previousMounted) {
+					if (this.#mounted) {
 						this.#index = -1;
 						this.#focusItem();
 					}
 
 					// Initial sync.
 					if (
-						(!this.#previousOpen || !this.#previousMounted) &&
+						(!this.#previousOpen || !this.#mounted) &&
 						this.#focusItemOnOpen &&
 						(this.#key != null ||
 							(this.#focusItemOnOpen === true && this.#key == null))
@@ -397,7 +395,7 @@ class ListNavigationState {
 					this.context.floating ||
 					!this.#tree ||
 					this.#virtual ||
-					!this.#previousMounted
+					!this.#mounted
 				) {
 					return;
 				}
@@ -446,15 +444,11 @@ class ListNavigationState {
 		);
 
 		$effect.pre(() => {
-			this.#previousMounted = !!this.context.floating;
+			this.#mounted = !!this.context.floating;
 		});
 
 		$effect.pre(() => {
 			this.#previousOpen = this.context.open;
-		});
-
-		$effect.pre(() => {
-			this.#previousOnNavigate = this.#onNavigate;
 		});
 
 		$effect.pre(() => {
@@ -472,7 +466,6 @@ class ListNavigationState {
 	}
 
 	#onNavigate = () => {
-		console.log("calling on navigate");
 		this.opts.onNavigate?.(this.#index === -1 ? null : this.#index);
 	};
 
@@ -811,6 +804,7 @@ class ListNavigationState {
 
 	#referenceOnKeyDown = (event: KeyboardEvent) => {
 		this.#isPointerModality = false;
+		const isOpen = this.context.open;
 
 		const isArrowKey = event.key.startsWith("Arrow");
 		const isHomeOrEndKey = ["Home", "End"].includes(event.key);
@@ -831,7 +825,7 @@ class ListNavigationState {
 			event.key === "Enter" ||
 			event.key.trim() === "";
 
-		if (this.#virtual && this.context.open) {
+		if (this.#virtual && isOpen) {
 			const rootNode = this.#tree?.nodes.find((node) => node.parentId == null);
 			const deepestNode =
 				this.#tree && rootNode
@@ -879,9 +873,7 @@ class ListNavigationState {
 
 		// If a floating element should not open on arrow key down, avoid
 		// setting `activeIndex` while it's closed.
-		if (!this.context.open && !this.#openOnArrowKeyDown && isArrowKey) {
-			return;
-		}
+		if (!isOpen && !this.#openOnArrowKeyDown && isArrowKey) return;
 
 		if (isNavigationKey) {
 			this.#key = this.#nested && isMainKey ? null : event.key;
@@ -891,7 +883,7 @@ class ListNavigationState {
 			if (isCrossOpenKey) {
 				stopEvent(event);
 
-				if (this.context.open) {
+				if (isOpen) {
 					this.#index = getMinIndex(this.#listRef, this.#disabledIndices);
 					this.#onNavigate();
 				} else {
@@ -909,13 +901,13 @@ class ListNavigationState {
 
 			stopEvent(event);
 
-			if (!this.context.open && this.#openOnArrowKeyDown) {
+			if (!isOpen && this.#openOnArrowKeyDown) {
 				this.context.onOpenChange(true, event, "list-navigation");
 			} else {
 				this.#commonOnKeyDown(event);
 			}
 
-			if (this.context.open) {
+			if (isOpen) {
 				this.#onNavigate();
 			}
 		}

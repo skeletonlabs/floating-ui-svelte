@@ -273,8 +273,7 @@ describe("allowEscape + virtual", () => {
 		);
 	});
 
-	// TODO: Fix this test.
-	it.skip("true - calls `onNavigate` with `null` when escaped", async () => {
+	it("true - calls `onNavigate` with `null` when escaped", async () => {
 		const spy = vi.fn();
 		render(Main, {
 			allowEscape: true,
