@@ -472,6 +472,7 @@ class ListNavigationState {
 	}
 
 	#onNavigate = () => {
+		console.log("calling on navigate");
 		this.opts.onNavigate?.(this.#index === -1 ? null : this.#index);
 	};
 
