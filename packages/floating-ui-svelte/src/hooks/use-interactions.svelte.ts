@@ -11,10 +11,10 @@ interface ExtendedUserProps {
 
 interface ElementProps {
 	reference?: HTMLAttributes<Element>;
-	floating?: HTMLAttributes<Element>;
+	floating?: HTMLAttributes<HTMLElement>;
 	item?:
-		| HTMLAttributes<Element>
-		| ((props: ExtendedUserProps) => HTMLAttributes<Element>);
+		| HTMLAttributes<HTMLElement>
+		| ((props: ExtendedUserProps) => HTMLAttributes<HTMLElement>);
 }
 
 interface UseInteractionsReturn {

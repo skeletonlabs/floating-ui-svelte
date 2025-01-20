@@ -182,7 +182,7 @@ type FloatingContextOptions<RT extends ReferenceType = ReferenceType> = {
 interface FloatingContextData<RT extends ReferenceType = ReferenceType> {
 	reference: ReferenceType | null;
 	floating: HTMLElement | null;
-	domReference: NarrowedElement<RT> | null;
+	domReference: HTMLElement | null;
 	x: number;
 	y: number;
 	placement: Placement;
@@ -338,7 +338,7 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 	};
 
 	get domReference() {
-		return this.#derivedDomReference;
+		return this.#derivedDomReference as HTMLElement | null;
 	}
 
 	get reference() {
