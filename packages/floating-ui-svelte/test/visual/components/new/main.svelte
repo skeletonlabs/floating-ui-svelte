@@ -1,56 +1,91 @@
 <script lang="ts">
 	import {
-		useClick,
+		useDismiss,
 		useFloating,
 		useInteractions,
 		useListNavigation,
 	} from "../../../../src/index.js";
-	import FloatingFocusManager from "../../../../src/components/floating-focus-manager/floating-focus-manager.svelte";
-	import FloatingList from "../../../../src/components/floating-list/floating-list.svelte";
-	import SelectOption from "../../../unit/hooks/wrapper-components/use-list-navigation/select-option.svelte";
+	import { styleObjectToString } from "../../../../src/internal/style-object-to-string.js";
 
-	let activeIndex = $state<number | null>(null);
-	let selectedIndex = $state<number | null>(2);
 	let open = $state(false);
+	let inputValue = $state("");
+	let activeIndex = $state<number | null>(null);
+
+	let listRef = $state<Array<HTMLElement | null>>([]);
+
+	const data = ["a", "ab", "abc", "abcd"];
 
 	const f = useFloating({
 		open: () => open,
 		onOpenChange: (v) => (open = v),
 	});
 
-	let elements = $state<Array<HTMLElement | null>>([]);
+	const ints = useInteractions([
+		useDismiss(f.context),
+		useListNavigation(f.context, {
+			listRef: () => listRef,
+			activeIndex: () => activeIndex,
+			onNavigate: (index) => {
+				activeIndex = index;
+			},
+			virtual: true,
+			loop: true,
+		}),
+	]);
 
-	const click = useClick(f.context);
-	const listNav = useListNavigation(f.context, {
-		listRef: () => elements,
-		activeIndex: () => activeIndex,
-		selectedIndex: () => selectedIndex,
-		onNavigate: (idx) => (activeIndex = idx),
+	$effect(() => {
+		if (inputValue) {
+			activeIndex = null;
+			open = true;
+		} else {
+			open = false;
+		}
 	});
 
-	const ints = useInteractions([listNav, click]);
-	const options = [
-		"core",
-		"dom",
-		"react",
-		"react-dom",
-		"vue",
-		"react-native",
-	];
+	const items = $derived(
+		data.filter((item) =>
+			item.toLowerCase().startsWith(inputValue.toLowerCase())
+		)
+	);
 </script>
 
-<button bind:this={f.reference} {...ints.getReferenceProps()}> Open </button>
+<input
+	bind:this={f.reference}
+	{...ints.getReferenceProps({
+		placeholder: "Enter fruit",
+		"aria-autocomplete": "list",
+	})}
+	bind:value={inputValue}
+	data-testid="reference" />
 {#if open}
-	<FloatingFocusManager context={f.context} modal={false}>
-		<div
-			bind:this={f.floating}
-			style={f.floatingStyles}
-			{...ints.getFloatingProps()}>
-			<FloatingList bind:elements>
-				{#each options as option (option)}
-					<SelectOption {option} {activeIndex} {selectedIndex} />
-				{/each}
-			</FloatingList>
-		</div>
-	</FloatingFocusManager>
+	<div
+		bind:this={f.floating}
+		{...ints.getFloatingProps({
+			style: styleObjectToString({
+				position: f.strategy,
+				left: f.x ? `${f.x}` : "",
+				top: f.y ? `${f.y}` : "",
+				background: "#eee",
+				color: "black",
+				"overflow-y": "auto",
+			}),
+		})}
+		data-testid="floating">
+		<ul>
+			{#each items as item, index (item)}
+				<li
+					bind:this={listRef[index]}
+					{...ints.getItemProps({
+						onclick: () => {
+							inputValue = item;
+							open = false;
+							f.domReference?.focus();
+						},
+					})}>
+					{item}
+				</li>
+			{/each}
+		</ul>
+	</div>
 {/if}
+<div data-testid="active-index">{activeIndex}</div>

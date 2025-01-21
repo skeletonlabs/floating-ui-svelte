@@ -16,13 +16,16 @@ function extract<T, D extends T | undefined = undefined>(
 ): D extends undefined ? T : Exclude<T, undefined> {
 	if (isFunction(value)) {
 		const getter = value as Getter<T>;
-		const result = getter();
+
+		const res =
+			getter() !== undefined
+				? getter()
+				: defaultValue !== undefined
+					? defaultValue
+					: getter();
+
 		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-		if (result !== undefined) return result as any;
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-		if (defaultValue !== undefined) return defaultValue as any;
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-		return result as any;
+		return res as any;
 	}
 
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>

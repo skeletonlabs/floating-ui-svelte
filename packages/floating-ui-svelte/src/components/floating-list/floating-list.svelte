@@ -51,23 +51,25 @@
 
 	function register(node: Node) {
 		map.set(node, null);
+		const nodes = Array.from(map.keys()).sort(sortByDocumentPosition);
+		nodes.forEach((node, index) => {
+			map.set(node, index);
+		});
 	}
 
 	function unregister(node: Node) {
 		map.delete(node);
-	}
-
-	$effect.pre(() => {
 		const nodes = Array.from(map.keys()).sort(sortByDocumentPosition);
-
 		nodes.forEach((node, index) => {
 			map.set(node, index);
 		});
-	});
+	}
 
 	FloatingListContext.set({
 		elements,
-		labels,
+		get labels() {
+			return labels;
+		},
 		map,
 		register,
 		unregister,

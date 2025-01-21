@@ -75,7 +75,9 @@ it("resets index to -1 upon close", async () => {
 	await userEvent.keyboard("a");
 
 	expect(screen.getByTestId("floating")).toBeInTheDocument();
-	expect(screen.getByTestId("active-index").textContent).toBe("");
+	await waitFor(() =>
+		expect(screen.getByTestId("active-index").textContent).toBe(""),
+	);
 
 	await userEvent.keyboard(testKbd.ARROW_DOWN);
 	await userEvent.keyboard(testKbd.ARROW_DOWN);
@@ -1033,10 +1035,10 @@ it("handles scheduled list population", async () => {
 	await waitFor(() => expect(screen.getAllByRole("option")[0]).toHaveFocus());
 });
 
-it.only("async selectedIndex", async () => {
+it("async selectedIndex", async () => {
 	render(Select);
 
-	await fireEvent.click(screen.getByRole("button"));
+	await userEvent.click(screen.getByRole("button"));
 	await act(async () => {});
 
 	await waitFor(() => expect(screen.getAllByRole("option")[2]).toHaveFocus());

@@ -13,7 +13,7 @@
 		index: number;
 	} = $props();
 
-	let index = $state(-1);
+	let index = $state(propIndex);
 
 	$effect(() => {
 		index = propIndex;
@@ -29,8 +29,6 @@
 			}
 		}
 	);
-
-	$effect(() => {});
 </script>
 
 <div

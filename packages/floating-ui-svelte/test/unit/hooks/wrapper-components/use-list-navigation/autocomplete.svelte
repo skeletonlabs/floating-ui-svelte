@@ -25,10 +25,10 @@
 		useListNavigation(f.context, {
 			listRef: () => listRef,
 			activeIndex: () => activeIndex,
-			onNavigate(index) {
+			onNavigate: (index) => {
 				activeIndex = index;
 			},
-			virtual: true,
+			virtual: () => true,
 			loop: true,
 		}),
 	]);
