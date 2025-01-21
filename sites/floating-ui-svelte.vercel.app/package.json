@@ -4,7 +4,7 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"build": "vite build && pagefind",
+		"build": "vite build && pagefind --site .vercel/output/static",
 		"build:watch": "vite dev",
 		"sync": "svelte-kit sync"
 	},
@@ -23,6 +23,6 @@
 		"tailwindcss": "^3.4.17",
 		"typescript": "^5.7.2",
 		"vite": "^6.0.6",
-		"vite-plugin-pagefind": "^0.3.0"
+		"vite-plugin-pagefind": "^1.0.1"
 	}
 }
