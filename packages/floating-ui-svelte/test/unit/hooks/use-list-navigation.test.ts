@@ -14,6 +14,7 @@ import Grid from "../../visual/components/grid/main.svelte";
 import ComplexGrid from "../../visual/components/complex-grid/main.svelte";
 import Scheduled from "./wrapper-components/use-list-navigation/scheduled.svelte";
 import Select from "./wrapper-components/use-list-navigation/select.svelte";
+import EmojiPicker from "../../visual/components/emoji-picker/main.svelte";
 
 it("opens on ArrowDown and focuses first item", async () => {
 	render(Main);
@@ -1046,7 +1047,29 @@ it("async selectedIndex", async () => {
 	await waitFor(() => expect(screen.getAllByRole("option")[3]).toHaveFocus());
 });
 
-it.todo("grid navigation with changing list items");
+it("grid navigation with changing list items", async () => {
+	render(EmojiPicker);
+
+	await fireEvent.click(screen.getByRole("button"));
+
+	await act(async () => {});
+
+	await waitFor(() => expect(screen.getByRole("textbox")).toHaveFocus());
+
+	await userEvent.keyboard("appl");
+	await sleep(200);
+	await userEvent.keyboard(testKbd.ARROW_DOWN);
+
+	await waitFor(() =>
+		expect(screen.getByLabelText("apple")).toHaveAttribute("data-active"),
+	);
+
+	await userEvent.keyboard(testKbd.ARROW_DOWN);
+
+	await waitFor(() =>
+		expect(screen.getByLabelText("apple")).toHaveAttribute("data-active"),
+	);
+});
 
 it.todo("grid navigation with disabled list items");
 

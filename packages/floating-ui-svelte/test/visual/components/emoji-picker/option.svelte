@@ -9,13 +9,15 @@
 		children,
 		active,
 		selected,
-		ref = $bindable(null),
+		ref = $bindable(),
+		index,
 		...rest
 	}: HTMLButtonAttributes & {
 		name: string;
 		active: boolean;
 		selected: boolean;
-	} & Partial<WithRef<HTMLButtonElement>> = $props();
+		index: number;
+	} & Partial<WithRef<HTMLElement>> = $props();
 </script>
 
 <button
@@ -35,6 +37,7 @@
 	disabled={name === "orange"}
 	aria-label={name}
 	tabindex={-1}
+	data-index={index}
 	data-active={active ? "" : undefined}>
 	{@render children?.()}
 </button>

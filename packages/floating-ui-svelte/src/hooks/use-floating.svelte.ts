@@ -342,10 +342,10 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 	}
 
 	get reference() {
-		return this.#position.referenceEl as RT | null;
+		return this.#position.referenceEl as Element | null;
 	}
 
-	set reference(node: RT | null) {
+	set reference(node: Element | null) {
 		if (isElement(node) || node === null) {
 			this.options.reference.current = node;
 		}

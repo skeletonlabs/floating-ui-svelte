@@ -216,6 +216,10 @@ function useListNavigation(
 		isTypeableCombobox(context.domReference),
 	);
 
+	$effect(() => {
+		console.log("listref changed", $state.snapshot(listRef));
+	});
+
 	const hasActiveIndex = $derived(activeIndex != null);
 
 	const ariaActiveDescendantProp = $derived.by(() => {
@@ -297,7 +301,7 @@ function useListNavigation(
 			() => activeIndex,
 			() => selectedIndex,
 			() => nested,
-			() => listRef,
+			() => $state.snapshot(listRef),
 			() => orientation,
 			() => rtl,
 			() => disabledIndices,
@@ -550,8 +554,9 @@ function useListNavigation(
 		}
 
 		const currentIndex = index;
-		const minIndex = getMinIndex(listRef, disabledIndices);
-		const maxIndex = getMaxIndex(listRef, disabledIndices);
+		const filteredListRef = listRef.filter((item) => item !== null);
+		const minIndex = getMinIndex(filteredListRef, disabledIndices);
+		const maxIndex = getMaxIndex(filteredListRef, disabledIndices);
 
 		if (!typeableComboboxReference) {
 			if (event.key === "Home") {
@@ -571,7 +576,7 @@ function useListNavigation(
 		if (cols > 1) {
 			const sizes =
 				itemSizes ||
-				Array.from({ length: listRef.length }, () => ({
+				Array.from({ length: filteredListRef.length }, () => ({
 					width: 1,
 					height: 1,
 				}));
@@ -580,12 +585,12 @@ function useListNavigation(
 			const cellMap = buildCellMap(sizes, cols, dense);
 			const minGridIndex = cellMap.findIndex(
 				(index) =>
-					index != null && !isDisabled(listRef, index, disabledIndices),
+					index != null && !isDisabled(filteredListRef, index, disabledIndices),
 			);
 			// last enabled index
 			const maxGridIndex = cellMap.reduce(
 				(foundIndex: number, index, cellIndex) =>
-					index != null && !isDisabled(listRef, index, disabledIndices)
+					index != null && !isDisabled(filteredListRef, index, disabledIndices)
 						? cellIndex
 						: foundIndex,
 				-1,
@@ -595,11 +600,11 @@ function useListNavigation(
 				cellMap[
 					getGridNavigatedIndex(
 						cellMap.map((itemIndex) =>
-							itemIndex != null ? listRef[itemIndex] : null,
+							itemIndex != null ? filteredListRef[itemIndex] : null,
 						),
 						{
 							event,
-							orientation: orientation,
+							orientation,
 							loop,
 							rtl,
 							cols,
@@ -608,8 +613,8 @@ function useListNavigation(
 							disabledIndices: getCellIndices(
 								[
 									...(disabledIndices ||
-										listRef.map((_, index) =>
-											isDisabled(listRef, index) ? index : undefined,
+										filteredListRef.map((_, index) =>
+											isDisabled(filteredListRef, index) ? index : undefined,
 										)),
 									undefined,
 								],
@@ -637,13 +642,12 @@ function useListNavigation(
 				];
 
 			if (localIndex != null) {
+				console.log("localIndex", localIndex);
 				index = localIndex;
 				onNavigate();
 			}
 
-			if (orientation === "both") {
-				return;
-			}
+			if (orientation === "both") return;
 		}
 
 		if (isMainOrientationKey(event.key, orientation)) {
@@ -667,17 +671,17 @@ function useListNavigation(
 				if (loop) {
 					index =
 						currentIndex >= maxIndex
-							? allowEscape && currentIndex !== listRef.length
+							? allowEscape && currentIndex !== filteredListRef.length
 								? -1
 								: minIndex
-							: findNonDisabledIndex(listRef, {
+							: findNonDisabledIndex(filteredListRef, {
 									startingIndex: currentIndex,
 									disabledIndices: disabledIndices,
 								});
 				} else {
 					index = Math.min(
 						maxIndex,
-						findNonDisabledIndex(listRef, {
+						findNonDisabledIndex(filteredListRef, {
 							startingIndex: currentIndex,
 							disabledIndices: disabledIndices,
 						}),
@@ -688,9 +692,9 @@ function useListNavigation(
 					index =
 						currentIndex <= minIndex
 							? allowEscape && currentIndex !== -1
-								? listRef.length
+								? filteredListRef.length
 								: maxIndex
-							: findNonDisabledIndex(listRef, {
+							: findNonDisabledIndex(filteredListRef, {
 									startingIndex: currentIndex,
 									decrement: true,
 									disabledIndices: disabledIndices,
@@ -698,7 +702,7 @@ function useListNavigation(
 				} else {
 					index = Math.max(
 						minIndex,
-						findNonDisabledIndex(listRef, {
+						findNonDisabledIndex(filteredListRef, {
 							startingIndex: currentIndex,
 							decrement: true,
 							disabledIndices: disabledIndices,
@@ -707,7 +711,7 @@ function useListNavigation(
 				}
 			}
 
-			if (isIndexOutOfBounds(listRef, index)) {
+			if (isIndexOutOfBounds(filteredListRef, index)) {
 				index = -1;
 			}
 
