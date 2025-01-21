@@ -1,8 +1,8 @@
 <script lang="ts">
-import CodeBlock from "$lib/components/CodeBlock/CodeBlock.svelte";
-import Table from "$lib/components/Table/Table.svelte";
-import ExampleRaw from "./Example.svelte?raw";
-import { tableOptions } from "./data.js";
+	import CodeBlock from "$lib/components/CodeBlock/CodeBlock.svelte";
+	import Table from "$lib/components/Table/Table.svelte";
+	import ExampleRaw from "./Example.svelte?raw";
+	import { tableOptions } from "./data.js";
 </script>
 
 <div class="space-y-10">
@@ -10,10 +10,13 @@ import { tableOptions } from "./data.js";
 	<header class="card card-gradient space-y-8">
 		<h1 class="h1"><span>useFocus</span></h1>
 		<p>
-			Opens the floating element while the reference element has focus, like CSS
+			Opens the floating element while the reference element has focus,
+			like CSS
 			<code class="code">:focus</code>.
 		</p>
-		<CodeBlock lang="ts" code={`import { useFocus } from '@skeletonlabs/floating-ui-svelte';`} />
+		<CodeBlock
+			lang="ts"
+			code={`import { useFocus } from '@skeletonlabs/floating-ui-svelte';`} />
 		<!-- TODO: add when FloatingFocusManager is ready -->
 		<!-- <p>To manage focus within the floating element itself, use <a class="anchor" href="/api/floating-focus-manager">FloatingFocusManager</a>.</p> -->
 	</header>
@@ -21,10 +24,11 @@ import { tableOptions } from "./data.js";
 	<section class="space-y-8">
 		<h2 class="h2">Usage</h2>
 		<p>
-			This Hook returns event handler props. To use it, pass it the context object returned from <code
-				class="code">useFloating()</code
-			>, and then feed its result into the <code class="code">useInteractions()</code> array. The returned
-			prop getters are then spread onto the elements for rendering.
+			This Hook returns event handler props. To use it, pass it the
+			context object returned from <code class="code">useFloating()</code
+			>, and then feed its result into the
+			<code class="code">useInteractions()</code> array. The returned prop
+			getters are then spread onto the elements for rendering.
 		</p>
 		<CodeBlock code={ExampleRaw} lang="svelte" mark={[2, 5, 6]} />
 	</section>

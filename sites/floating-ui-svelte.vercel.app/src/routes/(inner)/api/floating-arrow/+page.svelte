@@ -1,7 +1,7 @@
 <script lang="ts">
-import CodeBlock from "$lib/components/CodeBlock/CodeBlock.svelte";
-import Table from "$lib/components/Table/Table.svelte";
-import { tableProps } from "./data.js";
+	import CodeBlock from "$lib/components/CodeBlock/CodeBlock.svelte";
+	import Table from "$lib/components/Table/Table.svelte";
+	import { tableProps } from "./data.js";
 </script>
 
 <div class="space-y-10">
@@ -9,13 +9,12 @@ import { tableProps } from "./data.js";
 	<header class="card card-gradient space-y-8">
 		<h1 class="h1"><span>FloatingArrow</span></h1>
 		<p>
-			Renders a customizable <code class="code">{'<svg>'}</code> pointing arrow triangle inside the floating
-			element that gets automatically positioned.
+			Renders a customizable <code class="code">{"<svg>"}</code> pointing arrow
+			triangle inside the floating element that gets automatically positioned.
 		</p>
 		<CodeBlock
 			lang="ts"
-			code={`import { FloatingArrow } from '@skeletonlabs/floating-ui-svelte';`}
-		/>
+			code={`import { FloatingArrow } from '@skeletonlabs/floating-ui-svelte';`} />
 	</header>
 	<!-- Usage -->
 	<section class="space-y-8">
@@ -35,8 +34,7 @@ const floating = useFloating({
 		];
 	}
 });
-`}
-		/>
+`} />
 		<CodeBlock
 			lang="svelte"
 			code={`
@@ -57,8 +55,7 @@ const floating = useFloating({
 		context="{floating.context}"
 	/>
 </div>
-		`}
-		/>
+		`} />
 	</section>
 	<!-- Table: Props -->
 	<section class="space-y-8">
@@ -69,7 +66,9 @@ const floating = useFloating({
 	<section class="space-y-8">
 		<h2 class="h2">Utility Classes and Styles</h2>
 		<p>Provide arbitrary utility classes using the standard attribute.</p>
-		<CodeBlock lang="svelte" code={`<FloatingArrow class="fill-white" />`} />
+		<CodeBlock
+			lang="svelte"
+			code={`<FloatingArrow class="fill-white" />`} />
 	</section>
 	<!-- Compare -->
 	<section class="space-y-8">

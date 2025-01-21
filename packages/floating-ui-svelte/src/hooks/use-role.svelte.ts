@@ -1,3 +1,6 @@
+import { useFloatingParentNodeId } from "../components/floating-tree/hooks.svelte.js";
+import { extract } from "../internal/extract.js";
+import type { MaybeGetter } from "../types.js";
 import type { FloatingContext } from "./use-floating.svelte.js";
 import { useId } from "./use-id.js";
 import type {
@@ -22,12 +25,12 @@ interface UseRoleOptions {
 	 * handlers.
 	 * @default true
 	 */
-	enabled?: boolean;
+	enabled?: MaybeGetter<boolean>;
 	/**
 	 * The role of the floating element.
 	 * @default 'dialog'
 	 */
-	role?: AriaRole | ComponentRole;
+	role?: MaybeGetter<AriaRole | ComponentRole>;
 }
 
 const componentRoleToAriaRoleMap = new Map<
@@ -39,100 +42,115 @@ const componentRoleToAriaRoleMap = new Map<
 	["label", false],
 ]);
 
-function useRole(
-	context: FloatingContext,
-	options: UseRoleOptions = {},
-): ElementProps {
-	const { open, floatingId } = $derived(context);
-
-	const { enabled = true, role = "dialog" } = $derived(options);
-
-	const ariaRole = $derived(
-		(componentRoleToAriaRoleMap.get(role) ?? role) as
+class RoleInteraction implements ElementProps {
+	#enabled = $derived.by(() => extract(this.options.enabled, true));
+	#role = $derived.by(() => extract(this.options.role, "dialog"));
+	#ariaRole = $derived(
+		(componentRoleToAriaRoleMap.get(this.#role) ?? this.#role) as
 			| AriaRole
 			| false
 			| undefined,
 	);
+	#parentId: string | null = null;
+	#isNested: boolean;
+	#referenceId = useId();
 
-	// FIXME: Uncomment the commented code once useId and useFloatingParentNodeId are implemented.
-	const referenceId = useId();
-	const parentId = undefined;
-	// const parentId = useFloatingParentNodeId();
+	constructor(
+		private readonly context: FloatingContext,
+		private readonly options: UseRoleOptions = {},
+	) {
+		this.#parentId = useFloatingParentNodeId();
+		this.#isNested = this.#parentId != null;
+	}
 
-	const isNested = parentId != null;
+	#reference: ElementProps["reference"] = $derived.by(() => {
+		if (!this.#enabled) return {};
+		if (this.#ariaRole === "tooltip" || this.#role === "label") {
+			return {
+				[`aria-${this.#role === "label" ? "labelledby" : "describedby"}`]: this
+					.context.open
+					? this.context.floatingId
+					: undefined,
+			};
+		}
 
-	const floatingProps = $derived({
-		id: floatingId,
-		...(ariaRole && { role: ariaRole }),
+		return {
+			"aria-expanded": this.context.open ? "true" : "false",
+			"aria-haspopup":
+				this.#ariaRole === "alertdialog" ? "dialog" : this.#ariaRole,
+			"aria-controls": this.context.open ? this.context.floatingId : undefined,
+			...(this.#ariaRole === "listbox" && { role: "combobox " }),
+			...(this.#ariaRole === "menu" && { id: this.#referenceId }),
+			...(this.#ariaRole === "menu" && this.#isNested && { role: "menuitem" }),
+			...(this.#role === "select" && { "aria-autocomplete": "none" }),
+			...(this.#role === "combobox" && { "aria-autocomplete": "list" }),
+		};
 	});
 
-	return {
-		// @ts-expect-error - variable prop is not specific enough
-		get reference() {
-			if (!enabled) {
-				return {};
-			}
-			if (ariaRole === "tooltip" || role === "label") {
-				return {
-					[`aria-${role === "label" ? "labelledby" : "describedby"}` as const]:
-						open ? floatingId : undefined,
-				};
-			}
-			return {
-				"aria-expanded": open ? "true" : "false",
-				"aria-haspopup": ariaRole === "alertdialog" ? "dialog" : ariaRole,
-				"aria-controls": open ? floatingId : undefined,
-				...(ariaRole === "listbox" && { role: "combobox" }),
-				...(ariaRole === "menu" && { id: referenceId }),
-				...(ariaRole === "menu" && isNested && { role: "menuitem" }),
-				...(role === "select" && { "aria-autocomplete": "none" }),
-				...(role === "combobox" && { "aria-autocomplete": "list" }),
-			};
-		},
-		get floating() {
-			if (!enabled) {
-				return {};
-			}
-			if (ariaRole === "tooltip" || role === "label") {
-				return floatingProps;
-			}
-			return {
-				...floatingProps,
-				...(ariaRole === "menu" && { "aria-labelledby": referenceId }),
-			};
-		},
-		get item() {
-			if (!enabled) {
-				return {};
-			}
-			return ({ active, selected }: ExtendedUserProps) => {
-				const commonProps = {
-					role: "option",
-					...(active && { id: `${context.floatingId}-option` }),
-				};
+	#floating: ElementProps["floating"] = $derived.by(() => {
+		if (!this.#enabled) return {};
+		const floatingProps = {
+			id: this.context.floatingId,
+			...(this.#ariaRole && { role: this.#ariaRole }),
+		};
 
-				// For `menu`, we are unable to tell if the item is a `menuitemradio`
-				// or `menuitemcheckbox`. For backwards-compatibility reasons, also
-				// avoid defaulting to `menuitem` as it may overwrite custom role props.
-				switch (role) {
-					case "select":
-						return {
-							...commonProps,
-							"aria-selected": active && selected,
-						};
-					case "combobox": {
-						return {
-							...commonProps,
-							...(active && { "aria-selected": true }),
-						};
-					}
+		if (this.#ariaRole === "tooltip" || this.#role === "label") {
+			return floatingProps;
+		}
+
+		return {
+			...floatingProps,
+			...(this.#ariaRole === "menu" && {
+				"aria-labelledby": this.#referenceId,
+			}),
+		};
+	});
+
+	#item: ElementProps["item"] = $derived.by(() => {
+		return ({ active, selected }: ExtendedUserProps) => {
+			if (!this.#enabled) return {};
+			const commonProps = {
+				role: "option",
+				...(active && { id: `${this.context.floatingId}-option` }),
+			};
+
+			switch (this.#role) {
+				case "select":
+					return {
+						...commonProps,
+						"aria-selected": active && selected,
+					};
+				case "combobox": {
+					return {
+						...commonProps,
+						...(active && { "aria-selected": true }),
+					};
 				}
+			}
 
-				return {};
-			};
-		},
-	};
+			return {};
+		};
+	});
+
+	get reference() {
+		return this.#reference;
+	}
+
+	get floating() {
+		return this.#floating;
+	}
+
+	get item() {
+		return this.#item;
+	}
+}
+
+function useRole(
+	context: FloatingContext,
+	options: UseRoleOptions = {},
+): ElementProps {
+	return new RoleInteraction(context, options);
 }
 
 export type { UseRoleOptions };
-export { useRole };
+export { useRole, RoleInteraction };

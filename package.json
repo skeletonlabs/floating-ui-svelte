@@ -2,14 +2,14 @@
 	"name": "monorepo",
 	"private": true,
 	"scripts": {
+		"dev": "pnpm -F \"./packages/**\" sync && pnpm -r --parallel --reporter append-only --color dev",
 		"format": "biome check . --write",
 		"format:check": "biome check .",
 		"build": "pnpm --recursive build",
 		"build:watch": "pnpm --recursive --parallel build:watch",
-		"test": "pnpm --recursive test",
-		"test:watch": "pnpm --recursive test:watch",
-		"sync": "pnpm --recursive sync",
-		"postinstall": "pnpm sync"
+		"test": "pnpm --recursive --reporter append-only --color test",
+		"test:watch": "pnpm --recursive --reporter append-only --color test:watch",
+		"sync": "pnpm --recursive sync"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",

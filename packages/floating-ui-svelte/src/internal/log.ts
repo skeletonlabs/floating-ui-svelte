@@ -1,0 +1,24 @@
+import { DEV } from "esm-env";
+
+let devMessageSet: Set<string> | undefined;
+if (DEV) {
+	devMessageSet = new Set();
+}
+
+function warn(...messages: string[]) {
+	const message = `Floating UI Svelte: ${messages.join(" ")}`;
+	if (!devMessageSet?.has(message)) {
+		devMessageSet?.add(message);
+		console.warn(message);
+	}
+}
+
+function error(...messages: string[]) {
+	const message = `Floating UI Svelte: ${messages.join(" ")}`;
+	if (!devMessageSet?.has(message)) {
+		devMessageSet?.add(message);
+		console.error(message);
+	}
+}
+
+export { warn, error };

@@ -1,4 +1,5 @@
 import type { HTMLAttributes } from "svelte/elements";
+import { FOCUSABLE_ATTRIBUTE } from "../internal/get-floating-focus-element.js";
 
 const ACTIVE_KEY = "active";
 const SELECTED_KEY = "selected";
@@ -10,21 +11,21 @@ interface ExtendedUserProps {
 
 interface ElementProps {
 	reference?: HTMLAttributes<Element>;
-	floating?: HTMLAttributes<Element>;
+	floating?: HTMLAttributes<HTMLElement>;
 	item?:
-		| HTMLAttributes<Element>
-		| ((props: ExtendedUserProps) => HTMLAttributes<Element>);
+		| HTMLAttributes<HTMLElement>
+		| ((props: ExtendedUserProps) => HTMLAttributes<HTMLElement>);
 }
 
 interface UseInteractionsReturn {
 	getReferenceProps: (
-		userProps?: HTMLAttributes<Element>,
+		userProps?: Record<string, unknown>,
 	) => Record<string, unknown>;
 	getFloatingProps: (
-		userProps?: HTMLAttributes<Element>,
+		userProps?: Record<string, unknown>,
 	) => Record<string, unknown>;
 	getItemProps: (
-		userProps?: Omit<HTMLAttributes<Element>, "selected" | "active"> &
+		userProps?: Omit<Record<string, unknown>, "selected" | "active"> &
 			ExtendedUserProps,
 	) => Record<string, unknown>;
 }
@@ -44,7 +45,10 @@ function mergeProps<Key extends keyof ElementProps>(
 	}
 
 	return {
-		...(elementKey === "floating" && { tabIndex: -1 }),
+		...(elementKey === "floating" && {
+			tabindex: -1,
+			[FOCUSABLE_ATTRIBUTE]: "",
+		}),
 		...domUserProps,
 		...propsList
 			.map((value) => {
@@ -87,28 +91,32 @@ function mergeProps<Key extends keyof ElementProps>(
 	};
 }
 
-function useInteractions(
-	propsList: Array<ElementProps> = [],
-): UseInteractionsReturn {
-	const getReferenceProps = $derived((userProps?: HTMLAttributes<Element>) => {
-		return mergeProps(userProps, propsList, "reference");
+class Interactions {
+	constructor(private readonly propsList: Array<ElementProps> = []) {}
+
+	getReferenceProps = $derived((userProps?: HTMLAttributes<Element>) => {
+		return mergeProps(userProps, this.propsList, "reference");
 	});
 
-	const getFloatingProps = $derived((userProps?: HTMLAttributes<Element>) => {
-		return mergeProps(userProps, propsList, "floating");
+	getFloatingProps = $derived((userProps?: HTMLAttributes<Element>) => {
+		return mergeProps(userProps, this.propsList, "floating");
 	});
 
-	const getItemProps = $derived(
+	getItemProps = $derived(
 		(
 			userProps?: Omit<HTMLAttributes<Element>, "selected" | "active"> &
 				ExtendedUserProps,
 		) => {
-			return mergeProps(userProps, propsList, "item");
+			return mergeProps(userProps, this.propsList, "item");
 		},
 	);
+}
 
-	return { getReferenceProps, getFloatingProps, getItemProps };
+function useInteractions(
+	propsList: Array<ElementProps> = [],
+): UseInteractionsReturn {
+	return new Interactions(propsList);
 }
 
 export type { UseInteractionsReturn, ElementProps, ExtendedUserProps };
-export { useInteractions };
+export { useInteractions, Interactions };

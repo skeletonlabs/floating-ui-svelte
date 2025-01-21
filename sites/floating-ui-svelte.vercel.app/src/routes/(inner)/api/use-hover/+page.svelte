@@ -1,7 +1,7 @@
 <script lang="ts">
-import CodeBlock from "$lib/components/CodeBlock/CodeBlock.svelte";
-import Table from "$lib/components/Table/Table.svelte";
-import { tableOptions } from "./data.js";
+	import CodeBlock from "$lib/components/CodeBlock/CodeBlock.svelte";
+	import Table from "$lib/components/Table/Table.svelte";
+	import { tableOptions } from "./data.js";
 </script>
 
 <div class="space-y-10">
@@ -9,10 +9,13 @@ import { tableOptions } from "./data.js";
 	<header class="card card-gradient space-y-8">
 		<h1 class="h1"><span>useHover</span></h1>
 		<p>
-			Opens the floating element while hovering over the reference element, like CSS
+			Opens the floating element while hovering over the reference
+			element, like CSS
 			<code class="code">:hover</code>.
 		</p>
-		<CodeBlock lang="ts" code={`import { useHover } from '@skeletonlabs/floating-ui-svelte';`} />
+		<CodeBlock
+			lang="ts"
+			code={`import { useHover } from '@skeletonlabs/floating-ui-svelte';`} />
 	</header>
 	<!-- Usage -->
 	<section class="space-y-8">
@@ -25,8 +28,7 @@ import { useFloating, useInteractions, useHover } from '@skeletonlabs/floating-u
 const floating = useFloating();
 const hover = useHover(floating.context);
 const interactions = useInteractions([hover]);
-`}
-		/>
+`} />
 		<CodeBlock
 			lang="svelte"
 			code={`
@@ -46,8 +48,7 @@ const interactions = useInteractions([hover]);
 >
 	Tooltip
 </div>
-		`}
-		/>
+		`} />
 	</section>
 	<!-- Table: Options -->
 	<section class="space-y-8">

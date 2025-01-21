@@ -1,401 +1,406 @@
+import { useFloatingTree } from "../components/floating-tree/hooks.svelte.js";
+import type {
+	ContextData,
+	FloatingEvents,
+	FloatingTreeType,
+	MaybeGetter,
+	NarrowedElement,
+	OnOpenChange,
+	OpenChangeReason,
+	ReferenceType,
+	WhileElementsMounted,
+} from "../types.js";
 import {
-	type ComputePositionConfig,
-	type FloatingElement,
-	type Middleware,
-	type MiddlewareData,
-	type Placement,
-	type ReferenceElement,
-	type Strategy,
-	computePosition,
-} from "@floating-ui/dom";
-import { createPubSub } from "../internal/create-pub-sub.js";
-import { getDPR, roundByDPR } from "../internal/dpr.js";
+	type FloatingRootContext,
+	useFloatingRootContext,
+} from "./use-floating-root-context.svelte.js";
+import { PositionState } from "./use-position.svelte.js";
+import type { Placement, Strategy } from "@floating-ui/utils";
+import type { Middleware, MiddlewareData } from "@floating-ui/dom";
+import {
+	box,
+	type ReadableBox,
+	type WritableBox,
+} from "../internal/box.svelte.js";
+import { extract } from "../internal/extract.js";
 import { noop } from "../internal/noop.js";
-import { styleObjectToString } from "../internal/style-object-to-string.js";
-import type { OpenChangeReason } from "../types.js";
-import { useId } from "./use-id.js";
+import { isElement } from "@floating-ui/utils/dom";
 
-interface FloatingElements {
-	/**
-	 * The reference element.
-	 */
-	reference?: ReferenceElement | null;
-
-	/**
-	 * The floating element.
-	 */
-	floating?: FloatingElement | null;
-}
-
-interface UseFloatingOptions {
+interface UseFloatingOptions<RT extends ReferenceType = ReferenceType> {
 	/**
 	 * Represents the open/close state of the floating element.
 	 * @default true
 	 */
-	open?: boolean;
-
-	/**
-	 * Callback that is called whenever the open state changes.
-	 */
-	onOpenChange?: (
-		open: boolean,
-		event?: Event,
-		reason?: OpenChangeReason,
-	) => void;
+	open?: MaybeGetter<boolean>;
 
 	/**
 	 * Where to place the floating element relative to its reference element.
 	 * @default 'bottom'
 	 */
-	placement?: Placement;
+	placement?: MaybeGetter<Placement | undefined>;
 
 	/**
 	 * The type of CSS position property to use.
 	 * @default 'absolute'
 	 */
-	strategy?: Strategy;
+	strategy?: MaybeGetter<Strategy>;
 
 	/**
 	 * These are plain objects that modify the positioning coordinates in some fashion, or provide useful data for the consumer to use.
 	 * @default []
 	 */
-	middleware?: Array<Middleware | undefined | null | false>;
+	middleware?: MaybeGetter<Array<Middleware | undefined | null | false>>;
 
 	/**
 	 * Whether to use `transform` instead of `top` and `left` styles to
 	 * position the floating element (`floatingStyles`).
 	 * @default true
 	 */
-	transform?: boolean;
-
-	/**
-	 * Object containing the floating and reference elements.
-	 * @default {}
-	 */
-	elements?: FloatingElements;
+	transform?: MaybeGetter<boolean>;
 
 	/**
 	 * Callback to handle mounting/unmounting of the elements.
 	 * @default undefined
 	 */
-	whileElementsMounted?: (
-		reference: ReferenceElement,
-		floating: FloatingElement,
-		update: () => void,
-	) => () => void;
+	whileElementsMounted?: WhileElementsMounted;
 
+	rootContext?: MaybeGetter<FloatingRootContext<RT>>;
+	/**
+	 * The reference element.
+	 */
+	reference?: MaybeGetter<Element | null>;
+	/**
+	 * A callback that is invoked when the reference element changes.
+	 */
+	onReferenceChange?(node: Element | null): void;
+	/**
+	 * The floating element.
+	 */
+	floating?: MaybeGetter<HTMLElement | null>;
+
+	/**
+	 * A callback that is invoked when the floating element changes.
+	 */
+	onFloatingChange?(node: HTMLElement | null): void;
+
+	/**
+	 * An event callback that is invoked when the floating element is opened or
+	 * closed.
+	 */
+	onOpenChange?(open: boolean, event?: Event, reason?: OpenChangeReason): void;
 	/**
 	 * Unique node id when using `FloatingTree`.
-	 * @default undefined
 	 */
-	nodeId?: string;
-}
-
-interface UseFloatingData {
-	/**
-	 * The x-coordinate of the floating element.
-	 */
-	x: number;
-
-	/**
-	 * The y-coordinate of the floating element.
-	 */
-	y: number;
-
-	/**
-	 * The stateful placement, which can be different from the initial `placement` passed as options.
-	 */
-	placement: Placement;
-
-	/**
-	 * The stateful strategy, which can be different from the initial `strategy` passed as options.
-	 */
-	strategy: Strategy;
-
-	/**
-	 * Additional data from middleware.
-	 */
-	middlewareData: MiddlewareData;
-
-	/**
-	 * The boolean that let you know if the floating element has been positioned.
-	 */
-	isPositioned: boolean;
-}
-
-interface FloatingEvents {
-	// biome-ignore lint/suspicious/noExplicitAny: From the port
-	emit<T extends string>(event: T, data?: any): void;
-	// biome-ignore lint/suspicious/noExplicitAny: From the port
-	on(event: string, handler: (data: any) => void): void;
-	// biome-ignore lint/suspicious/noExplicitAny: From the port
-	off(event: string, handler: (data: any) => void): void;
-}
-
-interface ContextData {
-	/**
-	 * The latest even that caused the open state to change.
-	 */
-	openEvent?: Event;
-
-	/**
-	 * Arbitrary data produced and consumed by other hooks.
-	 */
-	[key: string]: unknown;
-}
-
-interface FloatingContext extends UseFloatingData {
-	/**
-	 * Represents the open/close state of the floating element.
-	 */
-	open: boolean;
-
-	/**
-	 * Callback that is called whenever the open state changes.
-	 */
-	onOpenChange(open: boolean, event?: Event, reason?: OpenChangeReason): void;
-
-	/**
-	 * Events for other hooks to consume.
-	 */
-	events: FloatingEvents;
-
-	/**
-	 * Arbitrary data produced and consumer by other hooks.
-	 */
-	data: ContextData;
-
-	/**
-	 * The id for the reference element
-	 */
-	nodeId: string | undefined;
-
-	/**
-	 * The id for the floating element
-	 */
-	floatingId: string;
-
-	/**
-	 * Object containing the floating and reference elements.
-	 */
-	elements: FloatingElements;
-}
-
-interface UseFloatingReturn extends UseFloatingData {
-	/**
-	 * Represents the open/close state of the floating element.
-	 */
-	readonly open: boolean;
-
-	/**
-	 * CSS styles to apply to the floating element to position it.
-	 */
-	readonly floatingStyles: string;
-
-	/**
-	 * The reference and floating elements.
-	 */
-	readonly elements: FloatingElements;
-
-	/**
-	 * Updates the floating element position.
-	 */
-	readonly update: () => Promise<void>;
-
-	/**
-	 * Additional context meant for other hooks to consume.
-	 */
-	readonly context: FloatingContext;
+	nodeId?: MaybeGetter<string | undefined>;
 }
 
 /**
- * Hook for managing floating elements.
+ * An instance of `FloatingOptions` is created for each call to `useFloating`,
+ * and is used to store the reactive state of the various options passed to
+ * `useFloating`.
  */
-function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
-	const elements = $state(options.elements ?? {});
-	const {
-		placement = "bottom",
-		strategy = "absolute",
-		middleware = [],
-		transform = true,
-		open = true,
-		onOpenChange: unstableOnOpenChange = noop,
-		whileElementsMounted,
-		nodeId,
-	} = $derived(options);
-	const floatingStyles = $derived.by(() => {
-		const initialStyles = {
-			position: strategy,
-			left: "0px",
-			top: "0px",
-		};
-
-		if (!elements.floating) {
-			return styleObjectToString(initialStyles);
-		}
-
-		const x = roundByDPR(elements.floating, state.x);
-		const y = roundByDPR(elements.floating, state.y);
-
-		if (transform) {
-			return styleObjectToString({
-				...initialStyles,
-				transform: `translate(${x}px, ${y}px)`,
-				...(getDPR(elements.floating) >= 1.5 && { willChange: "transform" }),
-			});
-		}
-
-		return styleObjectToString({
-			position: strategy,
-			left: `${x}px`,
-			top: `${y}px`,
-		});
-	});
-
-	const events = createPubSub();
-	const data: ContextData = $state({});
-
-	const onOpenChange = (
+// This enables us to not have to pass around a bunch of getters and setters internally
+// and can instead rely on the reactive state of the `FloatingOptions` instance.
+class FloatingOptions<RT extends ReferenceType = ReferenceType> {
+	open: ReadableBox<boolean>;
+	placement: ReadableBox<Placement>;
+	strategy: ReadableBox<Strategy>;
+	middleware: ReadableBox<Array<Middleware | undefined | null | false>>;
+	transform: ReadableBox<boolean>;
+	whileElementsMounted: WhileElementsMounted | undefined;
+	rootContext: ReadableBox<FloatingRootContext<RT> | undefined>;
+	onReferenceChange: (node: Element | null) => void;
+	onFloatingChange: (node: HTMLElement | null) => void;
+	onOpenChange: (
 		open: boolean,
 		event?: Event,
 		reason?: OpenChangeReason,
-	) => {
-		data.openEvent = open ? event : undefined;
-		events.emit("openchange", { open, event, reason });
-		unstableOnOpenChange(open, event, reason);
-	};
+	) => void;
+	nodeId: ReadableBox<string | undefined>;
 
-	const state: UseFloatingData = $state({
-		x: 0,
-		y: 0,
-		strategy,
-		placement,
-		middlewareData: {},
-		isPositioned: false,
-	});
-
-	const context: FloatingContext = $state({
-		data,
-		events,
-		elements,
-		onOpenChange,
-		floatingId: useId(),
-		get nodeId() {
-			return nodeId;
-		},
-		get x() {
-			return state.x;
-		},
-		get y() {
-			return state.y;
-		},
-		get placement() {
-			return state.placement;
-		},
-		get strategy() {
-			return state.strategy;
-		},
-		get middlewareData() {
-			return state.middlewareData;
-		},
-		get isPositioned() {
-			return state.isPositioned;
-		},
-		get open() {
-			return open;
-		},
-	});
-
-	const update = async () => {
-		if (!elements.floating || !elements.reference) {
-			return;
-		}
-
-		const config: ComputePositionConfig = {
-			placement,
-			strategy,
-			middleware,
-		};
-
-		const position = await computePosition(
-			elements.reference,
-			elements.floating,
-			config,
+	#stableReference = $state<Element | null>(null);
+	#stableFloating = $state<HTMLElement | null>(null);
+	reference: WritableBox<Element | null>;
+	floating: WritableBox<HTMLElement | null>;
+	constructor(private readonly options: UseFloatingOptions<RT>) {
+		const floatingProp = $derived.by(() =>
+			extract(this.options.floating, null),
 		);
+		const referenceProp = $derived.by(() =>
+			extract(this.options.reference, null),
+		);
+		this.open = box.with(() => extract(options.open, true));
+		this.placement = box.with(() => extract(options.placement, "bottom"));
+		this.strategy = box.with(() => extract(options.strategy, "absolute"));
+		this.middleware = box.with(() => extract(options.middleware, []));
+		this.transform = box.with(() => extract(options.transform, true));
+		this.onOpenChange = options.onOpenChange ?? noop;
+		this.onReferenceChange = options.onReferenceChange ?? noop;
+		this.onFloatingChange = options.onFloatingChange ?? noop;
+		this.whileElementsMounted = options.whileElementsMounted;
+		this.nodeId = box.with(() => extract(options.nodeId));
+		this.rootContext = box.with(
+			() => extract(options.rootContext) as FloatingRootContext<RT> | undefined,
+		);
+		this.reference = box.with(
+			() => this.#stableReference,
+			(node) => {
+				this.#stableReference = node;
+				this.onReferenceChange(node);
+			},
+		);
+		this.floating = box.with(
+			() => this.#stableFloating,
+			(node) => {
+				this.#stableFloating = node;
+				this.onFloatingChange(node);
+			},
+		);
+		this.reference.current = extract(this.options.reference, null);
+		this.floating.current = extract(this.options.floating, null);
 
-		state.x = position.x;
-		state.y = position.y;
-		state.placement = position.placement;
-		state.strategy = position.strategy;
-		state.middlewareData = position.middlewareData;
-		state.isPositioned = true;
-	};
+		$effect.pre(() => {
+			if (floatingProp) {
+				this.floating.current = floatingProp;
+			}
+		});
 
-	$effect.pre(() => {
-		if (!options.elements || !options.elements.reference) {
-			return;
-		}
-		elements.reference = options.elements.reference;
-	});
-
-	$effect.pre(() => {
-		if (!options.elements || !options.elements.floating) {
-			return;
-		}
-		elements.floating = options.elements.floating;
-	});
-
-	$effect.pre(() => {
-		if (open || !state.isPositioned) {
-			return;
-		}
-
-		state.isPositioned = false;
-	});
-
-	$effect.pre(() => {
-		if (!elements.floating || !elements.reference) {
-			return;
-		}
-
-		if (!whileElementsMounted) {
-			update();
-			return;
-		}
-
-		return whileElementsMounted(elements.reference, elements.floating, update);
-	});
-
-	return {
-		update,
-		context,
-		elements,
-		get x() {
-			return state.x;
-		},
-		get y() {
-			return state.y;
-		},
-		get placement() {
-			return state.placement;
-		},
-		get strategy() {
-			return state.strategy;
-		},
-		get middlewareData() {
-			return state.middlewareData;
-		},
-		get isPositioned() {
-			return state.isPositioned;
-		},
-		get open() {
-			return open;
-		},
-		get floatingStyles() {
-			return floatingStyles;
-		},
-	};
+		$effect.pre(() => {
+			if (referenceProp) {
+				this.reference.current = referenceProp;
+			}
+		});
+	}
 }
 
-export type { UseFloatingOptions, UseFloatingReturn, FloatingContext };
-export { useFloating };
+type FloatingContextOptions<RT extends ReferenceType = ReferenceType> = {
+	floating: FloatingState<RT>;
+	floatingOptions: FloatingOptions<RT>;
+	rootContext: FloatingRootContext<RT>;
+};
+
+interface FloatingContextData<RT extends ReferenceType = ReferenceType> {
+	reference: ReferenceType | null;
+	floating: HTMLElement | null;
+	domReference: HTMLElement | null;
+	x: number;
+	y: number;
+	placement: Placement;
+	strategy: Strategy;
+	middlewareData: MiddlewareData;
+	isPositioned: boolean;
+	update: () => Promise<void>;
+	floatingStyles: string;
+	onOpenChange: OnOpenChange;
+	open: boolean;
+	data: ContextData<RT>;
+	floatingId: string;
+	events: FloatingEvents;
+	nodeId: string | undefined;
+	setPositionReference: (node: ReferenceType | null) => void;
+}
+
+class FloatingContext<RT extends ReferenceType = ReferenceType>
+	implements FloatingContextData<RT>
+{
+	onOpenChange: OnOpenChange;
+	update: () => Promise<void>;
+	setPositionReference: (node: ReferenceType | null) => void;
+
+	constructor(private readonly opts: FloatingContextOptions<RT>) {
+		this.onOpenChange = this.opts.rootContext.onOpenChange;
+		this.update = this.opts.floating.update;
+		this.setPositionReference = this.opts.floating.setPositionReference;
+	}
+
+	get reference() {
+		return this.opts.floatingOptions.reference.current as ReferenceType | null;
+	}
+
+	get floating() {
+		return this.opts.floatingOptions.floating.current;
+	}
+
+	set floating(node: HTMLElement | null) {
+		this.opts.floatingOptions.floating.current = node;
+	}
+
+	get domReference() {
+		return this.opts.floating.domReference;
+	}
+
+	get x() {
+		return this.opts.floating.x;
+	}
+
+	get y() {
+		return this.opts.floating.y;
+	}
+
+	get placement() {
+		return this.opts.floating.placement;
+	}
+
+	get strategy() {
+		return this.opts.floating.strategy;
+	}
+
+	get middlewareData() {
+		return this.opts.floating.middlewareData;
+	}
+
+	get isPositioned() {
+		return this.opts.floating.isPositioned;
+	}
+
+	get floatingStyles() {
+		return this.opts.floating.floatingStyles;
+	}
+
+	get open() {
+		return this.opts.rootContext.open;
+	}
+
+	get data() {
+		return this.opts.rootContext.data;
+	}
+
+	get floatingId() {
+		return this.opts.rootContext.floatingId;
+	}
+
+	get events() {
+		return this.opts.rootContext.events;
+	}
+
+	get nodeId() {
+		return this.opts.floatingOptions.nodeId.current;
+	}
+}
+
+class FloatingState<RT extends ReferenceType = ReferenceType> {
+	#rootContext: FloatingRootContext<RT>;
+	#position: PositionState<RT>;
+	#positionReference = $state<ReferenceType | null>(null);
+	#derivedDomReference = $derived.by(
+		() =>
+			(this.#rootContext.domReference ||
+				this.options.reference.current) as NarrowedElement<RT>,
+	);
+	#tree: FloatingTreeType<RT> | null;
+	context: FloatingContext<RT>;
+
+	constructor(private readonly options: FloatingOptions<RT>) {
+		const internalRootContext = useFloatingRootContext({
+			open: () => options.open.current ?? true,
+			reference: () => options.reference.current,
+			floating: () => options.floating.current,
+			onOpenChange: options.onOpenChange,
+		});
+
+		this.#rootContext =
+			options.rootContext.current ??
+			(internalRootContext as unknown as FloatingRootContext<RT>);
+
+		this.#tree = useFloatingTree();
+		this.#position = new PositionState<RT>(
+			options,
+			this.#rootContext,
+			() => this.#positionReference,
+		);
+
+		this.context = new FloatingContext({
+			floating: this,
+			floatingOptions: options,
+			rootContext: this.#rootContext,
+		});
+
+		$effect(() => {
+			this.#rootContext.data.floatingContext = this.context;
+
+			const node = this.#tree?.nodes.find(
+				(node) => node.id === this.options.nodeId.current,
+			);
+			if (node) {
+				node.context = this.context;
+			}
+		});
+	}
+
+	setPositionReference = (node: ReferenceType | null) => {
+		const computedPositionReference = isElement(node)
+			? {
+					getBoundingClientRect: () => node.getBoundingClientRect(),
+					contextElement: node,
+				}
+			: node;
+		this.#positionReference = computedPositionReference;
+	};
+
+	get domReference() {
+		return this.#derivedDomReference as HTMLElement | null;
+	}
+
+	get reference() {
+		return this.#position.referenceEl as Element | null;
+	}
+
+	set reference(node: Element | null) {
+		if (isElement(node) || node === null) {
+			this.options.reference.current = node;
+		}
+	}
+
+	get floating() {
+		return this.options.floating.current;
+	}
+
+	set floating(node: HTMLElement | null) {
+		this.options.floating.current = node;
+	}
+
+	get placement() {
+		return this.#position.data.placement;
+	}
+
+	get strategy() {
+		return this.#position.data.strategy;
+	}
+
+	get middlewareData() {
+		return this.#position.data.middlewareData;
+	}
+
+	get isPositioned() {
+		return this.#position.data.isPositioned;
+	}
+
+	get x() {
+		return this.#position.data.x;
+	}
+
+	get y() {
+		return this.#position.data.y;
+	}
+
+	get floatingStyles() {
+		return this.#position.floatingStyles;
+	}
+
+	get update() {
+		return this.#position.update;
+	}
+}
+
+/**
+ * Provides data to position a floating element and context to add interactions.
+ */
+function useFloating<RT extends ReferenceType = ReferenceType>(
+	options: UseFloatingOptions<RT> = {},
+): FloatingState<RT> {
+	const optionsState = new FloatingOptions(options);
+	return new FloatingState<RT>(optionsState);
+}
+
+export { FloatingState, FloatingContext, useFloating };
+export type { UseFloatingOptions, FloatingContextData, FloatingOptions };

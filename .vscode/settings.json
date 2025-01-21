@@ -1,0 +1,6 @@
+{
+	"[typescript][javascript][json][html][css][jsonc][markdown][typescriptreact]": {
+		"editor.defaultFormatter": "biomejs.biome",
+		"editor.formatOnSave": true
+	}
+}

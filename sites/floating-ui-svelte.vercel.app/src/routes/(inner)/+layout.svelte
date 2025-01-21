@@ -1,11 +1,11 @@
 <script lang="ts">
-// Components
-import Navigation from "$lib/components/Navigation/Navigation.svelte";
-import PageFooter from "$lib/components/PageFooter/PageFooter.svelte";
-import PageHeader from "$lib/components/PageHeader/PageHeader.svelte";
+	// Components
+	import Navigation from "$lib/components/Navigation/Navigation.svelte";
+	import PageFooter from "$lib/components/PageFooter/PageFooter.svelte";
+	import PageHeader from "$lib/components/PageHeader/PageHeader.svelte";
 
-// Props
-let { children } = $props();
+	// Props
+	let { children } = $props();
 </script>
 
 <!-- Layout -->
@@ -20,8 +20,7 @@ let { children } = $props();
 		<article
 			id="page-container"
 			class="container p-10 text-lg mx-auto lg:ml-auto lg:px-32"
-			data-pagefind-body
-		>
+			data-pagefind-body>
 			{@render children()}
 		</article>
 		<!-- Page Footer -->

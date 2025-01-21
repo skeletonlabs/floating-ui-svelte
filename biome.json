@@ -9,7 +9,11 @@
 				"rules": {
 					"style": {
 						"useConst": "off",
-						"useImportType": "off"
+						"useImportType": "off",
+						"noNonNullAssertion": "off"
+					},
+					"suspicious": {
+						"noAssignInExpressions": "off"
 					}
 				}
 			}

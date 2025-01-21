@@ -20,16 +20,12 @@ function createAttribute(name: string) {
 }
 
 function contains(parent?: Element | null, child?: Element | null) {
-	if (!parent || !child) {
-		return false;
-	}
+	if (!parent || !child) return false;
 
 	const rootNode = child.getRootNode?.();
 
 	// First, attempt with faster native method
-	if (parent.contains(child)) {
-		return true;
-	}
+	if (parent.contains(child)) return true;
 
 	// then fallback to custom implementation with Shadow DOM support
 	if (rootNode && isShadowRoot(rootNode)) {
@@ -47,27 +43,6 @@ function contains(parent?: Element | null, child?: Element | null) {
 	return false;
 }
 
-function isVirtualPointerEvent(event: PointerEvent) {
-	if (isJSDOM()) {
-		return false;
-	}
-	return (
-		(!isAndroid() && event.width === 0 && event.height === 0) ||
-		(isAndroid() &&
-			event.width === 1 &&
-			event.height === 1 &&
-			event.pressure === 0 &&
-			event.detail === 0 &&
-			event.pointerType === "mouse") ||
-		// iOS VoiceOver returns 0.333• for width/height.
-		(event.width < 1 &&
-			event.height < 1 &&
-			event.pressure === 0 &&
-			event.detail === 0 &&
-			event.pointerType === "touch")
-	);
-}
-
 function getTarget(event: Event) {
 	if ("composedPath" in event) {
 		return event.composedPath()[0];
@@ -79,12 +54,12 @@ function getTarget(event: Event) {
 }
 
 function isEventTargetWithin(event: Event, node: Node | null | undefined) {
-	if (node == null) {
-		return false;
-	}
+	if (node == null) return false;
 
 	if ("composedPath" in event) {
-		return event.composedPath().includes(node);
+		return (
+			event.composedPath().includes(node) || node.contains(event.target as Node)
+		);
 	}
 
 	// TS thinks `event` is of type never as it assumes all browsers support composedPath, but browsers without shadow dom don't
@@ -109,6 +84,52 @@ function isMouseLikePointerType(
 	return values.includes(pointerType);
 }
 
+const pointerTypes = ["mouse", "pen", "touch"] as const;
+type PointerType = (typeof pointerTypes)[number];
+function isPointerType(str: string): str is PointerType {
+	return pointerTypes.includes(str as PointerType);
+}
+
+function stopEvent(event: Event) {
+	event.preventDefault();
+	event.stopPropagation();
+}
+
+// License: https://github.com/adobe/react-spectrum/blob/b35d5c02fe900badccd0cf1a8f23bb593419f238/packages/@react-aria/utils/src/isVirtualEvent.ts
+export function isVirtualClick(event: MouseEvent | PointerEvent): boolean {
+	// FIXME: Firefox is now emitting a deprecation warning for `mozInputSource`.
+	// Try to find a workaround for this. `react-aria` source still has the check.
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	if ((event as any).mozInputSource === 0 && event.isTrusted) {
+		return true;
+	}
+
+	if (isAndroid() && (event as PointerEvent).pointerType) {
+		return event.type === "click" && event.buttons === 1;
+	}
+
+	return event.detail === 0 && !(event as PointerEvent).pointerType;
+}
+
+function isVirtualPointerEvent(event: PointerEvent) {
+	if (isJSDOM()) return false;
+	return (
+		(!isAndroid() && event.width === 0 && event.height === 0) ||
+		(isAndroid() &&
+			event.width === 1 &&
+			event.height === 1 &&
+			event.pressure === 0 &&
+			event.detail === 0 &&
+			event.pointerType === "mouse") ||
+		// iOS VoiceOver returns 0.333• for width/height.
+		(event.width < 1 &&
+			event.height < 1 &&
+			event.pressure === 0 &&
+			event.detail === 0 &&
+			event.pointerType === "touch")
+	);
+}
+
 export {
 	getDocument,
 	activeElement,
@@ -119,4 +140,8 @@ export {
 	isEventTargetWithin,
 	isRootElement,
 	isMouseLikePointerType,
+	isPointerType,
+	stopEvent,
 };
+
+export type { PointerType };
