@@ -1,11 +1,6 @@
 import { DEV } from "esm-env";
 import { extract } from "../internal/extract.js";
-import type {
-	Boxed,
-	Dimensions,
-	FloatingTreeType,
-	MaybeGetter,
-} from "../types.js";
+import type { Boxed, Dimensions, MaybeGetter } from "../types.js";
 import type { FloatingRootContext } from "./use-floating-root-context.svelte.js";
 import type { FloatingContext } from "./use-floating.svelte.js";
 import { warn } from "../internal/log.js";
@@ -215,10 +210,6 @@ function useListNavigation(
 	const typeableComboboxReference = $derived(
 		isTypeableCombobox(context.domReference),
 	);
-
-	$effect(() => {
-		console.log("listref changed", $state.snapshot(listRef));
-	});
 
 	const hasActiveIndex = $derived(activeIndex != null);
 

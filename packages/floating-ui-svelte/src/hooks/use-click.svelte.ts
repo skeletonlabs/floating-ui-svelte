@@ -66,140 +66,131 @@ const pointerTypes = ["mouse", "pen", "touch"] as const;
 
 type PointerType = (typeof pointerTypes)[number];
 
-class ClickInteraction implements ElementProps {
-	#enabled = $derived.by(() => extract(this.options?.enabled, true));
-	#eventOption = $derived.by(() => extract(this.options?.event, "click"));
-	#toggle = $derived.by(() => extract(this.options?.toggle, true));
-	#ignoreMouse = $derived.by(() => extract(this.options?.ignoreMouse, false));
-	#stickIfOpen = $derived.by(() => extract(this.options?.stickIfOpen, true));
-	#keyboardHandlers = $derived.by(() =>
-		extract(this.options?.keyboardHandlers, true),
-	);
-	#pointerType: PointerType | undefined = undefined;
-	#didKeyDown = false;
+function useClick(
+	context: FloatingContext,
+	opts: UseClickOptions = {},
+): ElementProps {
+	const enabled = $derived(extract(opts.enabled, true));
+	const eventOption = $derived(extract(opts.event, "click"));
+	const toggle = $derived(extract(opts.toggle, true));
+	const ignoreMouse = $derived(extract(opts.ignoreMouse, false));
+	const stickIfOpen = $derived(extract(opts.stickIfOpen, true));
+	const keyboardHandlers = $derived(extract(opts.keyboardHandlers, true));
+	let pointerType: PointerType | undefined = undefined;
+	let didKeyDown = false;
 
-	constructor(
-		private readonly context: FloatingContext,
-		private readonly options: UseClickOptions = {},
-	) {}
-
-	#onpointerdown = (event: PointerEvent) => {
+	function onpointerdown(event: PointerEvent) {
 		if (!isPointerType(event.pointerType)) return;
-		this.#pointerType = event.pointerType;
-	};
+		pointerType = event.pointerType;
+	}
 
-	#onmousedown = (event: MouseEvent) => {
+	function onmousedown(event: MouseEvent) {
 		// Ignore all buttons except for the "main" button.
 		// https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
 		if (event.button !== 0) return;
-		if (this.#eventOption === "click") return;
-		if (isMouseLikePointerType(this.#pointerType, true) && this.#ignoreMouse) {
+		if (eventOption === "click") return;
+		if (isMouseLikePointerType(pointerType, true) && ignoreMouse) {
 			return;
 		}
 
 		if (
-			this.context.open &&
-			this.#toggle &&
-			(this.context.data.openEvent && this.#stickIfOpen
-				? this.context.data.openEvent.type === "mousedown"
+			context.open &&
+			toggle &&
+			(context.data.openEvent && stickIfOpen
+				? context.data.openEvent.type === "mousedown"
 				: true)
 		) {
-			this.context.onOpenChange(false, event, "click");
+			context.onOpenChange(false, event, "click");
 		} else {
 			// Prevent stealing focus from the floating element
 			event.preventDefault();
-			this.context.onOpenChange(true, event, "click");
+			context.onOpenChange(true, event, "click");
 		}
-	};
+	}
 
-	#onclick = (event: MouseEvent) => {
-		if (this.#eventOption === "mousedown" && this.#pointerType) {
-			this.#pointerType = undefined;
+	function onclick(event: MouseEvent) {
+		if (eventOption === "mousedown" && pointerType) {
+			pointerType = undefined;
 			return;
 		}
 
-		if (isMouseLikePointerType(this.#pointerType, true) && this.#ignoreMouse) {
+		if (isMouseLikePointerType(pointerType, true) && ignoreMouse) {
 			return;
 		}
 
 		if (
-			this.context.open &&
-			this.#toggle &&
-			(this.context.data.openEvent && this.#stickIfOpen
-				? this.context.data.openEvent.type === "click"
+			context.open &&
+			toggle &&
+			(context.data.openEvent && stickIfOpen
+				? context.data.openEvent.type === "click"
 				: true)
 		) {
-			this.context.onOpenChange(false, event, "click");
+			context.onOpenChange(false, event, "click");
 		} else {
-			this.context.onOpenChange(true, event, "click");
+			context.onOpenChange(true, event, "click");
 		}
-	};
+	}
 
-	#onkeydown = (event: KeyboardEvent) => {
-		this.#pointerType = undefined;
+	function onkeydown(event: KeyboardEvent) {
+		pointerType = undefined;
 
-		if (
-			event.defaultPrevented ||
-			!this.#keyboardHandlers ||
-			isButtonTarget(event)
-		) {
+		if (event.defaultPrevented || !keyboardHandlers || isButtonTarget(event)) {
 			return;
 		}
 
-		if (event.key === " " && !isSpaceIgnored(this.context.domReference)) {
+		if (event.key === " " && !isSpaceIgnored(context.domReference)) {
 			// Prevent scrolling
 			event.preventDefault();
-			this.#didKeyDown = true;
+			didKeyDown = true;
 		}
 
 		if (event.key === "Enter") {
-			if (this.context.open && this.#toggle) {
-				this.context.onOpenChange(false, event, "click");
+			if (context.open && toggle) {
+				context.onOpenChange(false, event, "click");
 			} else {
-				this.context.onOpenChange(true, event, "click");
+				context.onOpenChange(true, event, "click");
 			}
 		}
-	};
+	}
 
-	#onkeyup = (event: KeyboardEvent) => {
+	function onkeyup(event: KeyboardEvent) {
 		if (
 			event.defaultPrevented ||
-			!this.#keyboardHandlers ||
+			!keyboardHandlers ||
 			isButtonTarget(event) ||
-			isSpaceIgnored(this.context.domReference)
+			isSpaceIgnored(context.domReference)
 		) {
 			return;
 		}
 
-		if (event.key === " " && this.#didKeyDown) {
-			this.#didKeyDown = false;
-			if (this.context.open && this.#toggle) {
-				this.context.onOpenChange(false, event, "click");
+		if (event.key === " " && didKeyDown) {
+			didKeyDown = false;
+			if (context.open && toggle) {
+				context.onOpenChange(false, event, "click");
 			} else {
-				this.context.onOpenChange(true, event, "click");
+				context.onOpenChange(true, event, "click");
 			}
 		}
-	};
-
-	get reference() {
-		return this.#reference;
 	}
 
-	#reference = $derived.by(() => {
-		if (!this.#enabled) return {};
+	const reference = $derived.by(() => {
+		if (!enabled) return {};
 		return {
-			onpointerdown: this.#onpointerdown,
-			onmousedown: this.#onmousedown,
-			onclick: this.#onclick,
-			onkeydown: this.#onkeydown,
-			onkeyup: this.#onkeyup,
+			onpointerdown: onpointerdown,
+			onmousedown: onmousedown,
+			onclick: onclick,
+			onkeydown: onkeydown,
+			onkeyup: onkeyup,
 		};
 	});
-}
 
-function useClick(context: FloatingContext, options: UseClickOptions = {}) {
-	return new ClickInteraction(context, options);
+	return {
+		get reference() {
+			if (!enabled) return {};
+			return reference;
+		},
+	};
 }
 
 export type { UseClickOptions };
-export { useClick, ClickInteraction };
+export { useClick };

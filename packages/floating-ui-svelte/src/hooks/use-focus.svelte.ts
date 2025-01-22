@@ -14,7 +14,7 @@ import type { FloatingContext } from "./use-floating.svelte.js";
 import { on } from "svelte/events";
 import { executeCallbacks } from "../internal/execute-callbacks.js";
 import { extract } from "../internal/extract.js";
-import { watch, watchOnce } from "../internal/watch.svelte.js";
+import { watch } from "../internal/watch.svelte.js";
 import type { ElementProps } from "./use-interactions.svelte.js";
 
 interface UseFocusOptions {
@@ -32,90 +32,30 @@ interface UseFocusOptions {
 	visibleOnly?: MaybeGetter<boolean>;
 }
 
-class FocusInteraction implements ElementProps {
-	#enabled = $derived.by(() => extract(this.options.enabled, true));
-	#visibleOnly = $derived.by(() => extract(this.options.visibleOnly, true));
-	#blockFocus = false;
-	#timeout = -1;
-	#keyboardModality = true;
+function useFocus(context: FloatingContext, opts: UseFocusOptions = {}) {
+	const enabled = $derived(extract(opts.enabled, true));
+	const visibleOnly = $derived(extract(opts.visibleOnly, true));
+	let blockFocus = false;
+	let timeout = -1;
+	let keyboardModality = true;
 
-	constructor(
-		private readonly context: FloatingContext,
-		private readonly options: UseFocusOptions = {},
-	) {
-		watch(
-			[() => this.#enabled, () => this.context.domReference],
-			([enabled, domReference]) => {
-				if (!enabled) return;
-
-				const win = getWindow(domReference);
-
-				// If the domReference was focused and the user left the tab/window, and the
-				// floating element was not open, the focus should be blocked when they
-				// return to the tab/window.
-				const onBlur = () => {
-					if (
-						!context.open &&
-						isHTMLElement(domReference) &&
-						domReference === activeElement(getDocument(domReference))
-					) {
-						this.#blockFocus = true;
-					}
-				};
-
-				const onKeyDown = () => {
-					this.#keyboardModality = true;
-				};
-
-				return executeCallbacks(
-					on(win, "blur", onBlur),
-					on(win, "keydown", onKeyDown, { capture: true }),
-				);
-			},
-		);
-
-		watch(
-			() => this.#enabled,
-			(enabled) => {
-				if (!enabled) return;
-
-				const onOpenChange = ({ reason }: { reason: OpenChangeReason }) => {
-					if (reason === "reference-press" || reason === "escape-key") {
-						this.#blockFocus = true;
-					}
-				};
-
-				this.context.events.on("openchange", onOpenChange);
-				return () => {
-					this.context.events.off("openchange", onOpenChange);
-				};
-			},
-		);
-
-		$effect(() => {
-			return () => {
-				window.clearTimeout(this.#timeout);
-			};
-		});
+	function onpointerdown(event: PointerEvent) {
+		if (isVirtualPointerEvent(event)) return;
+		keyboardModality = false;
 	}
 
-	#onpointerdown = (event: PointerEvent) => {
-		if (isVirtualPointerEvent(event)) return;
-		this.#keyboardModality = false;
-	};
+	function onmouseleave() {
+		blockFocus = false;
+	}
 
-	#onmouseleave = () => {
-		this.#blockFocus = false;
-	};
-
-	#onfocus = (event: FocusEvent) => {
-		if (this.#blockFocus) {
+	function onfocus(event: FocusEvent) {
+		if (blockFocus) {
 			return;
 		}
 
 		const target = getTarget(event);
 
-		if (this.#visibleOnly && isElement(target)) {
+		if (visibleOnly && isElement(target)) {
 			try {
 				// Mac Safari unreliably matches `:focus-visible` on the reference
 				// if focus was outside the page initially - use the fallback
@@ -124,17 +64,17 @@ class FocusInteraction implements ElementProps {
 				if (!target.matches(":focus-visible")) return;
 			} catch {
 				// Old browsers will throw an error when using `:focus-visible`.
-				if (!this.#keyboardModality && !isTypeableElement(target)) {
+				if (!keyboardModality && !isTypeableElement(target)) {
 					return;
 				}
 			}
 		}
 
-		this.context.onOpenChange(true, event, "focus");
-	};
+		context.onOpenChange(true, event, "focus");
+	}
 
-	#onblur = (event: FocusEvent) => {
-		this.#blockFocus = false;
+	function onblur(event: FocusEvent) {
+		blockFocus = false;
 		const relatedTarget = event.relatedTarget;
 
 		// Hit the non-modal focus management portal guard. Focus will be
@@ -145,15 +85,15 @@ class FocusInteraction implements ElementProps {
 			relatedTarget.getAttribute("data-type") === "outside";
 
 		// Wait for the window blur listener to fire.
-		this.#timeout = window.setTimeout(() => {
+		timeout = window.setTimeout(() => {
 			const activeEl = activeElement(
-				isElement(this.context.domReference)
-					? this.context.domReference.ownerDocument
+				isElement(context.domReference)
+					? context.domReference.ownerDocument
 					: document,
 			);
 
 			// Focus left the page, keep it open.
-			if (!relatedTarget && activeEl === this.context.domReference) return;
+			if (!relatedTarget && activeEl === context.domReference) return;
 
 			// When focusing the reference element (e.g. regular click), then
 			// clicking into the floating element, prevent it from hiding.
@@ -163,35 +103,86 @@ class FocusInteraction implements ElementProps {
 			// and not the element that actually has received focus if it is located
 			// inside a shadow root.
 			if (
-				contains(this.context.floating, activeEl) ||
-				contains(this.context.domReference, activeEl) ||
+				contains(context.floating, activeEl) ||
+				contains(context.domReference, activeEl) ||
 				movedToFocusGuard
 			) {
 				return;
 			}
 
-			this.context.onOpenChange(false, event, "focus");
+			context.onOpenChange(false, event, "focus");
 		});
-	};
+	}
 
-	#reference = $derived.by(() => {
-		if (!this.#enabled) return {};
-		return {
-			onpointerdown: this.#onpointerdown,
-			onmouseleave: this.#onmouseleave,
-			onfocus: this.#onfocus,
-			onblur: this.#onblur,
+	watch(
+		[() => enabled, () => context.domReference],
+		([enabled, domReference]) => {
+			if (!enabled) return;
+
+			const win = getWindow(domReference);
+
+			// If the domReference was focused and the user left the tab/window, and the
+			// floating element was not open, the focus should be blocked when they
+			// return to the tab/window.
+			const onBlur = () => {
+				if (
+					!context.open &&
+					isHTMLElement(domReference) &&
+					domReference === activeElement(getDocument(domReference))
+				) {
+					blockFocus = true;
+				}
+			};
+
+			const onKeyDown = () => {
+				keyboardModality = true;
+			};
+
+			return executeCallbacks(
+				on(win, "blur", onBlur),
+				on(win, "keydown", onKeyDown, { capture: true }),
+			);
+		},
+	);
+
+	watch(
+		() => enabled,
+		(enabled) => {
+			if (!enabled) return;
+
+			const onOpenChange = ({ reason }: { reason: OpenChangeReason }) => {
+				if (reason === "reference-press" || reason === "escape-key") {
+					blockFocus = true;
+				}
+			};
+
+			context.events.on("openchange", onOpenChange);
+			return () => {
+				context.events.off("openchange", onOpenChange);
+			};
+		},
+	);
+
+	$effect(() => {
+		return () => {
+			window.clearTimeout(timeout);
 		};
 	});
 
-	get reference() {
-		return this.#reference;
-	}
-}
+	const reference = $derived({
+		onpointerdown: onpointerdown,
+		onmouseleave: onmouseleave,
+		onfocus: onfocus,
+		onblur: onblur,
+	});
 
-function useFocus(context: FloatingContext, options: UseFocusOptions = {}) {
-	return new FocusInteraction(context, options);
+	return {
+		get reference() {
+			if (!enabled) return {};
+			return reference;
+		},
+	};
 }
 
 export type { UseFocusOptions };
-export { useFocus, FocusInteraction as FocusState };
+export { useFocus };

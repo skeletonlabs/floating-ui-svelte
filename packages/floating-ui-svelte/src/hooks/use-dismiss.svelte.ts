@@ -121,177 +121,52 @@ interface UseDismissOptions {
 	>;
 }
 
-class DismissInteraction implements ElementProps {
-	#enabled = $derived.by(() => extract(this.options.enabled, true));
-	#escapeKey = $derived.by(() => extract(this.options.escapeKey, true));
-	#unstable_outsidePress = $derived.by(() => this.options.outsidePress ?? true);
-	#outsidePressEvent = $derived.by(() =>
-		extract(this.options.outsidePressEvent, "pointerdown"),
+function useDismiss(
+	context: FloatingContext,
+	opts: UseDismissOptions = {},
+): ElementProps {
+	const enabled = $derived(extract(opts.enabled, true));
+	const escapeKey = $derived(extract(opts.escapeKey, true));
+	const unstable_outsidePress = $derived(opts.outsidePress ?? true);
+	const outsidePressEvent = $derived(
+		extract(opts.outsidePressEvent, "pointerdown"),
 	);
-	#referencePress = $derived.by(() =>
-		extract(this.options.referencePress, false),
+	const referencePress = $derived(extract(opts.referencePress, false));
+	const referencePressEvent = $derived(
+		extract(opts.referencePressEvent, "pointerdown"),
 	);
-	#referencePressEvent = $derived.by(() =>
-		extract(this.options.referencePressEvent, "pointerdown"),
-	);
-	#ancestorScroll = $derived.by(() =>
-		extract(this.options.ancestorScroll, false),
-	);
-	#bubbles = $derived.by(() => extract(this.options.bubbles));
-	#capture = $derived.by(() => extract(this.options.capture));
-	#outsidePressFn = $derived.by(() =>
-		typeof this.#unstable_outsidePress === "function"
-			? this.#unstable_outsidePress
+	const ancestorScroll = $derived(extract(opts.ancestorScroll, false));
+	const bubbles = $derived(extract(opts.bubbles));
+	const capture = $derived(extract(opts.capture));
+	const outsidePressFn = $derived(
+		typeof unstable_outsidePress === "function"
+			? unstable_outsidePress
 			: () => false,
 	);
-	#outsidePress = $derived.by(() =>
-		typeof this.#unstable_outsidePress === "function"
-			? this.#outsidePressFn
-			: this.#unstable_outsidePress,
+	const outsidePress = $derived(
+		typeof unstable_outsidePress === "function"
+			? outsidePressFn
+			: unstable_outsidePress,
 	);
-	#bubbleOptions = $derived.by(() => normalizeProp(this.#bubbles));
-	#captureOptions = $derived.by(() => normalizeProp(this.#capture));
-	#endedOrStartedInside = false;
-	#isComposing = false;
-	#tree: FloatingTreeType | null;
-	#insideTree = false;
+	const bubbleOptions = $derived(normalizeProp(bubbles));
+	const captureOptions = $derived(normalizeProp(capture));
+	let endedOrStartedInside = false;
+	let isComposing = false;
+	const tree = useFloatingTree();
+	let insideTree = false;
 
-	constructor(
-		private readonly context: FloatingContext,
-		private readonly options: UseDismissOptions = {},
-	) {
-		this.#tree = useFloatingTree();
-
-		$effect(() => {
-			if (!this.context.open || !this.#enabled) return;
-			untrack(() => {
-				this.context.data.__escapeKeyBubbles = this.#bubbleOptions.escapeKey;
-				this.context.data.__outsidePressBubbles =
-					this.#bubbleOptions.outsidePress;
-			});
-
-			let compositionTimeout = -1;
-
-			const onScroll = (event: Event) => {
-				this.context.onOpenChange(false, event, "ancestor-scroll");
-			};
-
-			const handleCompositionStart = () => {
-				window.clearTimeout(compositionTimeout);
-				this.#isComposing = true;
-			};
-
-			const handleCompositionEnd = () => {
-				// Safari fires `compositionend` before `keydown`, so we need to wait
-				// until the next tick to set `isComposing` to `false`.
-				// https://bugs.webkit.org/show_bug.cgi?id=165004
-				compositionTimeout = window.setTimeout(
-					() => {
-						this.#isComposing = false;
-					},
-					// 0ms or 1ms don't work in Safari. 5ms appears to consistently work.
-					// Only apply to WebKit for the test to remain 0ms.
-					isWebKit() ? 5 : 0,
-				);
-			};
-
-			const doc = getDocument(this.context.floating);
-
-			const listenersToRemove: Array<() => void> = [];
-
-			if (this.#escapeKey) {
-				listenersToRemove.push(
-					on(
-						doc,
-						"keydown",
-						this.#captureOptions.escapeKey
-							? this.#closeOnEscapeKeyDownCapture
-							: this.#closeOnEscapeKeyDown,
-						{ capture: this.#captureOptions.escapeKey },
-					),
-					on(doc, "compositionstart", handleCompositionStart),
-					on(doc, "compositionend", handleCompositionEnd),
-				);
-			}
-
-			if (this.#outsidePress) {
-				listenersToRemove.push(
-					on(
-						doc,
-						this.#outsidePressEvent,
-						this.#captureOptions.outsidePress
-							? this.#closeOnPressOutsideCapture
-							: this.#closeOnPressOutside,
-						{ capture: this.#captureOptions.outsidePress },
-					),
-				);
-			}
-
-			let ancestors: (Element | Window | VisualViewport)[] = [];
-
-			if (this.#ancestorScroll) {
-				if (isElement(this.context.domReference)) {
-					ancestors = getOverflowAncestors(this.context.domReference);
-				}
-
-				if (isElement(this.context.floating)) {
-					ancestors = ancestors.concat(
-						getOverflowAncestors(this.context.floating),
-					);
-				}
-
-				if (
-					!isElement(this.context.reference) &&
-					this.context.reference &&
-					this.context.reference.contextElement
-				) {
-					ancestors = ancestors.concat(
-						getOverflowAncestors(this.context.reference.contextElement),
-					);
-				}
-			}
-
-			// Ignore the visual viewport for scrolling dismissal (allow pinch-zoom)
-			ancestors = ancestors.filter(
-				(ancestor) => ancestor !== doc.defaultView?.visualViewport,
-			);
-
-			for (const ancestor of ancestors) {
-				listenersToRemove.push(
-					on(ancestor, "scroll", onScroll, { passive: true }),
-				);
-			}
-
-			return () => {
-				for (const removeListener of listenersToRemove) {
-					removeListener();
-				}
-				window.clearTimeout(compositionTimeout);
-			};
-		});
-
-		watch([() => this.#outsidePress, () => this.#outsidePressEvent], () => {
-			this.#insideTree = false;
-		});
-	}
-
-	#closeOnEscapeKeyDown = (event: KeyboardEvent) => {
-		if (
-			!this.context.open ||
-			!this.#enabled ||
-			!this.#escapeKey ||
-			event.key !== "Escape"
-		)
+	function closeOnEscapeKeyDown(event: KeyboardEvent) {
+		if (!context.open || !enabled || !escapeKey || event.key !== "Escape")
 			return;
 
 		// Wait until IME is settled. Pressing `Escape` while composing should
 		// close the compose menu, but not the floating element.
-		if (this.#isComposing) return;
+		if (isComposing) return;
 
-		const nodeId = this.context.data.floatingContext?.nodeId;
-		const children = this.#tree ? getChildren(this.#tree.nodes, nodeId) : [];
+		const nodeId = context.data.floatingContext?.nodeId;
+		const children = tree ? getChildren(tree.nodes, nodeId) : [];
 
-		if (!this.#bubbleOptions.escapeKey) {
+		if (!bubbleOptions.escapeKey) {
 			event.stopPropagation();
 
 			if (children.length > 0) {
@@ -304,44 +179,41 @@ class DismissInteraction implements ElementProps {
 			}
 		}
 
-		this.context.onOpenChange(false, event, "escape-key");
-	};
+		context.onOpenChange(false, event, "escape-key");
+	}
 
-	#closeOnEscapeKeyDownCapture = (event: KeyboardEvent) => {
+	function closeOnEscapeKeyDownCapture(event: KeyboardEvent) {
 		const callback = () => {
-			this.#closeOnEscapeKeyDown(event);
+			closeOnEscapeKeyDown(event);
 			getTarget(event)?.removeEventListener("keydown", callback);
 		};
 		getTarget(event)?.addEventListener("keydown", callback);
-	};
+	}
 
-	#closeOnPressOutside = (event: MouseEvent) => {
-		const localInsideTree = this.#insideTree;
-		this.#insideTree = false;
+	function closeOnPressOutside(event: MouseEvent) {
+		const localInsideTree = insideTree;
+		insideTree = false;
 
 		// When click outside is lazy (`click` event), handle dragging.
 		// Don't close if:
 		// - The click started inside the floating element.
 		// - The click ended inside the floating element.
-		const localEndedOrStartedInside = this.#endedOrStartedInside;
-		this.#endedOrStartedInside = false;
+		const localEndedOrStartedInside = endedOrStartedInside;
+		endedOrStartedInside = false;
 
-		if (this.#outsidePressEvent === "click" && localEndedOrStartedInside) {
+		if (outsidePressEvent === "click" && localEndedOrStartedInside) {
 			return;
 		}
 
 		if (localInsideTree) return;
 
-		if (
-			typeof this.#outsidePress === "function" &&
-			!this.#outsidePress(event)
-		) {
+		if (typeof outsidePress === "function" && !outsidePress(event)) {
 			return;
 		}
 
 		const target = getTarget(event);
 		const inertSelector = `[${createAttribute("inert")}]`;
-		const markers = getDocument(this.context.floating).querySelectorAll(
+		const markers = getDocument(context.floating).querySelectorAll(
 			inertSelector,
 		);
 
@@ -361,7 +233,7 @@ class DismissInteraction implements ElementProps {
 			isElement(target) &&
 			!isRootElement(target) &&
 			// Clicked on a direct ancestor (e.g. FloatingOverlay).
-			!contains(target, this.context.floating) &&
+			!contains(target, context.floating) &&
 			// If the target root element contains none of the markers, then the
 			// element was injected after the floating element rendered.
 			Array.from(markers).every(
@@ -372,7 +244,7 @@ class DismissInteraction implements ElementProps {
 		}
 
 		// Check if the click occurred on the scrollbar
-		if (isHTMLElement(target) && this.context.floating) {
+		if (isHTMLElement(target) && context.floating) {
 			const lastTraversableNode = isLastTraversableNode(target);
 			const style = getComputedStyle(target);
 			const scrollRe = /auto|scroll/;
@@ -411,9 +283,9 @@ class DismissInteraction implements ElementProps {
 			}
 		}
 
-		const nodeId = this.context.data.floatingContext?.nodeId;
+		const nodeId = context.data.floatingContext?.nodeId;
 
-		const children = this.#tree ? getChildren(this.#tree.nodes, nodeId) : [];
+		const children = tree ? getChildren(tree.nodes, nodeId) : [];
 
 		const targetIsInsideChildren =
 			children.length &&
@@ -422,8 +294,8 @@ class DismissInteraction implements ElementProps {
 			);
 
 		if (
-			isEventTargetWithin(event, this.context.floating) ||
-			isEventTargetWithin(event, this.context.domReference) ||
+			isEventTargetWithin(event, context.floating) ||
+			isEventTargetWithin(event, context.domReference) ||
 			targetIsInsideChildren
 		) {
 			return;
@@ -438,62 +310,164 @@ class DismissInteraction implements ElementProps {
 			if (hasOpenChild) return;
 		}
 
-		this.context.onOpenChange(false, event, "outside-press");
-	};
+		context.onOpenChange(false, event, "outside-press");
+	}
 
-	#closeOnPressOutsideCapture = (event: MouseEvent) => {
+	function closeOnPressOutsideCapture(event: MouseEvent) {
 		const callback = () => {
-			this.#closeOnPressOutside(event);
-			getTarget(event)?.removeEventListener(this.#outsidePressEvent, callback);
+			closeOnPressOutside(event);
+			getTarget(event)?.removeEventListener(outsidePressEvent, callback);
 		};
-		getTarget(event)?.addEventListener(this.#outsidePressEvent, callback);
-	};
+		getTarget(event)?.addEventListener(outsidePressEvent, callback);
+	}
 
-	#reference = $derived.by(() => {
-		if (!this.#enabled) return {};
-		return {
-			onkeydown: this.#closeOnEscapeKeyDown,
-			...(this.#referencePress && {
-				[bubbleHandlerKeys[this.#referencePressEvent]]: (event: Event) => {
-					this.context.onOpenChange(false, event, "reference-press");
+	$effect(() => {
+		if (!context.open || !enabled) return;
+		untrack(() => {
+			context.data.__escapeKeyBubbles = bubbleOptions.escapeKey;
+			context.data.__outsidePressBubbles = bubbleOptions.outsidePress;
+		});
+
+		let compositionTimeout = -1;
+
+		const onScroll = (event: Event) => {
+			context.onOpenChange(false, event, "ancestor-scroll");
+		};
+
+		const handleCompositionStart = () => {
+			window.clearTimeout(compositionTimeout);
+			isComposing = true;
+		};
+
+		const handleCompositionEnd = () => {
+			// Safari fires `compositionend` before `keydown`, so we need to wait
+			// until the next tick to set `isComposing` to `false`.
+			// https://bugs.webkit.org/show_bug.cgi?id=165004
+			compositionTimeout = window.setTimeout(
+				() => {
+					isComposing = false;
 				},
-				...(this.#referencePressEvent !== "click" && {
-					onclick: (event: MouseEvent) => {
-						this.context.onOpenChange(false, event, "reference-press");
-					},
-				}),
+				// 0ms or 1ms don't work in Safari. 5ms appears to consistently work.
+				// Only apply to WebKit for the test to remain 0ms.
+				isWebKit() ? 5 : 0,
+			);
+		};
+
+		const doc = getDocument(context.floating);
+
+		const listenersToRemove: Array<() => void> = [];
+
+		if (escapeKey) {
+			listenersToRemove.push(
+				on(
+					doc,
+					"keydown",
+					captureOptions.escapeKey
+						? closeOnEscapeKeyDownCapture
+						: closeOnEscapeKeyDown,
+					{ capture: captureOptions.escapeKey },
+				),
+				on(doc, "compositionstart", handleCompositionStart),
+				on(doc, "compositionend", handleCompositionEnd),
+			);
+		}
+
+		if (outsidePress) {
+			listenersToRemove.push(
+				on(
+					doc,
+					outsidePressEvent,
+					captureOptions.outsidePress
+						? closeOnPressOutsideCapture
+						: closeOnPressOutside,
+					{ capture: captureOptions.outsidePress },
+				),
+			);
+		}
+
+		let ancestors: (Element | Window | VisualViewport)[] = [];
+
+		if (ancestorScroll) {
+			if (isElement(context.domReference)) {
+				ancestors = getOverflowAncestors(context.domReference);
+			}
+
+			if (isElement(context.floating)) {
+				ancestors = ancestors.concat(getOverflowAncestors(context.floating));
+			}
+
+			if (
+				!isElement(context.reference) &&
+				context.reference &&
+				context.reference.contextElement
+			) {
+				ancestors = ancestors.concat(
+					getOverflowAncestors(context.reference.contextElement),
+				);
+			}
+		}
+
+		// Ignore the visual viewport for scrolling dismissal (allow pinch-zoom)
+		ancestors = ancestors.filter(
+			(ancestor) => ancestor !== doc.defaultView?.visualViewport,
+		);
+
+		for (const ancestor of ancestors) {
+			listenersToRemove.push(
+				on(ancestor, "scroll", onScroll, { passive: true }),
+			);
+		}
+
+		return () => {
+			for (const removeListener of listenersToRemove) {
+				removeListener();
+			}
+			window.clearTimeout(compositionTimeout);
+		};
+	});
+
+	watch([() => outsidePress, () => outsidePressEvent], () => {
+		insideTree = false;
+	});
+
+	const reference = $derived({
+		onkeydown: closeOnEscapeKeyDown,
+		...(referencePress && {
+			[bubbleHandlerKeys[referencePressEvent]]: (event: Event) => {
+				context.onOpenChange(false, event, "reference-press");
+			},
+			...(referencePressEvent !== "click" && {
+				onclick: (event: MouseEvent) => {
+					context.onOpenChange(false, event, "reference-press");
+				},
 			}),
-		};
+		}),
 	});
 
-	#floating = $derived.by(() => {
-		if (!this.#enabled) return {};
-		return {
-			onkeydown: this.#closeOnEscapeKeyDown,
-			onmousedown: () => {
-				this.#endedOrStartedInside = true;
-			},
-			onmouseup: () => {
-				this.#endedOrStartedInside = true;
-			},
-			[captureHandlerKeys[this.#outsidePressEvent]]: () => {
-				this.#insideTree = true;
-			},
-		};
+	const floating = $derived({
+		onkeydown: closeOnEscapeKeyDown,
+		onmousedown: () => {
+			endedOrStartedInside = true;
+		},
+		onmouseup: () => {
+			endedOrStartedInside = true;
+		},
+		[captureHandlerKeys[outsidePressEvent]]: () => {
+			insideTree = true;
+		},
 	});
 
-	get reference() {
-		return this.#reference;
-	}
-
-	get floating() {
-		return this.#floating;
-	}
-}
-
-function useDismiss(context: FloatingContext, options: UseDismissOptions = {}) {
-	return new DismissInteraction(context, options);
+	return {
+		get reference() {
+			if (!enabled) return {};
+			return reference;
+		},
+		get floating() {
+			if (!enabled) return {};
+			return floating;
+		},
+	};
 }
 
 export type { UseDismissOptions };
-export { useDismiss, DismissInteraction as DismissState };
+export { useDismiss };

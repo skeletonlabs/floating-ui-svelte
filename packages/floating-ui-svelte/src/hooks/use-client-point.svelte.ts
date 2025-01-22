@@ -114,182 +114,161 @@ interface UseClientPointOptions {
 	y?: MaybeGetter<number | null>;
 }
 
-class ClientPointInteraction implements ElementProps {
-	#enabled = $derived.by(() => extract(this.options?.enabled, true));
-	#axis = $derived.by(() => extract(this.options?.axis, "both"));
-	#x = $derived.by(() => extract(this.options?.x, null));
-	#y = $derived.by(() => extract(this.options?.y, null));
-	#initial = false;
-	#cleanupListener: (() => void) | null = null;
-
-	#pointerType = $state<string | undefined>();
-	#listenerDeps = $state.raw<never[]>([]);
+function useClientPoint(
+	context: FloatingContext,
+	opts: UseClientPointOptions = {},
+): ElementProps {
+	const enabled = $derived(extract(opts.enabled, true));
+	const axis = $derived(extract(opts.axis, "both"));
+	const x = $derived(extract(opts.x, null));
+	const y = $derived(extract(opts.y, null));
+	let initial = false;
+	let cleanupListener: (() => void) | null = null;
+	let pointerType = $state<string | undefined>();
+	let listenerDeps = $state.raw<never[]>([]);
 
 	// If the pointer is a mouse-like pointer, we want to continue following the
 	// mouse even if the floating element is transitioning out. On touch
 	// devices, this is undesirable because the floating element will move to
 	// the dismissal touch point.
-	#openCheck = $derived.by(() =>
-		isMouseLikePointerType(this.#pointerType)
-			? this.context.floating
-			: this.context.open,
+	const openCheck = $derived(
+		isMouseLikePointerType(pointerType) ? context.floating : context.open,
 	);
 
-	constructor(
-		private readonly context: FloatingContext,
-		private readonly options: UseClientPointOptions = {},
-	) {
-		watch(
-			() => this.#listenerDeps,
-			() => {
-				return this.#addListener();
-			},
-		);
-
-		watch([() => this.#enabled, () => this.context.floating], () => {
-			if (this.#enabled && !this.context.floating) {
-				this.#initial = false;
-			}
-		});
-
-		watch([() => this.#enabled, () => this.context.floating], () => {
-			if (!this.#enabled && this.context.open) {
-				this.#initial = true;
-			}
-		});
-
-		watch.pre([() => this.#enabled, () => this.#x, () => this.#y], () => {
-			if (this.#enabled && (this.#x != null || this.#y != null)) {
-				this.#initial = false;
-				this.#setReference(this.#x, this.#y);
-			}
-		});
-
-		watch([() => this.#enabled, () => this.context.open], () => {
-			if (this.#enabled && this.context.open) {
-				this.#listenerDeps = [];
-			}
-		});
-
-		watch(
-			() => this.#openCheck,
-			() => {
-				if (!this.#openCheck && this.#cleanupListener) {
-					this.#cleanupListener();
-				}
-			},
-		);
-	}
-
-	#setReference = (x: number | null, y: number | null) => {
-		if (this.#initial) return;
+	function setReference(x: number | null, y: number | null) {
+		if (initial) return;
 
 		// Prevent setting if the open event was not a mouse-like one
 		// (e.g. focus to open, then hover over the reference element).
 		// Only apply if the event exists.
-		if (
-			this.context.data.openEvent &&
-			!isMouseBasedEvent(this.context.data.openEvent)
-		) {
+		if (context.data.openEvent && !isMouseBasedEvent(context.data.openEvent)) {
 			return;
 		}
 
-		this.context.setPositionReference(
-			createVirtualElement(this.context.domReference, {
+		context.setPositionReference(
+			createVirtualElement(context.domReference, {
 				x,
 				y,
-				axis: this.#axis,
-				data: this.context.data,
-				pointerType: this.#pointerType,
+				axis: axis,
+				data: context.data,
+				pointerType: pointerType,
 			}),
 		);
-	};
+	}
 
-	#handleReferenceEnterOrMove = (event: MouseEvent) => {
-		if (this.#x != null || this.#y != null) return;
+	function handleReferenceEnterOrMove(event: MouseEvent) {
+		if (x != null || y != null) return;
 
-		if (!this.context.open) {
-			this.#setReference(event.clientX, event.clientY);
-		} else if (!this.#cleanupListener) {
+		if (!context.open) {
+			setReference(event.clientX, event.clientY);
+		} else if (!cleanupListener) {
 			// If there's no cleanup, there's no listener, but we want to ensure
 			// we add the listener if the cursor landed on the floating element and
 			// then back on the reference (i.e. it's interactive).
-			this.#listenerDeps = [];
+			listenerDeps = [];
 		}
-	};
+	}
 
-	#addListener() {
-		if (
-			!this.#openCheck ||
-			!this.#enabled ||
-			this.#x != null ||
-			this.#y != null
-		) {
+	function addListener() {
+		if (!openCheck || !enabled || x != null || y != null) {
 			// Clear existing listener when conditions change
-			if (this.#cleanupListener) {
-				this.#cleanupListener();
-				this.#cleanupListener = null;
+			if (cleanupListener) {
+				cleanupListener();
+				cleanupListener = null;
 			}
 			return;
 		}
 
 		// Clear existing listener before adding new one
-		if (this.#cleanupListener) {
-			this.#cleanupListener();
-			this.#cleanupListener = null;
+		if (cleanupListener) {
+			cleanupListener();
+			cleanupListener = null;
 		}
 
-		const win = getWindow(this.context.floating);
+		const win = getWindow(context.floating);
 
 		const handleMouseMove = (event: MouseEvent) => {
 			const target = getTarget(event) as Element | null;
-			if (!contains(this.context.floating, target)) {
-				this.#setReference(event.clientX, event.clientY);
+			if (!contains(context.floating, target)) {
+				setReference(event.clientX, event.clientY);
 			} else {
 				win.removeEventListener("mousemove", handleMouseMove);
-				this.#cleanupListener = null;
+				cleanupListener = null;
 			}
 		};
 
-		if (
-			!this.context.data.openEvent ||
-			isMouseBasedEvent(this.context.data.openEvent)
-		) {
+		if (!context.data.openEvent || isMouseBasedEvent(context.data.openEvent)) {
 			win.addEventListener("mousemove", handleMouseMove);
 			const cleanup = () => {
 				win.removeEventListener("mousemove", handleMouseMove);
-				this.#cleanupListener = null;
+				cleanupListener = null;
 			};
-			this.#cleanupListener = cleanup;
+			cleanupListener = cleanup;
 			return cleanup;
 		}
 
-		this.context.setPositionReference(this.context.domReference);
+		context.setPositionReference(context.domReference);
 	}
 
-	#setPointerType = (event: PointerEvent) => {
-		this.#pointerType = event.pointerType;
+	function setPointerType(event: PointerEvent) {
+		pointerType = event.pointerType;
+	}
+
+	watch(
+		() => listenerDeps,
+		() => {
+			return addListener();
+		},
+	);
+
+	watch([() => enabled, () => context.floating], () => {
+		if (enabled && !context.floating) {
+			initial = false;
+		}
+	});
+
+	watch([() => enabled, () => context.floating], () => {
+		if (!enabled && context.open) {
+			initial = true;
+		}
+	});
+
+	watch.pre([() => enabled, () => x, () => y], () => {
+		if (enabled && (x != null || y != null)) {
+			initial = false;
+			setReference(x, y);
+		}
+	});
+
+	watch([() => enabled, () => context.open], () => {
+		if (enabled && context.open) {
+			listenerDeps = [];
+		}
+	});
+
+	watch(
+		() => openCheck,
+		() => {
+			if (!openCheck && cleanupListener) {
+				cleanupListener();
+			}
+		},
+	);
+
+	const reference = $derived({
+		onpointerdown: setPointerType,
+		onpointerenter: setPointerType,
+		onmousemove: handleReferenceEnterOrMove,
+		onmouseenter: handleReferenceEnterOrMove,
+	});
+
+	return {
+		get reference() {
+			if (!enabled) return {};
+			return reference;
+		},
 	};
-
-	#reference = $derived.by(() => ({
-		onpointerdown: this.#setPointerType,
-		onpointerenter: this.#setPointerType,
-		onmousemove: this.#handleReferenceEnterOrMove,
-		onmouseenter: this.#handleReferenceEnterOrMove,
-	}));
-
-	get reference() {
-		if (!this.#enabled) return {};
-		return this.#reference;
-	}
-}
-
-function useClientPoint(
-	context: FloatingContext,
-	options: UseClientPointOptions = {},
-) {
-	return new ClientPointInteraction(context, options);
 }
 
 export type { UseClientPointOptions };
-export { useClientPoint, ClientPointInteraction };
+export { useClientPoint };

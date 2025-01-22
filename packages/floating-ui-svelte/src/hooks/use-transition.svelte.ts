@@ -55,69 +55,59 @@ interface UseTransitionStatusOptions {
 }
 type TransitionStatus = "unmounted" | "initial" | "open" | "close";
 
-class TransitionStatusState {
-	#duration = $derived.by(() => extract(this.options.duration, 250));
-	#closeDuration = $derived.by(() => {
-		if (typeof this.#duration === "number") {
-			return this.#duration;
-		}
-		return this.#duration.close || 0;
-	});
-	#status: TransitionStatus = $state("unmounted");
-	#isMounted: ReturnType<typeof useDelayUnmount>;
-
-	constructor(
-		private readonly context: FloatingContext,
-		private readonly options: UseTransitionStatusOptions,
-	) {
-		this.#isMounted = useDelayUnmount({
-			open: () => this.context.open,
-			durationMs: () => this.#closeDuration,
-		});
-
-		$effect.pre(() => {
-			if (!this.#isMounted.current && this.#status === "close") {
-				this.#status = "unmounted";
-			}
-		});
-
-		watch.pre([() => this.context.open, () => this.context.floating], () => {
-			if (!this.context.floating) return;
-
-			if (this.context.open) {
-				this.#status = "initial";
-
-				const frame = requestAnimationFrame(() => {
-					this.#status = "open";
-				});
-
-				return () => {
-					cancelAnimationFrame(frame);
-				};
-			}
-
-			this.#status = "close";
-		});
-	}
-
-	get isMounted() {
-		return this.#isMounted.current;
-	}
-
-	get status() {
-		return this.#status;
-	}
-}
-
 /**
  * Provides a status string to apply CSS transitions to a floating element,
  * correctly handling placement-aware transitions.
  */
 function useTransitionStatus(
 	context: FloatingContext,
-	options: UseTransitionStatusOptions = {},
-): TransitionStatusState {
-	return new TransitionStatusState(context, options);
+	opts: UseTransitionStatusOptions = {},
+): { isMounted: boolean; status: TransitionStatus } {
+	const duration = $derived(extract(opts.duration, 250));
+	const closeDuration = $derived.by(() => {
+		if (typeof duration === "number") {
+			return duration;
+		}
+		return duration.close || 0;
+	});
+	let status: TransitionStatus = $state("unmounted");
+	const isMounted = useDelayUnmount({
+		open: () => context.open,
+		durationMs: () => closeDuration,
+	});
+
+	$effect.pre(() => {
+		if (!isMounted.current && status === "close") {
+			status = "unmounted";
+		}
+	});
+
+	watch.pre([() => context.open, () => context.floating], () => {
+		if (!context.floating) return;
+
+		if (context.open) {
+			status = "initial";
+
+			const frame = requestAnimationFrame(() => {
+				status = "open";
+			});
+
+			return () => {
+				cancelAnimationFrame(frame);
+			};
+		}
+
+		status = "close";
+	});
+
+	return {
+		get isMounted() {
+			return isMounted.current;
+		},
+		get status() {
+			return status;
+		},
+	};
 }
 
 type CSSStylesProperty =
@@ -145,112 +135,102 @@ interface UseTransitionStylesOptions extends UseTransitionStatusOptions {
 	common?: CSSStylesProperty;
 }
 
-class TransitionStylesState<RT extends ReferenceType = ReferenceType> {
-	#initial = $derived.by(() => this.options.initial ?? { opacity: 0 });
-	#open = $derived.by(() => this.options.open);
-	#close = $derived.by(() => this.options.close);
-	#common = $derived.by(() => this.options.common);
-	#duration = $derived.by(() => extract(this.options.duration, 250));
-	#placement = $derived.by(() => this.context.placement);
-	#side = $derived.by(() => this.#placement.split("-")[0] as Side);
-	#fnArgs = $derived.by(() => ({
-		side: this.#side,
-		placement: this.#placement,
-	}));
-	#openDuration = $derived.by(() => {
-		if (typeof this.#duration === "number") {
-			return this.#duration;
-		}
-		return this.#duration.open || 0;
-	});
-	#closeDuration = $derived.by(() => {
-		if (typeof this.#duration === "number") {
-			return this.#duration;
-		}
-		return this.#duration.close || 0;
-	});
-	#styles = $state.raw<PropertiesHyphen>({});
-	#transitionStatus: TransitionStatusState;
-	#status = $derived.by(() => this.#transitionStatus.status);
-
-	constructor(
-		private readonly context: FloatingContext<RT>,
-		private readonly options: UseTransitionStylesOptions = {},
-	) {
-		this.#styles = {
-			...execWithArgsOrReturn(this.#common, this.#fnArgs),
-			...execWithArgsOrReturn(this.#initial, this.#fnArgs),
-		};
-		this.#transitionStatus = useTransitionStatus(context, {
-			duration: this.options.duration,
-		});
-
-		watch.pre(
-			[
-				() => this.#closeDuration,
-				() => this.#close,
-				() => this.#initial,
-				() => this.#open,
-				() => this.#common,
-				() => this.#openDuration,
-				() => this.#status,
-				() => this.#fnArgs,
-			],
-			() => {
-				const initialStyles = execWithArgsOrReturn(this.#initial, this.#fnArgs);
-				const closeStyles = execWithArgsOrReturn(this.#close, this.#fnArgs);
-				const commonStyles = execWithArgsOrReturn(this.#common, this.#fnArgs);
-				const openStyles =
-					execWithArgsOrReturn(this.#open, this.#fnArgs) ||
-					Object.keys(initialStyles).reduce((acc: Record<string, "">, key) => {
-						acc[key] = "";
-						return acc;
-					}, {});
-
-				if (this.#status === "initial") {
-					this.#styles = {
-						"transition-property": this.#styles["transition-property"],
-						...commonStyles,
-						...initialStyles,
-					};
-				}
-
-				if (this.#status === "open") {
-					this.#styles = {
-						"transition-property": Object.keys(openStyles).join(", "),
-						"transition-duration": `${this.#openDuration}ms`,
-						...commonStyles,
-						...openStyles,
-					};
-				}
-
-				if (this.#status === "close") {
-					const localStyles = closeStyles || initialStyles;
-					this.#styles = {
-						"transition-property": Object.keys(localStyles).join(", "),
-						"transition-duration": `${this.#closeDuration}ms`,
-						...commonStyles,
-						...localStyles,
-					};
-				}
-			},
-		);
-	}
-
-	get styles() {
-		return styleObjectToString(this.#styles);
-	}
-
-	get isMounted() {
-		return this.#transitionStatus.isMounted;
-	}
-}
-
 function useTransitionStyles(
 	context: FloatingContext,
-	options: UseTransitionStylesOptions = {},
-): TransitionStylesState {
-	return new TransitionStylesState(context, options);
+	opts: UseTransitionStylesOptions = {},
+): {
+	styles: string;
+	isMounted: boolean;
+} {
+	const initial = $derived(opts.initial ?? { opacity: 0 });
+	const open = $derived(opts.open);
+	const close = $derived(opts.close);
+	const common = $derived(opts.common);
+	const duration = $derived(extract(opts.duration, 250));
+	const placement = $derived(context.placement);
+	const side = $derived(placement.split("-")[0] as Side);
+	const fnArgs = $derived({ side, placement });
+	const openDuration = $derived.by(() => {
+		if (typeof duration === "number") {
+			return duration;
+		}
+		return duration.open || 0;
+	});
+	const closeDuration = $derived.by(() => {
+		if (typeof duration === "number") {
+			return duration;
+		}
+		return duration.close || 0;
+	});
+	let styles = $state.raw<PropertiesHyphen>({
+		...execWithArgsOrReturn(common, fnArgs),
+		...execWithArgsOrReturn(initial, fnArgs),
+	});
+	const transitionStatus = useTransitionStatus(context, {
+		duration: opts.duration,
+	});
+	const status = $derived(transitionStatus.status);
+
+	watch.pre(
+		[
+			() => closeDuration,
+			() => close,
+			() => initial,
+			() => open,
+			() => common,
+			() => openDuration,
+			() => status,
+			() => fnArgs,
+		],
+		() => {
+			const initialStyles = execWithArgsOrReturn(initial, fnArgs);
+			const closeStyles = execWithArgsOrReturn(close, fnArgs);
+			const commonStyles = execWithArgsOrReturn(common, fnArgs);
+			const openStyles =
+				execWithArgsOrReturn(open, fnArgs) ||
+				Object.keys(initialStyles).reduce((acc: Record<string, "">, key) => {
+					acc[key] = "";
+					return acc;
+				}, {});
+
+			if (status === "initial") {
+				styles = {
+					"transition-property": styles["transition-property"],
+					...commonStyles,
+					...initialStyles,
+				};
+			}
+
+			if (status === "open") {
+				styles = {
+					"transition-property": Object.keys(openStyles).join(", "),
+					"transition-duration": `${openDuration}ms`,
+					...commonStyles,
+					...openStyles,
+				};
+			}
+
+			if (status === "close") {
+				const localStyles = closeStyles || initialStyles;
+				styles = {
+					"transition-property": Object.keys(localStyles).join(", "),
+					"transition-duration": `${closeDuration}ms`,
+					...commonStyles,
+					...localStyles,
+				};
+			}
+		},
+	);
+
+	return {
+		get styles() {
+			return styleObjectToString(styles);
+		},
+
+		get isMounted() {
+			return transitionStatus.isMounted;
+		},
+	};
 }
 
 export { useTransitionStyles, useTransitionStatus };
