@@ -262,7 +262,6 @@
 						initialFocus={isNested ? -1 : 0}
 						returnFocus={!isNested}>
 						<div
-							id={floatingId}
 							bind:this={f.floating}
 							class="flex flex-col rounded bg-white shadow-lg outline-none p-1 border border-slate-900/10 bg-clip-padding"
 							style={styleObjectToString({
@@ -274,7 +273,9 @@
 										: "hidden",
 							})}
 							aria-hidden={!open}
-							{...ints.getFloatingProps()}>
+							{...ints.getFloatingProps({
+								id: floatingId,
+							})}>
 							{@render children?.()}
 						</div>
 					</FloatingFocusManager>

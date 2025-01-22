@@ -118,6 +118,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}) {
 	const handleClose: HandleCloseFn | null = options.handleClose ?? null;
 	const tree = useFloatingTree();
 	const parentId = useFloatingParentNodeId();
+
 	let pointerType: PointerType | undefined = undefined;
 	let timeout = -1;
 	let handler: ((event: MouseEvent) => void) | undefined = undefined;
@@ -207,7 +208,9 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}) {
 		closeWithDelay(event, false);
 	}
 
-	watch([() => enabled, () => context.events], ([enabled, events]) => {
+	// When closing before opening, clear the delay timeouts to cancel it
+	// from showing.
+	watch([() => enabled, () => context.events], () => {
 		if (!enabled) return;
 
 		const onOpenChange = ({ open }: { open: boolean }) => {
@@ -219,11 +222,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}) {
 			}
 		};
 
-		events.on("openchange", onOpenChange);
-
-		return () => {
-			events.off("openchange", onOpenChange);
-		};
+		return context.events.on("openchange", onOpenChange);
 	});
 
 	watch(
@@ -234,12 +233,14 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}) {
 			() => isHoverOpen,
 		],
 		() => {
-			if (!enabled || !handleClose || !context.open) return;
+			if (!enabled) return;
+			if (!handleClose) return;
+			if (!context.open) return;
 
-			const onLeave = (event: MouseEvent) => {
+			function onLeave(event: MouseEvent) {
 				if (!isHoverOpen) return;
 				context.onOpenChange(false, event, "hover");
-			};
+			}
 
 			const html = getDocument(context.floating).documentElement;
 			return on(html, "mouseleave", onLeave);
@@ -267,10 +268,9 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}) {
 		() => {
 			if (!enabled) return;
 
-			const onMouseEnter = (event: MouseEvent) => {
+			function onMouseEnter(event: MouseEvent) {
 				window.clearTimeout(timeout);
 				blockMouseMove = false;
-				const isOpen = context.open;
 
 				if (
 					(mouseOnly && !isMouseLikePointerType(pointerType)) ||
@@ -280,6 +280,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}) {
 				}
 
 				const openDelay = getDelay(delay, "open", pointerType);
+				const isOpen = context.open;
 
 				if (openDelay) {
 					timeout = window.setTimeout(() => {
@@ -287,13 +288,12 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}) {
 							context.onOpenChange(true, event, "hover");
 						}
 					}, openDelay);
-				} else if (!isOpen) {
+				} else if (!context.open) {
 					context.onOpenChange(true, event, "hover");
 				}
-			};
+			}
 
-			const onMouseLeave = (event: MouseEvent) => {
-				console.log("mouse leave");
+			function onMouseLeave(event: MouseEvent) {
 				if (isClickLikeOpenEvent) return;
 				const isOpen = context.open;
 
@@ -344,7 +344,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}) {
 				if (shouldClose) {
 					closeWithDelay(event);
 				}
-			};
+			}
 
 			// Ensure the floating element closes after scrolling even if the pointer
 			// did not move.
@@ -355,7 +355,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}) {
 
 				handleClose?.({
 					...snapshotFloatingContext(context.data.floatingContext).current,
-					tree: tree,
+					tree,
 					x: event.clientX,
 					y: event.clientY,
 					onClose: () => {
@@ -367,16 +367,16 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}) {
 					},
 				})(event);
 			};
-			const isOpen = context.open;
 			if (isElement(context.domReference)) {
 				const ref = context.domReference as unknown as HTMLElement;
-				isOpen && ref.addEventListener("mouseleave", onScrollMouseLeave);
+				context.open && ref.addEventListener("mouseleave", onScrollMouseLeave);
 				context.floating?.addEventListener("mouseleave", onScrollMouseLeave);
 				move && ref.addEventListener("mousemove", onMouseEnter, { once: true });
 				ref.addEventListener("mouseenter", onMouseEnter);
 				ref.addEventListener("mouseleave", onMouseLeave);
 				return () => {
-					isOpen && ref.removeEventListener("mouseleave", onScrollMouseLeave);
+					context.open &&
+						ref.removeEventListener("mouseleave", onScrollMouseLeave);
 					context.floating?.removeEventListener(
 						"mouseleave",
 						onScrollMouseLeave,
@@ -442,7 +442,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}) {
 		},
 	);
 
-	$effect(() => {
+	$effect.pre(() => {
 		if (!context.open) {
 			pointerType = undefined;
 			restTimeoutPending = false;
