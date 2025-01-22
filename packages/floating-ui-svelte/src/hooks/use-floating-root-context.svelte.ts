@@ -126,8 +126,7 @@ class FloatingRootContext<RT extends ReferenceType = ReferenceType> {
 }
 
 export function useFloatingRootContext(options: UseFloatingRootContextOptions) {
-	const optionsState = new FloatingRootContextOptions(options);
-	return new FloatingRootContext(optionsState);
+	return new FloatingRootContext(new FloatingRootContextOptions(options));
 }
 
 export type { UseFloatingRootContextOptions };

@@ -14,8 +14,12 @@ function createPubSub() {
 		// biome-ignore lint/suspicious/noExplicitAny: TODO: Type this with the actual structures?
 		on(event: string, listener: (data: any) => void) {
 			map.set(event, [...(map.get(event) || []), listener]);
+
+			return () => {
+				map.set(event, map.get(event)?.filter((l) => l !== listener) || []);
+			};
 		},
-		// biome-ignore lint/suspicious/noExplicitAny: TODO: Type this with the actual structures?
+		// biome-ignore lint/suspicious/noExplicitAny: TODO: Type this with the actual structures maybe not since people could make their own custom ones? Idk we'll see
 		off(event: string, listener: (data: any) => void) {
 			map.set(event, map.get(event)?.filter((l) => l !== listener) || []);
 		},

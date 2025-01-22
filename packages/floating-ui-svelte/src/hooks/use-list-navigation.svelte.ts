@@ -633,7 +633,6 @@ function useListNavigation(
 				];
 
 			if (localIndex != null) {
-				console.log("localIndex", localIndex);
 				index = localIndex;
 				onNavigate();
 			}

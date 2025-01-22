@@ -51,10 +51,7 @@
 		useRole,
 	} from "../../../../src/index.js";
 	import { arrow, autoUpdate, flip, offset } from "@floating-ui/dom";
-	import type {
-		FormEventHandler,
-		KeyboardEventHandler,
-	} from "svelte/elements";
+	import type { KeyboardEventHandler } from "svelte/elements";
 	import Button from "../button.svelte";
 	import FloatingPortal from "../../../../src/components/floating-portal/floating-portal.svelte";
 	import FloatingFocusManager from "../../../../src/components/floating-focus-manager/floating-focus-manager.svelte";

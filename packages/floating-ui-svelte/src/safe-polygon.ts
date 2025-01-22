@@ -80,7 +80,7 @@ function safePolygon(options: SafePolygonOptions = {}) {
 	}
 
 	const fn: HandleCloseFn = (context) => {
-		return function onMouseMove(event: MouseEvent) {
+		return (event: MouseEvent) => {
 			function close() {
 				clearTimeout(timeoutId);
 				context.onClose();
@@ -118,11 +118,10 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			const bottom = (isFloatingTaller ? refRect : rect).bottom;
 
 			if (isOverFloatingEl) {
+				console.log("isOverflowingel");
 				hasLanded = true;
 
-				if (!isLeave) {
-					return;
-				}
+				if (!isLeave) return;
 			}
 
 			if (isOverReferenceEl) {
@@ -164,6 +163,7 @@ function safePolygon(options: SafePolygonOptions = {}) {
 				(side === "left" && context.x >= refRect.right - 1) ||
 				(side === "right" && context.x <= refRect.left + 1)
 			) {
+				console.log("1");
 				return close();
 			}
 
@@ -371,13 +371,16 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			}
 
 			if (hasLanded && !isOverReferenceRect) {
+				console.log("2");
 				return close();
 			}
 
 			if (!isLeave && requireIntent) {
 				const cursorSpeed = getCursorSpeed(event.clientX, event.clientY);
 				const cursorSpeedThreshold = 0.1;
+				console.log(cursorSpeed);
 				if (cursorSpeed !== null && cursorSpeed < cursorSpeedThreshold) {
+					console.log("3");
 					return close();
 				}
 			}
@@ -390,7 +393,11 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			) {
 				close();
 			} else if (!hasLanded && requireIntent) {
-				timeoutId = window.setTimeout(close, 40);
+				function here() {
+					console.log("4");
+					close();
+				}
+				timeoutId = window.setTimeout(here, 40);
 			}
 		};
 	};

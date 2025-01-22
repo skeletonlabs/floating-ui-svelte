@@ -2,7 +2,7 @@ import { extract } from "../../internal/extract.js";
 import type { MaybeGetter } from "../../types.js";
 import { Context } from "../../internal/context.js";
 import { watch } from "../../internal/watch.svelte.js";
-import type { SvelteMap } from "svelte/reactivity";
+import { SvelteMap } from "svelte/reactivity";
 
 type FloatingListContextType = {
 	register: (node: Node) => void;
@@ -26,7 +26,12 @@ interface UseListItemOptions {
  */
 function useListItem(opts: UseListItemOptions = {}) {
 	const label = $derived(extract(opts.label));
-	const listContext = FloatingListContext.get();
+	const listContext = FloatingListContext.getOr({
+		elements: [],
+		map: new SvelteMap(),
+		register: () => {},
+		unregister: () => {},
+	} as FloatingListContextType);
 	let index = $state<number | null>(null);
 	let ref = $state<Node | null>(null);
 

@@ -18,6 +18,10 @@
 	FloatingTreeContext.set({
 		addNode: (node: FloatingNodeType) => {
 			nodes = [...nodes, node];
+
+			return () => {
+				nodes = nodes.filter((n) => n !== node);
+			};
 		},
 		removeNode: (node: FloatingNodeType) => {
 			nodes = nodes.filter((n) => n !== node);

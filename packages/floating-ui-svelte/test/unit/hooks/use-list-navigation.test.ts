@@ -1071,7 +1071,48 @@ it("grid navigation with changing list items", async () => {
 	);
 });
 
-it.todo("grid navigation with disabled list items");
+it("grid navigation with disabled list items after input", async () => {
+	render(EmojiPicker);
+
+	await fireEvent.click(screen.getByRole("button"));
+
+	await act(async () => {});
+
+	await waitFor(() => expect(screen.getByRole("textbox")).toHaveFocus());
+
+	await userEvent.keyboard("o");
+	await userEvent.keyboard("{ArrowDown}");
+
+	await waitFor(() =>
+		expect(screen.getByLabelText("orange")).not.toHaveAttribute("data-active"),
+	);
+	await waitFor(() =>
+		expect(screen.getByLabelText("watermelon")).toHaveAttribute("data-active"),
+	);
+
+	await userEvent.keyboard("{ArrowDown}");
+
+	await waitFor(() =>
+		expect(screen.getByLabelText("watermelon")).toHaveAttribute("data-active"),
+	);
+});
+
+it("grid navigation with disabled list items", async () => {
+	render(EmojiPicker);
+
+	await fireEvent.click(screen.getByRole("button"));
+
+	await waitFor(() => expect(screen.getByRole("textbox")).toHaveFocus());
+
+	await userEvent.keyboard(testKbd.ARROW_DOWN);
+	await userEvent.keyboard(testKbd.ARROW_DOWN);
+	await userEvent.keyboard(testKbd.ARROW_RIGHT);
+	await userEvent.keyboard(testKbd.ARROW_UP);
+
+	await waitFor(() =>
+		expect(screen.getByLabelText("cherry")).toHaveAttribute("data-active"),
+	);
+});
 
 it.todo("selectedIndex changing does not steal focus");
 

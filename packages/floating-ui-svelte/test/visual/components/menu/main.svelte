@@ -1,0 +1,29 @@
+<script lang="ts">
+	import MenuItem from "./menu-item.svelte";
+	import Menu from "./menu.svelte";
+</script>
+
+<h1 class="text-5xl font-bold mb-8">Menu</h1>
+<div
+	class="grid place-items-center border border-slate-400 rounded lg:w-[40rem] h-[20rem] mb-4">
+	<Menu label="Edit">
+		<MenuItem label="Undo" onclick={() => console.log("Undo")} />
+		<MenuItem label="Redo" />
+		<MenuItem label="Cut" disabled />
+		<Menu label="Copy as" forceMount>
+			<MenuItem label="Text" />
+			<MenuItem label="Video" />
+			<Menu label="Image" forceMount>
+				<MenuItem label=".png" />
+				<MenuItem label=".jpg" />
+				<MenuItem label=".svg" />
+				<MenuItem label=".gif" />
+			</Menu>
+			<MenuItem label="Audio" />
+		</Menu>
+		<Menu label="Share">
+			<MenuItem label="Mail" />
+			<MenuItem label="Instagram" />
+		</Menu>
+	</Menu>
+</div>

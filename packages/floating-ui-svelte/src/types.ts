@@ -26,8 +26,12 @@ type Rect = Coords & Dimensions;
 interface FloatingEvents {
 	// biome-ignore lint/suspicious/noExplicitAny: From the port
 	emit<T extends string>(event: T, data?: any): void;
+	/**
+	 * Listen for events emitted by the floating tree.
+	 * Returns a function to remove the listener.
+	 */
 	// biome-ignore lint/suspicious/noExplicitAny: From the port
-	on(event: string, handler: (data: any) => void): void;
+	on(event: string, handler: (data: any) => void): () => void;
 	// biome-ignore lint/suspicious/noExplicitAny: From the port
 	off(event: string, handler: (data: any) => void): void;
 }
@@ -39,6 +43,9 @@ interface ContextData<RT extends ReferenceType = ReferenceType> {
 	openEvent?: Event;
 
 	floatingContext?: FloatingContext<RT>;
+
+	/** @deprecated use `onTypingChange` prop in `useTypeahead` */
+	typing?: boolean;
 
 	/**
 	 * Arbitrary data produced and consumed by other hooks.

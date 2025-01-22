@@ -17,6 +17,16 @@
 					}
 				}
 			}
+		},
+		{
+			"include": ["*.ts"],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noAssignInExpressions": "off"
+					}
+				}
+			}
 		}
 	]
 }
