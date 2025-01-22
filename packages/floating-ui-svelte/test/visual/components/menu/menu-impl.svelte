@@ -43,10 +43,11 @@
 		forceMount = false,
 		ref = $bindable(null),
 		class: className,
+		floatingId,
 		...rest
 	}: MenuProps &
 		Partial<WithRef<HTMLButtonElement>> &
-		HTMLButtonAttributes = $props();
+		HTMLButtonAttributes & { floatingId?: string } = $props();
 
 	let open = $state(false);
 	let activeIndex = $state<number | null>(null);
@@ -261,6 +262,7 @@
 						initialFocus={isNested ? -1 : 0}
 						returnFocus={!isNested}>
 						<div
+							id={floatingId}
 							bind:this={f.floating}
 							class="flex flex-col rounded bg-white shadow-lg outline-none p-1 border border-slate-900/10 bg-clip-padding"
 							style={styleObjectToString({

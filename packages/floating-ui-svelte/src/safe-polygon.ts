@@ -102,6 +102,7 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			const clientPoint: Point = [clientX, clientY];
 			const target = getTarget(event) as Element | null;
 			const isLeave = event.type === "mouseleave";
+			console.log(event.type);
 			const isOverFloatingEl = contains(context.floating, target);
 			const isOverReferenceEl = contains(context.domReference, target);
 			const refRect = context.domReference.getBoundingClientRect();
@@ -118,7 +119,6 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			const bottom = (isFloatingTaller ? refRect : rect).bottom;
 
 			if (isOverFloatingEl) {
-				console.log("isOverflowingel");
 				hasLanded = true;
 
 				if (!isLeave) return;
@@ -378,9 +378,7 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			if (!isLeave && requireIntent) {
 				const cursorSpeed = getCursorSpeed(event.clientX, event.clientY);
 				const cursorSpeedThreshold = 0.1;
-				console.log(cursorSpeed);
 				if (cursorSpeed !== null && cursorSpeed < cursorSpeedThreshold) {
-					console.log("3");
 					return close();
 				}
 			}
@@ -391,10 +389,11 @@ function safePolygon(options: SafePolygonOptions = {}) {
 					getPolygon([context.x, context.y]),
 				)
 			) {
+				console.log("4");
 				close();
 			} else if (!hasLanded && requireIntent) {
 				function here() {
-					console.log("4");
+					console.log("5");
 					close();
 				}
 				timeoutId = window.setTimeout(here, 40);

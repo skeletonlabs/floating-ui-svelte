@@ -82,21 +82,24 @@ function useTypeahead(
 	let matchIndex: number | null = null;
 
 	watch.pre(
-		() => open,
+		() => context.open,
 		() => {
-			if (!open) return;
+			if (!context.open) return;
 			clearTimeout(timeoutId);
 			matchIndex = null;
 			str = "";
 		},
 	);
 
-	watch.pre([() => open, () => selectedIndex, () => activeIndex], () => {
-		// sync arrow key nav but not typeahead nav
-		if (context.open && str === "") {
-			prevIndex = selectedIndex ?? activeIndex ?? -1;
-		}
-	});
+	watch.pre(
+		[() => context.open, () => selectedIndex, () => activeIndex],
+		() => {
+			// sync arrow key nav but not typeahead nav
+			if (context.open && str === "") {
+				prevIndex = selectedIndex ?? activeIndex ?? -1;
+			}
+		},
+	);
 
 	function setTypingChange(value: boolean) {
 		if (value) {
@@ -129,7 +132,7 @@ function useTypeahead(
 
 	function onkeydown(event: KeyboardEvent) {
 		const listContent = listRef;
-		const open = context.open;
+		const isOpen = context.open;
 
 		if (str.length > 0 && str[0] !== " ") {
 			if (getMatchingIndex(listContent, listContent, str) === -1) {
@@ -152,7 +155,7 @@ function useTypeahead(
 			return;
 		}
 
-		if (open && event.key !== " ") {
+		if (isOpen && event.key !== " ") {
 			stopEvent(event);
 			setTypingChange(true);
 		}

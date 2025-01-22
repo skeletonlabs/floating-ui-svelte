@@ -30,6 +30,7 @@ function snapshotFloatingContext<RT extends ReferenceType = ReferenceType>(
 				floatingId: context.floatingId,
 				events: context.events,
 				nodeId: context.nodeId,
+				setPositionReference: context.setPositionReference,
 			};
 		},
 	};

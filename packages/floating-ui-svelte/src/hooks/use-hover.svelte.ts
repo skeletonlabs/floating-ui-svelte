@@ -22,10 +22,8 @@ import {
 	useFloatingTree,
 } from "../components/floating-tree/hooks.svelte.js";
 import { on } from "svelte/events";
-import { executeCallbacks } from "../internal/execute-callbacks.js";
 import { snapshotFloatingContext } from "../internal/snapshot.svelte.js";
 import { watch } from "../internal/watch.svelte.js";
-import type { ElementProps } from "./use-interactions.svelte.js";
 import { extract } from "../internal/extract.js";
 
 interface DelayOptions {
@@ -236,7 +234,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}) {
 			() => isHoverOpen,
 		],
 		() => {
-			if (!enabled || !handleClose || !open) return;
+			if (!enabled || !handleClose || !context.open) return;
 
 			const onLeave = (event: MouseEvent) => {
 				if (!isHoverOpen) return;
@@ -260,7 +258,7 @@ function useHover(context: FloatingContext, options: UseHoverOptions = {}) {
 			() => mouseOnly,
 			() => restMs,
 			() => move,
-			() => open,
+			() => context.open,
 			() => tree?.nodes,
 			() => delay,
 			() => context.data.floatingContext,

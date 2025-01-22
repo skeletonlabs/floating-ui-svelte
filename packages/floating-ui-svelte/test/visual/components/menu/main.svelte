@@ -10,10 +10,18 @@
 		<MenuItem label="Undo" onclick={() => console.log("Undo")} />
 		<MenuItem label="Redo" />
 		<MenuItem label="Cut" disabled />
-		<Menu label="Copy as" forceMount>
+		<Menu
+			label="Copy as"
+			forceMount
+			id="copy-as-ref"
+			floatingId="copy-as-floating">
 			<MenuItem label="Text" />
 			<MenuItem label="Video" />
-			<Menu label="Image" forceMount>
+			<Menu
+				label="Image"
+				forceMount
+				id="image-ref"
+				floatingId="image-floating">
 				<MenuItem label=".png" />
 				<MenuItem label=".jpg" />
 				<MenuItem label=".svg" />
