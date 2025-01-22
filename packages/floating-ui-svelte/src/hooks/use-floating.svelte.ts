@@ -69,6 +69,13 @@ interface UseFloatingOptions {
 	transform?: boolean;
 
 	/**
+	 * Whether to use 'translate' instead of 'transform' to position the floating element.
+	 *
+	 * @default false
+	 */
+	translate?: boolean;
+
+	/**
 	 * Object containing the floating and reference elements.
 	 * @default {}
 	 */
@@ -218,11 +225,34 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		strategy = "absolute",
 		middleware = [],
 		transform = true,
+		translate = false,
 		open = true,
 		onOpenChange: unstableOnOpenChange = noop,
 		whileElementsMounted,
 		nodeId,
 	} = $derived(options);
+
+	const state: UseFloatingData = $state({
+		x: 0,
+		y: 0,
+		strategy,
+		placement,
+		middlewareData: {},
+		isPositioned: false,
+	});
+
+	const origin = $derived.by(() => {
+		if (state.placement.startsWith("top"))
+			return state.placement.replace("top", "bottom");
+		if (state.placement.startsWith("bottom"))
+			return state.placement.replace("bottom", "top");
+		if (state.placement.startsWith("left"))
+			return state.placement.replace("left", "right");
+		if (state.placement.startsWith("right"))
+			return state.placement.replace("right", "left");
+		return state.placement;
+	});
+
 	const floatingStyles = $derived.by(() => {
 		const initialStyles = {
 			position: strategy,
@@ -237,10 +267,20 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		const x = roundByDPR(elements.floating, state.x);
 		const y = roundByDPR(elements.floating, state.y);
 
+		if (translate) {
+			return styleObjectToString({
+				...initialStyles,
+				translate: `${x}px ${y}px`,
+				"transform-origin": origin,
+				...(getDPR(elements.floating) >= 1.5 && { willChange: "transform" }),
+			});
+		}
+
 		if (transform) {
 			return styleObjectToString({
 				...initialStyles,
 				transform: `translate(${x}px, ${y}px)`,
+				"transform-origin": origin,
 				...(getDPR(elements.floating) >= 1.5 && { willChange: "transform" }),
 			});
 		}
@@ -264,15 +304,6 @@ function useFloating(options: UseFloatingOptions = {}): UseFloatingReturn {
 		events.emit("openchange", { open, event, reason });
 		unstableOnOpenChange(open, event, reason);
 	};
-
-	const state: UseFloatingData = $state({
-		x: 0,
-		y: 0,
-		strategy,
-		placement,
-		middlewareData: {},
-		isPositioned: false,
-	});
 
 	const context: FloatingContext = $state({
 		data,
