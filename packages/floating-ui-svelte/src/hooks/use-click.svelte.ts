@@ -173,15 +173,12 @@ function useClick(
 		}
 	}
 
-	const reference = $derived.by(() => {
-		if (!enabled) return {};
-		return {
-			onpointerdown: onpointerdown,
-			onmousedown: onmousedown,
-			onclick: onclick,
-			onkeydown: onkeydown,
-			onkeyup: onkeyup,
-		};
+	const reference = $derived({
+		onpointerdown: onpointerdown,
+		onmousedown: onmousedown,
+		onclick: onclick,
+		onkeydown: onkeydown,
+		onkeyup: onkeyup,
 	});
 
 	return {

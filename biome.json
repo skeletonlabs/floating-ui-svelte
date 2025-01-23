@@ -22,6 +22,9 @@
 			"include": ["*.ts"],
 			"linter": {
 				"rules": {
+					"style": {
+						"noNonNullAssertion": "off"
+					},
 					"suspicious": {
 						"noAssignInExpressions": "off"
 					}

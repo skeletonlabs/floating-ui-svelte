@@ -27,6 +27,12 @@ interface UseFloatingRootContextOptions {
 	floating: MaybeGetter<HTMLElement | null>;
 	onReferenceChange?: (node: Element | null) => void;
 	onFloatingChange?: (node: HTMLElement | null) => void;
+	/**
+	 * The id to assign to the floating element.
+	 *
+	 * @default useId()
+	 */
+	floatingId?: MaybeGetter<string | undefined | null>;
 }
 
 class FloatingRootContextOptions {
@@ -40,6 +46,7 @@ class FloatingRootContextOptions {
 	floating: WritableBox<HTMLElement | null>;
 	floatingProp = $derived.by(() => extract(this.options.floating, null));
 	referenceProp = $derived.by(() => extract(this.options.reference, null));
+	floatingId = $derived.by(() => extract(this.options.floatingId, useId()));
 
 	constructor(readonly options: UseFloatingRootContextOptions) {
 		this.open = box.with(() => extract(options.open, false));
@@ -75,7 +82,7 @@ class FloatingRootContextOptions {
 }
 
 class FloatingRootContext<RT extends ReferenceType = ReferenceType> {
-	floatingId = useId();
+	floatingId = $derived.by(() => extract(this.options.floatingId) ?? useId());
 	data: ContextData<RT> = $state({});
 	events = createPubSub();
 	open = $derived.by(() => this.options.open.current);

@@ -25,6 +25,7 @@ import {
 import { extract } from "../internal/extract.js";
 import { noop } from "../internal/noop.js";
 import { isElement } from "@floating-ui/utils/dom";
+import { useId } from "bits-ui";
 
 interface UseFloatingOptions<RT extends ReferenceType = ReferenceType> {
 	/**
@@ -92,6 +93,13 @@ interface UseFloatingOptions<RT extends ReferenceType = ReferenceType> {
 	 * Unique node id when using `FloatingTree`.
 	 */
 	nodeId?: MaybeGetter<string | undefined>;
+
+	/**
+	 * A unique id for the floating element.
+	 *
+	 * @default useId()
+	 */
+	floatingId?: MaybeGetter<string | undefined | null>;
 }
 
 /**
@@ -109,6 +117,7 @@ class FloatingOptions<RT extends ReferenceType = ReferenceType> {
 	transform: ReadableBox<boolean>;
 	whileElementsMounted: WhileElementsMounted | undefined;
 	rootContext: ReadableBox<FloatingRootContext<RT> | undefined>;
+	floatingId: ReadableBox<string>;
 	onReferenceChange: (node: Element | null) => void;
 	onFloatingChange: (node: HTMLElement | null) => void;
 	onOpenChange: (
@@ -134,6 +143,7 @@ class FloatingOptions<RT extends ReferenceType = ReferenceType> {
 		this.strategy = box.with(() => extract(options.strategy, "absolute"));
 		this.middleware = box.with(() => extract(options.middleware, []));
 		this.transform = box.with(() => extract(options.transform, true));
+		this.floatingId = box.with(() => extract(options.floatingId) ?? useId());
 		this.onOpenChange = options.onOpenChange ?? noop;
 		this.onReferenceChange = options.onReferenceChange ?? noop;
 		this.onFloatingChange = options.onFloatingChange ?? noop;
@@ -296,6 +306,7 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 			reference: () => options.reference.current,
 			floating: () => options.floating.current,
 			onOpenChange: options.onOpenChange,
+			floatingId: () => options.floatingId.current,
 		});
 
 		this.#rootContext =

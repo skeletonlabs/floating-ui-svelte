@@ -75,12 +75,13 @@
 
 	const f = useFloating<HTMLButtonElement>({
 		nodeId,
+		floatingId,
 		open: () => open,
 		onOpenChange: (v) => (open = v),
-		placement: isNested ? "right-start" : "bottom-start",
+		placement: () => (isNested ? "right-start" : "bottom-start"),
 		middleware: [
 			offset({
-				mainAxis: isNested ? 0 : 4,
+				mainAxis: isNested ? 40 : 4,
 				alignmentAxis: isNested ? -4 : 0,
 			}),
 			flip(),
@@ -98,7 +99,7 @@
 	const click = useClick(f.context, {
 		event: "mousedown",
 		toggle: () => !isNested || !allowHover,
-		ignoreMouse: isNested,
+		ignoreMouse: () => isNested,
 	});
 
 	const role = useRole(f.context, { role: "menu" });
@@ -108,7 +109,7 @@
 	const listNav = useListNavigation(f.context, {
 		listRef: () => elements,
 		activeIndex: () => activeIndex,
-		nested: isNested,
+		nested: () => isNested,
 		onNavigate: (v) => (activeIndex = v),
 	});
 	const typeahead = useTypeahead(f.context, {
@@ -129,6 +130,12 @@
 		listNav,
 		typeahead,
 	]);
+
+	$effect(() => {
+		f.context.events.on("openchange", (data) => {
+			console.log("open change data", data);
+		});
+	});
 
 	// Event emitter allows you to communicate across tree components.
 	// This effect closes all menus when an item gets clicked anywhere
@@ -178,9 +185,9 @@
 	const mergedReference = box.with(
 		() => ref,
 		(v) => {
+			ref = v;
 			f.reference = v;
 			item.ref = v;
-			ref = v;
 		}
 	);
 </script>
@@ -273,9 +280,8 @@
 										: "hidden",
 							})}
 							aria-hidden={!open}
-							{...ints.getFloatingProps({
-								id: floatingId,
-							})}>
+							{...ints.getFloatingProps()}
+							id={floatingId}>
 							{@render children?.()}
 						</div>
 					</FloatingFocusManager>

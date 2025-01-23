@@ -4,6 +4,7 @@ import type { HandleCloseFn } from "./hooks/use-hover.svelte.js";
 import { contains, getTarget } from "./internal/dom.js";
 import { getChildren } from "./internal/get-children.js";
 import { debugPolygon } from "../test/visual/components/utils/debug-polygon.svelte";
+import { sleep } from "./internal/sleep.js";
 
 type Point = [number, number];
 type Polygon = Point[];
@@ -83,36 +84,39 @@ function safePolygon(options: SafePolygonOptions = {}) {
 	const fn: HandleCloseFn = (context) => {
 		return (event: MouseEvent) => {
 			function close() {
+				if (!context.open) return;
 				clearTimeout(timeoutId);
 				context.onClose();
 			}
-
+			const floating = context.floating;
+			const reference = context.domReference;
+			const placement = context.placement;
+			const x = context.x;
+			const y = context.y;
 			clearTimeout(timeoutId);
 
 			if (
-				!context.domReference ||
-				!context.floating ||
-				context.placement == null ||
+				!reference ||
+				!floating ||
+				placement == null ||
 				context.x == null ||
 				context.y == null
 			) {
 				return;
 			}
 
-			const { clientX, clientY } = event;
-			const clientPoint: Point = [clientX, clientY];
+			const clientPoint: Point = [event.clientX, event.clientY];
 			const target = getTarget(event) as Element | null;
 			const isLeave = event.type === "mouseleave";
-			const isOverFloatingEl = contains(context.floating, target);
-			const isOverReferenceEl = contains(context.domReference, target);
+			const isOverFloatingEl = contains(floating, target);
+			const isOverReferenceEl = contains(reference, target);
 
-			const refRect = context.domReference.getBoundingClientRect();
-			const rect = context.floating.getBoundingClientRect();
-			const side = context.placement.split("-")[0] as Side;
-			const cursorLeaveFromRight = context.x > rect.right - rect.width / 2;
-			const cursorLeaveFromBottom = context.y > rect.bottom - rect.height / 2;
+			const refRect = reference.getBoundingClientRect();
+			const rect = floating.getBoundingClientRect();
+			const side = placement.split("-")[0] as Side;
+			const cursorLeaveFromRight = x > rect.right - rect.width / 2;
+			const cursorLeaveFromBottom = y > rect.bottom - rect.height / 2;
 			const isOverReferenceRect = isInside(clientPoint, refRect);
-			console.log("isOverReferenceRect", isOverReferenceRect);
 			const isFloatingWider = rect.width > refRect.width;
 			const isFloatingTaller = rect.height > refRect.height;
 			const left = (isFloatingWider ? refRect : rect).left;
@@ -140,7 +144,7 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			if (
 				isLeave &&
 				isElement(event.relatedTarget) &&
-				contains(context.floating, event.relatedTarget)
+				contains(floating, event.relatedTarget)
 			) {
 				return;
 			}
@@ -160,10 +164,10 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			// ignored.
 			// A constant of 1 handles floating point rounding errors.
 			if (
-				(side === "top" && context.y >= refRect.bottom - 1) ||
-				(side === "bottom" && context.y <= refRect.top + 1) ||
-				(side === "left" && context.x >= refRect.right - 1) ||
-				(side === "right" && context.x <= refRect.left + 1)
+				(side === "top" && y >= refRect.bottom - 1) ||
+				(side === "bottom" && y <= refRect.top + 1) ||
+				(side === "left" && x >= refRect.right - 1) ||
+				(side === "right" && x <= refRect.left + 1)
 			) {
 				console.log("1");
 				return close();
@@ -368,11 +372,11 @@ function safePolygon(options: SafePolygonOptions = {}) {
 				}
 			}
 
-			const polygon = getPolygon([context.x, context.y]);
+			const polygon = getPolygon([x, y]);
 			debugPolygon.current.tri = polygon;
 			debugPolygon.current.rect = rectPoly;
 
-			if (isPointInPolygon([clientX, clientY], rectPoly)) {
+			if (isPointInPolygon([event.clientX, event.clientY], rectPoly)) {
 				return;
 			}
 
@@ -385,15 +389,13 @@ function safePolygon(options: SafePolygonOptions = {}) {
 				const cursorSpeed = getCursorSpeed(event.clientX, event.clientY);
 				const cursorSpeedThreshold = 0.1;
 				if (cursorSpeed !== null && cursorSpeed < cursorSpeedThreshold) {
+					console.log("3");
 					return close();
 				}
 			}
 
 			if (
-				!isPointInPolygon(
-					[clientX, clientY],
-					getPolygon([context.x, context.y]),
-				)
+				!isPointInPolygon([event.clientX, event.clientY], getPolygon([x, y]))
 			) {
 				console.log("4");
 				close();

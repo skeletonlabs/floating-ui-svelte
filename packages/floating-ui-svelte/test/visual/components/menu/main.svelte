@@ -6,7 +6,7 @@
 <h1 class="text-5xl font-bold mb-8">Menu</h1>
 <div
 	class="grid place-items-center border border-slate-400 rounded lg:w-[40rem] h-[20rem] mb-4">
-	<Menu label="Edit">
+	<Menu label="Edit" floatingId="main-floating" id="main-ref">
 		<MenuItem label="Undo" onclick={() => console.log("Undo")} />
 		<MenuItem label="Redo" />
 		<MenuItem label="Cut" disabled />
