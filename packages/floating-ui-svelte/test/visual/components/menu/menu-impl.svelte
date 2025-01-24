@@ -93,7 +93,11 @@
 	const hover = useHover(f.context, {
 		enabled: () => isNested && allowHover,
 		delay: { open: 75 },
-		handleClose: safePolygon({ blockPointerEvents: true }),
+		handleClose: safePolygon({
+			blockPointerEvents: true,
+			buffer: 1,
+			requireIntent: false,
+		}),
 	});
 
 	const click = useClick(f.context, {
@@ -243,6 +247,7 @@
 				return activeIndex;
 			},
 			set activeIndex(v: number | null) {
+				console.log("setting active index");
 				activeIndex = v;
 			},
 			getItemProps: (u) => ints.getItemProps(u),

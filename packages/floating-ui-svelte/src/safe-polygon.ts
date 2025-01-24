@@ -83,8 +83,9 @@ function safePolygon(options: SafePolygonOptions = {}) {
 
 	const fn: HandleCloseFn = (context) => {
 		return (event: MouseEvent) => {
+			const isOpen = context.open;
 			function close() {
-				if (!context.open) return;
+				if (!isOpen) return;
 				clearTimeout(timeoutId);
 				context.onClose();
 			}
@@ -93,14 +94,15 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			const placement = context.placement;
 			const x = context.x;
 			const y = context.y;
+			const tree = context.tree;
 			clearTimeout(timeoutId);
 
 			if (
 				!reference ||
 				!floating ||
 				placement == null ||
-				context.x == null ||
-				context.y == null
+				x == null ||
+				y == null
 			) {
 				return;
 			}
@@ -108,6 +110,7 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			const clientPoint: Point = [event.clientX, event.clientY];
 			const target = getTarget(event) as Element | null;
 			const isLeave = event.type === "mouseleave";
+			console.log("event.type", event.type);
 			const isOverFloatingEl = contains(floating, target);
 			const isOverReferenceEl = contains(reference, target);
 
@@ -117,6 +120,7 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			const cursorLeaveFromRight = x > rect.right - rect.width / 2;
 			const cursorLeaveFromBottom = y > rect.bottom - rect.height / 2;
 			const isOverReferenceRect = isInside(clientPoint, refRect);
+			const isOverFloatingRect = isInside(clientPoint, rect);
 			const isFloatingWider = rect.width > refRect.width;
 			const isFloatingTaller = rect.height > refRect.height;
 			const left = (isFloatingWider ? refRect : rect).left;
@@ -124,7 +128,8 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			const top = (isFloatingTaller ? refRect : rect).top;
 			const bottom = (isFloatingTaller ? refRect : rect).bottom;
 
-			if (isOverFloatingEl) {
+			if (isOverFloatingEl || isOverFloatingRect) {
+				console.log("isOverfloatingel", isOverFloatingEl);
 				hasLanded = true;
 
 				if (!isLeave) return;
@@ -151,9 +156,9 @@ function safePolygon(options: SafePolygonOptions = {}) {
 
 			// If any nested child is open, abort.
 			if (
-				context.tree &&
-				getChildren(context.tree.nodes, context.nodeId).some(
-					({ context }) => context?.open,
+				tree &&
+				getChildren(tree.nodes, context.nodeId).some(
+					({ context: ctx }) => ctx?.open,
 				)
 			) {
 				return;
