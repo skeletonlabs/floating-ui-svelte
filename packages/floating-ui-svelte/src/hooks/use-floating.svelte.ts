@@ -25,7 +25,7 @@ import {
 import { extract } from "../internal/extract.js";
 import { noop } from "../internal/noop.js";
 import { isElement } from "@floating-ui/utils/dom";
-import { useId } from "bits-ui";
+import { useId } from "./use-id.js";
 
 interface UseFloatingOptions<RT extends ReferenceType = ReferenceType> {
 	/**

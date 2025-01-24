@@ -31,7 +31,7 @@ function usePortalContext() {
 
 interface UseFloatingPortalNodeProps {
 	id?: MaybeGetter<string | undefined>;
-	root?: MaybeGetter<HTMLElement | null>;
+	root?: MaybeGetter<HTMLElement | null | undefined>;
 }
 
 function useFloatingPortalNode(props: UseFloatingPortalNodeProps = {}) {
@@ -46,6 +46,9 @@ function useFloatingPortalNode(props: UseFloatingPortalNodeProps = {}) {
 	$effect.pre(() => {
 		return () => {
 			portalNode?.remove();
+			// Allow the subsequent layout effects to create a new node on updates.
+			// The portal node will still be cleaned up on unmount.
+			// https://github.com/floating-ui/floating-ui/issues/2454
 			queueMicrotask(() => {
 				portalNode = null;
 			});

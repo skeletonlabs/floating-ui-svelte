@@ -47,7 +47,7 @@
 	let {
 		children,
 		id,
-		root = typeof document === "undefined" ? null : document.body,
+		root,
 		preserveTabOrder = true,
 	}: FloatingPortalProps = $props();
 
@@ -76,7 +76,7 @@
 			!!(root || portalNode.current)
 	);
 
-	watch(
+	watch.pre(
 		[() => portalNode.current, () => preserveTabOrder, () => modal],
 		() => {
 			if (!portalNode.current || !preserveTabOrder || modal) return;
@@ -102,7 +102,7 @@
 		}
 	);
 
-	watch([() => portalNode.current, () => open], () => {
+	watch.pre([() => portalNode.current, () => open], () => {
 		if (!portalNode.current || open) return;
 		enableFocusInside(portalNode.current);
 	});

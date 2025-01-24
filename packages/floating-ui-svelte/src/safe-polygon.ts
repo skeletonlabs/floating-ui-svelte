@@ -111,6 +111,7 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			const target = getTarget(event) as Element | null;
 			const isLeave = event.type === "mouseleave";
 			console.log("event.type", event.type);
+			console.log("event.target", event.target);
 			const isOverFloatingEl = contains(floating, target);
 			const isOverReferenceEl = contains(reference, target);
 

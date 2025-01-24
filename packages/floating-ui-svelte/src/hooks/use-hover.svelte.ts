@@ -385,10 +385,23 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 					if (parentFloating) {
 						parentFloating.style.pointerEvents = "";
 					}
+					console.log("Before applying styles:");
+					console.log("Floating element style:", floating.style.cssText);
+					console.log(
+						"Floating element computed style:",
+						window.getComputedStyle(floating).pointerEvents,
+					);
 
 					body.style.pointerEvents = "none";
 					ref.style.pointerEvents = "auto";
 					floating.style.pointerEvents = "auto";
+
+					console.log("After applying styles:");
+					console.log("Floating element style:", floating.style.cssText);
+					console.log(
+						"Floating element computed style:",
+						window.getComputedStyle(floating).pointerEvents,
+					);
 
 					return () => {
 						body.style.pointerEvents = "";

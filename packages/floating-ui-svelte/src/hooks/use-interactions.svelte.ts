@@ -60,9 +60,8 @@ function mergeProps<Key extends keyof ElementProps>(
 			})
 			.concat(userProps)
 			.reduce((acc: Record<string, unknown>, props) => {
-				if (!props) {
-					return acc;
-				}
+				if (!props) return acc;
+
 				for (const [key, value] of Object.entries(props)) {
 					if (isItem && [ACTIVE_KEY, SELECTED_KEY].includes(key)) {
 						continue;

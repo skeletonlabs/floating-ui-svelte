@@ -51,8 +51,10 @@
 			menu.setHasFocusInside(true);
 		},
 		onmouseenter: (event: ButtonEvent<MouseEvent>) => {
+			console.log("menuitem enter");
 			rest.onmouseenter?.(event);
 			if (menu.allowHover && menu.open) {
+				console.log("setting menu active index to", item.index);
 				menu.activeIndex = item.index;
 			}
 		},
