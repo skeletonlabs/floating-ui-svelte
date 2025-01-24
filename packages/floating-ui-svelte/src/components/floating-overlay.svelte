@@ -78,10 +78,7 @@
 </script>
 
 <script lang="ts">
-	import {
-		styleObjectToString,
-		styleStringToObject,
-	} from "../internal/style-object-to-string.js";
+	import { mergeStyles } from "../internal/style-object-to-string.js";
 
 	let {
 		ref = $bindable(null),
@@ -111,14 +108,16 @@
 <div
 	bind:this={ref}
 	{...rest}
-	style={styleObjectToString({
-		position: "fixed",
-		overflow: "auto",
-		top: 0,
-		right: 0,
-		bottom: 0,
-		left: 0,
-		...styleStringToObject(style),
-	})}>
+	style={mergeStyles(
+		{
+			position: "fixed",
+			overflow: "auto",
+			top: 0,
+			right: 0,
+			bottom: 0,
+			left: 0,
+		},
+		style
+	)}>
 	{@render children?.()}
 </div>

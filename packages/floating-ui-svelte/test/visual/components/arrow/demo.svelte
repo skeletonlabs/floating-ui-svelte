@@ -6,10 +6,7 @@
 	import type { Middleware } from "@floating-ui/dom";
 	import { useFloating } from "../../../../src/index.js";
 	import { arrow, autoUpdate, offset } from "@floating-ui/dom";
-	import {
-		styleObjectToString,
-		styleStringToObject,
-	} from "../../../../src/internal/style-object-to-string.js";
+	import { mergeStyles } from "../../../../src/internal/style-object-to-string.js";
 	import type { PropertiesHyphen } from "csstype";
 
 	let {
@@ -30,7 +27,6 @@
 
 	let open = $state(true);
 
-	// biome-ignore lint/style/noNonNullAssertion: <explanation>
 	let arrowRef: SVGSVGElement = $state(null!);
 
 	const f = useFloating({
@@ -61,13 +57,15 @@
 			bind:this={f.floating}
 			class="bg-black text-white p-2 bg-clip-padding"
 			{...floatingProps}
-			style={styleObjectToString({
-				visibility: f.middlewareData.hide?.referenceHidden
-					? "hidden"
-					: "visible",
-				...styleStringToObject(f.floatingStyles),
-				...floatingStyle,
-			})}>
+			style={mergeStyles(
+				{
+					visibility: f.middlewareData.hide?.referenceHidden
+						? "hidden"
+						: "visible",
+				},
+				f.floatingStyles,
+				floatingStyle
+			)}>
 			{#if children}
 				{@render children?.()}
 			{:else}

@@ -4,7 +4,6 @@ import type { HandleCloseFn } from "./hooks/use-hover.svelte.js";
 import { contains, getTarget } from "./internal/dom.js";
 import { getChildren } from "./internal/get-children.js";
 import { debugPolygon } from "../test/visual/components/utils/debug-polygon.svelte";
-import { sleep } from "./internal/sleep.js";
 
 type Point = [number, number];
 type Polygon = Point[];
@@ -110,8 +109,6 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			const clientPoint: Point = [event.clientX, event.clientY];
 			const target = getTarget(event) as Element | null;
 			const isLeave = event.type === "mouseleave";
-			console.log("event.type", event.type);
-			console.log("event.target", event.target);
 			const isOverFloatingEl = contains(floating, target);
 			const isOverReferenceEl = contains(reference, target);
 
@@ -121,7 +118,6 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			const cursorLeaveFromRight = x > rect.right - rect.width / 2;
 			const cursorLeaveFromBottom = y > rect.bottom - rect.height / 2;
 			const isOverReferenceRect = isInside(clientPoint, refRect);
-			const isOverFloatingRect = isInside(clientPoint, rect);
 			const isFloatingWider = rect.width > refRect.width;
 			const isFloatingTaller = rect.height > refRect.height;
 			const left = (isFloatingWider ? refRect : rect).left;
@@ -129,8 +125,7 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			const top = (isFloatingTaller ? refRect : rect).top;
 			const bottom = (isFloatingTaller ? refRect : rect).bottom;
 
-			if (isOverFloatingEl || isOverFloatingRect) {
-				console.log("isOverfloatingel", isOverFloatingEl);
+			if (isOverFloatingEl) {
 				hasLanded = true;
 
 				if (!isLeave) return;

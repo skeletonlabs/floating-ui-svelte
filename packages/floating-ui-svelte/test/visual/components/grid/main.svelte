@@ -7,10 +7,7 @@
 		useInteractions,
 		useListNavigation,
 	} from "../../../../src/index.js";
-	import {
-		styleObjectToString,
-		styleStringToObject,
-	} from "../../../../src/internal/style-object-to-string.js";
+	import { mergeStyles } from "../../../../src/internal/style-object-to-string.js";
 
 	let {
 		orientation = "horizontal",
@@ -58,8 +55,7 @@
 				bind:this={f.floating}
 				data-testid="floating"
 				class="grid gap-2"
-				style={styleObjectToString({
-					...styleStringToObject(f.floatingStyles),
+				style={mergeStyles(f.floatingStyles, {
 					"grid-template-columns": "100px 100px 100px 100px 100px",
 					"z-index": 999,
 				})}

@@ -486,7 +486,6 @@ function useListNavigation(
 	const itemOnMouseMove: MouseEventHandler<HTMLElement> = ({
 		currentTarget,
 	}) => {
-		console.log("item on mouse move");
 		forceSyncFocus = true;
 		forceScrollIntoView = false;
 		syncCurrentTarget(currentTarget);

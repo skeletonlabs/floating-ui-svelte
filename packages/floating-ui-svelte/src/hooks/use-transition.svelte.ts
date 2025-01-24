@@ -1,7 +1,7 @@
 import type { PropertiesHyphen } from "csstype";
 import { extract } from "../internal/extract.js";
 import { watch } from "../internal/watch.svelte.js";
-import type { Boxed, Getter, MaybeGetter, ReferenceType } from "../types.js";
+import type { Boxed, Getter, MaybeGetter } from "../types.js";
 import type { FloatingContext } from "./use-floating.svelte.js";
 import type { Placement, Side } from "@floating-ui/utils";
 import { styleObjectToString } from "../internal/style-object-to-string.js";

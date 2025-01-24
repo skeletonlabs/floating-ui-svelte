@@ -7,8 +7,8 @@
 		useListNavigation,
 	} from "../../../../src/index.js";
 	import {
+		mergeStyles,
 		styleObjectToString,
-		styleStringToObject,
 	} from "../../../../src/internal/style-object-to-string.js";
 
 	/*
@@ -84,8 +84,7 @@
 				bind:this={f.floating}
 				data-testid="floating"
 				class="grid gap-2"
-				style={styleObjectToString({
-					...styleStringToObject(f.floatingStyles),
+				style={mergeStyles(f.floatingStyles, {
 					display: "grid",
 					"grid-template-columns":
 						"100px 100px 100px 100px 100px 100px 100px",

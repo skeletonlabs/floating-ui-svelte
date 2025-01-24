@@ -11,6 +11,8 @@ import { styleObjectToString } from "../internal/style-object-to-string.js";
 import type { ReferenceType, WhileElementsMounted } from "../types.js";
 import type { FloatingOptions } from "./use-floating.svelte.js";
 import type { FloatingRootContext } from "./use-floating-root-context.svelte.js";
+import type { PropertiesHyphen } from "csstype";
+import { PositionContext } from "../internal/position-context.js";
 
 interface PositionElements<RT extends ReferenceType = ReferenceType> {
 	/**
@@ -116,11 +118,17 @@ class PositionState<RT extends ReferenceType = ReferenceType> {
 		middlewareData: {},
 		isPositioned: false,
 	});
+	floatingPointerEvents: PropertiesHyphen["pointer-events"] | undefined =
+		$state(undefined);
+
 	floatingStyles = $derived.by(() => {
-		const initialStyles = {
+		const initialStyles: PropertiesHyphen = {
 			position: this.options.strategy.current,
 			left: "0px",
 			top: "0px",
+			...(this.floatingPointerEvents && {
+				"pointer-events": this.floatingPointerEvents,
+			}),
 		};
 
 		if (!this.options.floating.current) {
@@ -144,6 +152,9 @@ class PositionState<RT extends ReferenceType = ReferenceType> {
 			position: this.options.strategy.current,
 			left: `${x}px`,
 			top: `${y}px`,
+			...(this.floatingPointerEvents && {
+				"pointer-events": this.floatingPointerEvents,
+			}),
 		});
 	});
 
@@ -157,6 +168,13 @@ class PositionState<RT extends ReferenceType = ReferenceType> {
 		this.data.strategy = this.options.strategy.current;
 		this.data.placement = this.options.placement.current;
 		this.update = this.update.bind(this);
+
+		$effect(() => {
+			console.log(
+				"floating styles change",
+				$state.snapshot(this.floatingStyles),
+			);
+		});
 
 		$effect.pre(() => {
 			if (this.rootContext.open || !this.data.isPositioned) return;
@@ -176,6 +194,8 @@ class PositionState<RT extends ReferenceType = ReferenceType> {
 				this.update();
 			}
 		});
+
+		PositionContext.set(this);
 	}
 
 	async update() {

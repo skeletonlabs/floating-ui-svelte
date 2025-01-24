@@ -25,6 +25,8 @@ import { snapshotFloatingContext } from "../internal/snapshot.svelte.js";
 import { watch } from "../internal/watch.svelte.js";
 import { extract } from "../internal/extract.js";
 import type { ElementProps } from "./use-interactions.svelte.js";
+import { sleep } from "../internal/sleep.js";
+import { PositionContext } from "../internal/position-context.js";
 
 interface DelayOptions {
 	/**
@@ -119,6 +121,7 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 
 	const tree = useFloatingTree();
 	const parentId = useFloatingParentNodeId();
+	const positionContext = PositionContext.get();
 
 	let pointerType: PointerType | undefined;
 	let timeout = -1;
@@ -207,35 +210,6 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 			? ["click", "mousedown"].includes(context.data.openEvent.type)
 			: false;
 	}
-
-	// watch(
-	// 	[
-	// 		() => enabled,
-	// 		() => context.floating,
-	// 		() => context.reference,
-	// 		() => context.domReference,
-	// 		() => mouseOnly,
-	// 		() => restMs,
-	// 		() => move,
-	// 		() => context.open,
-	// 		() => tree?.nodes,
-	// 		() => delay,
-	// 		() => context.data.floatingContext,
-	// 	],
-	// 	([
-	// 		isEnabled,
-	// 		floating,
-	// 		reference,
-	// 		domReference,
-	// 		mouseOnly,
-	// 		restMs,
-	// 		move,
-	// 		isOpen,
-	// 		treeNodes,
-	// 		delay,
-	// 		floatingContext,
-	// 	]) => {},
-	// );
 
 	// Ensure the floating element closes after scrolling even if the pointer
 	// did not move.
@@ -371,42 +345,32 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 				handleClose?.__options.blockPointerEvents &&
 				isHoverOpen()
 			) {
+				console.log("blocking pointer events for floating", floating);
+
 				performedPointerEventsMutation = true;
 
 				if (isElement(domReference) && floating) {
 					const body = getDocument(floating).body;
 					body.setAttribute(safePolygonIdentifier, "");
 
-					const ref = domReference as unknown as HTMLElement | SVGSVGElement;
+					const parentContext = treeNodes?.find(
+						(node) => node.id === parentId,
+					)?.context;
 
-					const parentFloating = treeNodes?.find((node) => node.id === parentId)
-						?.context?.floating;
-
-					if (parentFloating) {
-						parentFloating.style.pointerEvents = "";
+					if (parentContext?.floating) {
+						parentContext.__position.floatingPointerEvents = undefined;
 					}
-					console.log("Before applying styles:");
-					console.log("Floating element style:", floating.style.cssText);
-					console.log(
-						"Floating element computed style:",
-						window.getComputedStyle(floating).pointerEvents,
-					);
 
 					body.style.pointerEvents = "none";
-					ref.style.pointerEvents = "auto";
-					floating.style.pointerEvents = "auto";
+					domReference.style.pointerEvents = "auto";
+					context.__position.floatingPointerEvents = "auto";
 
-					console.log("After applying styles:");
-					console.log("Floating element style:", floating.style.cssText);
-					console.log(
-						"Floating element computed style:",
-						window.getComputedStyle(floating).pointerEvents,
-					);
+					console.log(getComputedStyle(floating).pointerEvents);
 
 					return () => {
 						body.style.pointerEvents = "";
-						ref.style.pointerEvents = "";
-						floating.style.pointerEvents = "";
+						domReference.style.pointerEvents = "";
+						context.__position.floatingPointerEvents = undefined;
 					};
 				}
 			}
@@ -485,11 +449,9 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 
 	const floating: ElementProps["floating"] = {
 		onmouseenter: () => {
-			console.log("mouseenter floating");
 			window.clearTimeout(timeout);
 		},
 		onmouseleave: (event) => {
-			console.log("mouseleave floating");
 			onScrollMouseLeave(event);
 			if (!isClickLikeOpenEvent()) {
 				closeWithDelay(event, false);

@@ -1,5 +1,6 @@
 import type { Axis, Length, Side, VirtualElement } from "@floating-ui/dom";
 import type { FloatingContext } from "./hooks/use-floating.svelte.js";
+import type { PositionState } from "./hooks/use-position.svelte.js";
 
 type OpenChangeReason =
 	| "outside-press"

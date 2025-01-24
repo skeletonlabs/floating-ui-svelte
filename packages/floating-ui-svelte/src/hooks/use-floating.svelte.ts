@@ -184,9 +184,10 @@ class FloatingOptions<RT extends ReferenceType = ReferenceType> {
 }
 
 type FloatingContextOptions<RT extends ReferenceType = ReferenceType> = {
-	floating: FloatingState<RT>;
+	floatingState: FloatingState<RT>;
 	floatingOptions: FloatingOptions<RT>;
 	rootContext: FloatingRootContext<RT>;
+	positionState: PositionState<RT>;
 };
 
 interface FloatingContextData<RT extends ReferenceType = ReferenceType> {
@@ -219,8 +220,9 @@ class FloatingContext<RT extends ReferenceType = ReferenceType>
 
 	constructor(private readonly opts: FloatingContextOptions<RT>) {
 		this.onOpenChange = this.opts.rootContext.onOpenChange;
-		this.update = this.opts.floating.update;
-		this.setPositionReference = this.opts.floating.setPositionReference;
+		this.update = this.opts.floatingState.update;
+		this.setPositionReference = this.opts.floatingState.setPositionReference;
+		this.__position = this.opts.positionState;
 	}
 
 	get reference() {
@@ -236,35 +238,35 @@ class FloatingContext<RT extends ReferenceType = ReferenceType>
 	}
 
 	get domReference() {
-		return this.opts.floating.domReference;
+		return this.opts.floatingState.domReference;
 	}
 
 	get x() {
-		return this.opts.floating.x;
+		return this.opts.floatingState.x;
 	}
 
 	get y() {
-		return this.opts.floating.y;
+		return this.opts.floatingState.y;
 	}
 
 	get placement() {
-		return this.opts.floating.placement;
+		return this.opts.floatingState.placement;
 	}
 
 	get strategy() {
-		return this.opts.floating.strategy;
+		return this.opts.floatingState.strategy;
 	}
 
 	get middlewareData() {
-		return this.opts.floating.middlewareData;
+		return this.opts.floatingState.middlewareData;
 	}
 
 	get isPositioned() {
-		return this.opts.floating.isPositioned;
+		return this.opts.floatingState.isPositioned;
 	}
 
 	get floatingStyles() {
-		return this.opts.floating.floatingStyles;
+		return this.opts.floatingState.floatingStyles;
 	}
 
 	get open() {
@@ -286,6 +288,14 @@ class FloatingContext<RT extends ReferenceType = ReferenceType>
 	get nodeId() {
 		return this.opts.floatingOptions.nodeId.current;
 	}
+
+	/**
+	 * @internal - do not use
+	 * @deprecated
+	 */
+	// Used to handle pointer event style synchronization between tree nodes.
+	// Marked as internal and deprecated, deprecated will push it to the bottom of intellisense.
+	__position: PositionState<RT>;
 }
 
 class FloatingState<RT extends ReferenceType = ReferenceType> {
@@ -321,9 +331,10 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 		);
 
 		this.context = new FloatingContext({
-			floating: this,
+			floatingState: this,
 			floatingOptions: options,
 			rootContext: this.#rootContext,
+			positionState: this.#position,
 		});
 
 		$effect(() => {

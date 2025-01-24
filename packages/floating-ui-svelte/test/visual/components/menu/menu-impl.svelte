@@ -32,10 +32,7 @@
 	import FloatingList from "../../../../src/components/floating-list/floating-list.svelte";
 	import FloatingPortal from "../../../../src/components/floating-portal/floating-portal.svelte";
 	import FloatingFocusManager from "../../../../src/components/floating-focus-manager/floating-focus-manager.svelte";
-	import {
-		styleObjectToString,
-		styleStringToObject,
-	} from "../../../../src/internal/style-object-to-string.js";
+	import { mergeStyles } from "../../../../src/internal/style-object-to-string.js";
 
 	let {
 		children,
@@ -276,8 +273,7 @@
 						<div
 							bind:this={f.floating}
 							class="flex flex-col rounded bg-white shadow-lg outline-none p-1 border border-slate-900/10 bg-clip-padding"
-							style={styleObjectToString({
-								...styleStringToObject(f.floatingStyles),
+							style={mergeStyles(f.floatingStyles, {
 								visibility: !forceMount
 									? undefined
 									: open

@@ -1,4 +1,4 @@
-import type { PropertiesHyphen } from "csstype";
+import type { Properties, PropertiesHyphen } from "csstype";
 import { error } from "./log.js";
 import parse from "style-to-object";
 
@@ -20,4 +20,23 @@ function styleStringToObject(
 	}
 }
 
-export { styleObjectToString, styleStringToObject };
+type MergeStylesArg = string | PropertiesHyphen | null | undefined;
+
+function mergeStyles<T extends MergeStylesArg[]>(
+	...args: T
+): string | undefined {
+	const mergedStyleObj: PropertiesHyphen = {};
+
+	for (const arg of args) {
+		if (arg === null) continue;
+		if (typeof arg === "string") {
+			Object.assign(mergedStyleObj, styleStringToObject(arg));
+		} else if (arg) {
+			Object.assign(mergedStyleObj, arg);
+		}
+	}
+
+	return styleObjectToString(mergedStyleObj);
+}
+
+export { styleObjectToString, styleStringToObject, mergeStyles };
