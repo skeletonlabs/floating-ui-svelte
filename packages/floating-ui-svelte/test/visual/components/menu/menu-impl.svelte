@@ -78,7 +78,7 @@
 		placement: () => (isNested ? "right-start" : "bottom-start"),
 		middleware: [
 			offset({
-				mainAxis: isNested ? 40 : 4,
+				mainAxis: isNested ? 0 : 4,
 				alignmentAxis: isNested ? -4 : 0,
 			}),
 			flip(),
@@ -92,7 +92,6 @@
 		delay: { open: 75 },
 		handleClose: safePolygon({
 			blockPointerEvents: true,
-			buffer: 1,
 			requireIntent: false,
 		}),
 	});
@@ -131,12 +130,6 @@
 		listNav,
 		typeahead,
 	]);
-
-	$effect(() => {
-		f.context.events.on("openchange", (data) => {
-			console.log("open change data", data);
-		});
-	});
 
 	// Event emitter allows you to communicate across tree components.
 	// This effect closes all menus when an item gets clicked anywhere
@@ -244,7 +237,6 @@
 				return activeIndex;
 			},
 			set activeIndex(v: number | null) {
-				console.log("setting active index");
 				activeIndex = v;
 			},
 			getItemProps: (u) => ints.getItemProps(u),

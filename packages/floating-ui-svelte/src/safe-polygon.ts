@@ -3,7 +3,6 @@ import type { Rect, Side } from "./types.js";
 import type { HandleCloseFn } from "./hooks/use-hover.svelte.js";
 import { contains, getTarget } from "./internal/dom.js";
 import { getChildren } from "./internal/get-children.js";
-import { debugPolygon } from "../test/visual/components/utils/debug-polygon.svelte";
 
 type Point = [number, number];
 type Polygon = Point[];
@@ -39,6 +38,11 @@ interface SafePolygonOptions {
 	requireIntent?: boolean;
 }
 
+interface IntentState {
+	velocities: Array<{ x: number; y: number; timestamp: number }>;
+	maxSamples: number;
+}
+
 /**
  * Generates a safe polygon area that the user can traverse without closing the
  * floating element once leaving the reference element.
@@ -53,70 +57,69 @@ function safePolygon(options: SafePolygonOptions = {}) {
 
 	let timeoutId: number;
 	let hasLanded = false;
-	let lastX: number | null = null;
-	let lastY: number | null = null;
-	let lastCursorTime = performance.now();
 
-	function getCursorSpeed(x: number, y: number): number | null {
-		const currentTime = performance.now();
-		const elapsedTime = currentTime - lastCursorTime;
+	const intentState: IntentState = {
+		velocities: [],
+		maxSamples: 5,
+	};
 
-		if (lastX === null || lastY === null || elapsedTime === 0) {
-			lastX = x;
-			lastY = y;
-			lastCursorTime = currentTime;
-			return null;
+	function updateIntentState(x: number, y: number): boolean {
+		const now = performance.now();
+		const velocities = intentState.velocities;
+
+		if (velocities.length >= intentState.maxSamples) {
+			velocities.shift();
 		}
 
-		const deltaX = x - lastX;
-		const deltaY = y - lastY;
-		const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-		const speed = distance / elapsedTime; // px / ms
+		velocities.push({ x, y, timestamp: now });
 
-		lastX = x;
-		lastY = y;
-		lastCursorTime = currentTime;
+		if (velocities.length < 3) return false;
 
-		return speed;
+		// Calculate average velocity over last few samples
+		const avgVelocity =
+			velocities.reduce((acc, curr, i, arr) => {
+				if (i === 0) return acc;
+				const prev = arr[i - 1];
+				const dt = curr.timestamp - prev.timestamp;
+				const dx = curr.x - prev.x;
+				const dy = curr.y - prev.y;
+				return acc + Math.sqrt(dx * dx + dy * dy) / dt;
+			}, 0) /
+			(velocities.length - 1);
+
+		return avgVelocity < 0.03;
 	}
 
 	const fn: HandleCloseFn = (context) => {
-		return (event: MouseEvent) => {
-			const isOpen = context.open;
+		return function onMouseMove(event: MouseEvent) {
 			function close() {
-				if (!isOpen) return;
-				clearTimeout(timeoutId);
+				window.clearTimeout(timeoutId);
 				context.onClose();
 			}
-			const floating = context.floating;
-			const reference = context.domReference;
-			const placement = context.placement;
-			const x = context.x;
-			const y = context.y;
-			const tree = context.tree;
-			clearTimeout(timeoutId);
+
+			window.clearTimeout(timeoutId);
 
 			if (
-				!reference ||
-				!floating ||
-				placement == null ||
-				x == null ||
-				y == null
+				!context.domReference ||
+				!context.floating ||
+				context.placement == null ||
+				context.x == null ||
+				context.y == null
 			) {
 				return;
 			}
 
-			const clientPoint: Point = [event.clientX, event.clientY];
+			const { clientX, clientY } = event;
+			const clientPoint: Point = [clientX, clientY];
 			const target = getTarget(event) as Element | null;
 			const isLeave = event.type === "mouseleave";
-			const isOverFloatingEl = contains(floating, target);
-			const isOverReferenceEl = contains(reference, target);
-
-			const refRect = reference.getBoundingClientRect();
-			const rect = floating.getBoundingClientRect();
-			const side = placement.split("-")[0] as Side;
-			const cursorLeaveFromRight = x > rect.right - rect.width / 2;
-			const cursorLeaveFromBottom = y > rect.bottom - rect.height / 2;
+			const isOverFloatingEl = contains(context.floating, target);
+			const isOverReferenceEl = contains(context.domReference, target);
+			const refRect = context.domReference.getBoundingClientRect();
+			const rect = context.floating.getBoundingClientRect();
+			const side = context.placement.split("-")[0] as Side;
+			const cursorLeaveFromRight = context.x > rect.right - rect.width / 2;
+			const cursorLeaveFromBottom = context.y > rect.bottom - rect.height / 2;
 			const isOverReferenceRect = isInside(clientPoint, refRect);
 			const isFloatingWider = rect.width > refRect.width;
 			const isFloatingTaller = rect.height > refRect.height;
@@ -127,6 +130,7 @@ function safePolygon(options: SafePolygonOptions = {}) {
 
 			if (isOverFloatingEl) {
 				hasLanded = true;
+				intentState.velocities = [];
 
 				if (!isLeave) return;
 			}
@@ -145,16 +149,17 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			if (
 				isLeave &&
 				isElement(event.relatedTarget) &&
-				contains(floating, event.relatedTarget)
+				contains(context.floating, event.relatedTarget)
 			) {
 				return;
 			}
 
 			// If any nested child is open, abort.
+
 			if (
-				tree &&
-				getChildren(tree.nodes, context.nodeId).some(
-					({ context: ctx }) => ctx?.open,
+				context.tree &&
+				getChildren(context.tree.nodes, context.nodeId).some(
+					({ context }) => context?.open,
 				)
 			) {
 				return;
@@ -165,10 +170,10 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			// ignored.
 			// A constant of 1 handles floating point rounding errors.
 			if (
-				(side === "top" && y >= refRect.bottom - 1) ||
-				(side === "bottom" && y <= refRect.top + 1) ||
-				(side === "left" && x >= refRect.right - 1) ||
-				(side === "right" && x <= refRect.left + 1)
+				(side === "top" && context.y >= refRect.bottom - 1) ||
+				(side === "bottom" && context.y <= refRect.top + 1) ||
+				(side === "left" && context.x >= refRect.right - 1) ||
+				(side === "right" && context.x <= refRect.left + 1)
 			) {
 				console.log("1");
 				return close();
@@ -373,11 +378,7 @@ function safePolygon(options: SafePolygonOptions = {}) {
 				}
 			}
 
-			const polygon = getPolygon([x, y]);
-			debugPolygon.current.tri = polygon;
-			debugPolygon.current.rect = rectPoly;
-
-			if (isPointInPolygon([event.clientX, event.clientY], rectPoly)) {
+			if (isPointInPolygon([clientX, clientY], rectPoly)) {
 				return;
 			}
 
@@ -386,25 +387,24 @@ function safePolygon(options: SafePolygonOptions = {}) {
 				return close();
 			}
 
-			if (!isLeave && requireIntent) {
-				const cursorSpeed = getCursorSpeed(event.clientX, event.clientY);
-				const cursorSpeedThreshold = 0.1;
-				if (cursorSpeed !== null && cursorSpeed < cursorSpeedThreshold) {
-					console.log("3");
-					return close();
-				}
+			if (!isLeave && requireIntent && updateIntentState(clientX, clientY)) {
+				console.log("3");
+				return close();
 			}
 
 			if (
-				!isPointInPolygon([event.clientX, event.clientY], getPolygon([x, y]))
+				!isPointInPolygon(
+					[clientX, clientY],
+					getPolygon([context.x, context.y]),
+				)
 			) {
 				console.log("4");
 				close();
 			} else if (!hasLanded && requireIntent) {
-				function here() {
+				const here = () => {
 					console.log("5");
 					close();
-				}
+				};
 				timeoutId = window.setTimeout(here, 40);
 			}
 		};

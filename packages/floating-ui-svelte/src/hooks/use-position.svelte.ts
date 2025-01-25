@@ -169,13 +169,6 @@ class PositionState<RT extends ReferenceType = ReferenceType> {
 		this.data.placement = this.options.placement.current;
 		this.update = this.update.bind(this);
 
-		$effect(() => {
-			console.log(
-				"floating styles change",
-				$state.snapshot(this.floatingStyles),
-			);
-		});
-
 		$effect.pre(() => {
 			if (this.rootContext.open || !this.data.isPositioned) return;
 			this.data.isPositioned = false;
