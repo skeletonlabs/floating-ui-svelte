@@ -22,11 +22,11 @@ import {
 	useFloatingTree,
 } from "../components/floating-tree/hooks.svelte.js";
 import { snapshotFloatingContext } from "../internal/snapshot.svelte.js";
-import { watch } from "../internal/watch.svelte.js";
 import { extract } from "../internal/extract.js";
 import type { ElementProps } from "./use-interactions.svelte.js";
+import { on } from "svelte/events";
 import { sleep } from "../internal/sleep.js";
-import { PositionContext } from "../internal/position-context.js";
+import { untrack } from "svelte";
 
 interface DelayOptions {
 	/**
@@ -75,13 +75,15 @@ interface UseHoverOptions {
 	delay?: MaybeGetter<number | DelayOptions>;
 
 	/**
-	 * Time in ms that the pointer must rest on the reference element before the open state is set to true.
+	 * Time in ms that the pointer must rest on the reference element before the open state
+	 * is set to true.
 	 * @default 0
 	 */
 	restMs?: MaybeGetter<number>;
 
 	/**
-	 * Whether moving the pointer over the floating element will open it, without a regular hover event required.
+	 * Whether moving the pointer over the reference element will open its floating
+	 * element without a regular hover event required.
 	 * @default true
 	 */
 	move?: MaybeGetter<boolean>;
@@ -95,19 +97,16 @@ interface UseHoverOptions {
 
 const safePolygonIdentifier = createAttribute("safe-polygon");
 
+/**
+ * Returns the delay value for the given prop.
+ */
 function getDelay(
 	value: number | DelayOptions,
 	prop: "open" | "close",
 	pointerType?: PointerType,
 ) {
-	if (pointerType && !isMouseLikePointerType(pointerType)) {
-		return 0;
-	}
-
-	if (typeof value === "number") {
-		return value;
-	}
-
+	if (pointerType && !isMouseLikePointerType(pointerType)) return 0;
+	if (typeof value === "number") return value;
 	return value?.[prop];
 }
 
@@ -121,29 +120,34 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 
 	const tree = useFloatingTree();
 	const parentId = useFloatingParentNodeId();
-	const positionContext = PositionContext.get();
 
 	let pointerType: PointerType | undefined;
-	let timeout = -1;
+	let openChangeTimeout = -1;
+	let restOpenChangeTimeout = -1;
+	let restTimeoutPending = false;
 	let handler: ((e: MouseEvent) => void) | undefined = noop;
-	let restTimeout = -1;
 	let blockMouseMove = true;
 	let performedPointerEventsMutation = false;
 	let unbindMouseMove = noop;
-	let restTimeoutPending = false;
 
-	function isHoverOpen() {
+	const isHoverOpen = $derived.by(() => {
 		const type = context.data.openEvent?.type;
 		return type?.includes("mouse") && type !== "mousedown";
-	}
+	});
 
-	watch([() => enabled, () => context.events], () => {
+	const isClickLikeOpenEvent = $derived(
+		context.data.openEvent
+			? ["click", "mousedown"].includes(context.data.openEvent.type)
+			: false,
+	);
+
+	$effect(() => {
 		if (!enabled) return;
 
 		function onOpenChange({ open }: { open: boolean }) {
 			if (open) return;
-			window.clearTimeout(timeout);
-			window.clearTimeout(restTimeout);
+			window.clearTimeout(openChangeTimeout);
+			window.clearTimeout(restOpenChangeTimeout);
 			blockMouseMove = true;
 			restTimeoutPending = false;
 		}
@@ -151,27 +155,20 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 		return context.events.on("openchange", onOpenChange);
 	});
 
-	watch(
-		[() => enabled, () => context.open, () => context.floating],
-		([isEnabled, isOpen, floatingEl]) => {
-			if (!isEnabled) return;
-			if (!handleClose) return;
-			if (!isOpen) return;
+	function htmlOnLeave(event: MouseEvent) {
+		if (isHoverOpen) {
+			context.onOpenChange(false, event, "hover");
+		}
+	}
 
-			function onLeave(event: MouseEvent) {
-				if (isHoverOpen()) {
-					context.onOpenChange(false, event, "hover");
-				}
-			}
+	$effect(() => {
+		if (!enabled) return;
+		if (!handleClose) return;
+		if (!context.open) return;
 
-			const html = getDocument(floatingEl).documentElement;
-
-			html.addEventListener("mouseleave", onLeave);
-			return () => {
-				html.removeEventListener("mouseleave", onLeave);
-			};
-		},
-	);
+		const html = getDocument(context.floating).documentElement;
+		return on(html, "mouseleave", htmlOnLeave);
+	});
 
 	function closeWithDelay(
 		event: Event,
@@ -180,13 +177,13 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 	) {
 		const closeDelay = getDelay(delay, "close", pointerType);
 		if (closeDelay && !handler) {
-			window.clearTimeout(timeout);
-			timeout = window.setTimeout(
+			window.clearTimeout(openChangeTimeout);
+			openChangeTimeout = window.setTimeout(
 				() => context.onOpenChange(false, event, reason),
 				closeDelay,
 			);
 		} else if (runElseBranch) {
-			clearTimeout(timeout);
+			clearTimeout(openChangeTimeout);
 			context.onOpenChange(false, event, reason);
 		}
 	}
@@ -205,72 +202,73 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 		}
 	}
 
-	function isClickLikeOpenEvent() {
-		return context.data.openEvent
-			? ["click", "mousedown"].includes(context.data.openEvent.type)
-			: false;
-	}
-
 	// Ensure the floating element closes after scrolling even if the pointer
 	// did not move.
 	// https://github.com/floating-ui/floating-ui/discussions/1692
-	function onScrollMouseLeave(event: MouseEvent) {
-		if (isClickLikeOpenEvent()) return;
-		if (!context.data.floatingContext) return;
+	// function onScrollMouseLeave(event: MouseEvent) {
+	// 	if (isClickLikeOpenEvent) return;
+	// 	if (!context.data.floatingContext) return;
 
-		handleClose?.({
-			...snapshotFloatingContext(context.data.floatingContext).current,
-			tree,
-			x: event.clientX,
-			y: event.clientY,
-			onClose() {
-				clearPointerEvents();
-				cleanupMouseMoveHandler();
-				if (!isClickLikeOpenEvent()) {
-					closeWithDelay(event);
-				}
-			},
-		})(event);
-	}
+	// 	handleClose?.({
+	// 		...snapshotFloatingContext(context.data.floatingContext).current,
+	// 		tree,
+	// 		x: event.clientX,
+	// 		y: event.clientY,
+	// 		onClose() {
+	// 			clearPointerEvents();
+	// 			cleanupMouseMoveHandler();
+	// 			if (!isClickLikeOpenEvent) {
+	// 				closeWithDelay(event);
+	// 			}
+	// 		},
+	// 	})(event);
+	// }
 
-	function onMouseEnter(event: MouseEvent) {
-		window.clearTimeout(timeout);
+	function onReferenceMouseEnter(event: MouseEvent) {
+		window.clearTimeout(openChangeTimeout);
 		blockMouseMove = false;
 
-		if (
-			(mouseOnly && !isMouseLikePointerType(pointerType)) ||
-			(restMs > 0 && !getDelay(delay, "open"))
-		) {
-			return;
-		}
+		const failedMouseOnlyCheck =
+			mouseOnly && !isMouseLikePointerType(pointerType);
+		const failedRestMsCheck = restMs > 0 && !getDelay(delay, "open");
+
+		if (failedMouseOnlyCheck || failedRestMsCheck) return;
 
 		const openDelay = getDelay(delay, "open", pointerType);
 
 		if (openDelay) {
-			timeout = window.setTimeout(() => {
+			// if there is an open delay, we set a timeout to open the floating element
+			// after the delay has passed
+			openChangeTimeout = window.setTimeout(() => {
 				if (!context.open) {
 					context.onOpenChange(true, event, "hover");
 				}
 			}, openDelay);
 		} else if (!context.open) {
+			// if no delay and the floating element is not open, we open it immediately
 			context.onOpenChange(true, event, "hover");
 		}
 	}
 
-	function onMouseLeave(event: MouseEvent) {
-		if (isClickLikeOpenEvent()) return;
+	function onReferenceMouseLeave(event: MouseEvent) {
+		console.log("onreferencemouseleave");
+		// if opened via a click-like event, we don't handle the mouseleave event
+		if (isClickLikeOpenEvent) return;
 
+		// clean up any existing mousemove listeners
 		unbindMouseMove();
 
 		const doc = getDocument(context.floating);
 
-		window.clearTimeout(restTimeout);
+		// clear the rest timeout and set pending to false
+		window.clearTimeout(restOpenChangeTimeout);
 		restTimeoutPending = false;
 
 		if (handleClose && context.data.floatingContext) {
-			// Prevent clearing `onScrollMouseLeave` timeout.
+			// if not open already, we clear any open change timeouts that may
+			// be pending
 			if (!context.open) {
-				window.clearTimeout(timeout);
+				window.clearTimeout(openChangeTimeout);
 			}
 
 			handler = handleClose({
@@ -281,7 +279,7 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 				onClose: () => {
 					clearPointerEvents();
 					cleanupMouseMoveHandler();
-					if (!isClickLikeOpenEvent()) {
+					if (!isClickLikeOpenEvent) {
 						closeWithDelay(event, true, "safe-polygon");
 					}
 				},
@@ -289,10 +287,8 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 
 			const localHandler = handler;
 
-			doc.addEventListener("mousemove", localHandler);
-			unbindMouseMove = () => {
-				doc.removeEventListener("mousemove", localHandler);
-			};
+			// kick off a mousemove listener to handle movements
+			unbindMouseMove = on(doc, "mousemove", localHandler);
 
 			return;
 		}
@@ -304,23 +300,52 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 			pointerType === "touch"
 				? !contains(context.floating, event.relatedTarget as Element | null)
 				: true;
+
 		if (shouldClose) {
 			closeWithDelay(event);
 		}
 	}
 
+	// $effect(() => {
+	// 	const floatingEl = context.floating;
+	// 	if (!floatingEl) return;
+
+	// 	const observer = new MutationObserver(() => {
+	// 		console.log(
+	// 			"floatingEl:",
+	// 			floatingEl.id,
+	// 			"pointer-events",
+	// 			getComputedStyle(floatingEl).pointerEvents,
+	// 		);
+	// 	});
+
+	// 	observer.observe(floatingEl, {
+	// 		attributes: true,
+	// 		attributeFilter: ["style"],
+	// 	});
+
+	// 	return () => {
+	// 		observer.disconnect();
+	// 	};
+	// });
+
 	$effect(() => {
 		if (!enabled) return;
-
-		if (isElement(context.domReference)) {
-			const ref = context.domReference as unknown as HTMLElement;
-
-			if (move) {
-				ref.addEventListener("mousemove", onMouseEnter, { once: true });
-				return () => {
-					ref.removeEventListener("mousemove", onMouseEnter);
-				};
-			}
+		if (isElement(context.domReference) && move) {
+			return on(
+				context.domReference,
+				"mousemove",
+				(e) => {
+					console.log(
+						"calling once on mousemove for floatingId:",
+						context.floatingId,
+					);
+					onReferenceMouseEnter(e);
+				},
+				{
+					once: true,
+				},
+			);
 		}
 	});
 
@@ -328,132 +353,132 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 	// while the floating element is open and has a `handleClose` handler. Also
 	// handles nested floating elements.
 	// https://github.com/floating-ui/floating-ui/issues/1722
-	watch.pre(
-		[
-			() => enabled,
-			() => context.open,
-			() => context.floating,
-			() => context.domReference,
-			() => tree?.nodes,
-			() => context.reference,
-		],
-		([isEnabled, isOpen, floating, domReference, treeNodes]) => {
-			if (!isEnabled) return;
+	$effect.pre(() => {
+		if (
+			!enabled ||
+			!context.open ||
+			!handleClose?.__options.blockPointerEvents ||
+			!untrack(() => isHoverOpen)
+		) {
+			return;
+		}
 
-			if (
-				isOpen &&
-				handleClose?.__options.blockPointerEvents &&
-				isHoverOpen()
-			) {
-				console.log("blocking pointer events for floating", floating);
+		const floatingEl = context.floating;
+		const domReferenceEl = context.domReference;
+		performedPointerEventsMutation = true;
+		if (!isElement(domReferenceEl) || !floatingEl) return;
 
-				performedPointerEventsMutation = true;
+		const body = getDocument(floatingEl).body;
+		body.setAttribute(safePolygonIdentifier, "");
 
-				if (isElement(domReference) && floating) {
-					const body = getDocument(floating).body;
-					body.setAttribute(safePolygonIdentifier, "");
+		const parentContext = tree?.nodes?.find(
+			(node) => node.id === parentId,
+		)?.context;
 
-					const parentContext = treeNodes?.find(
-						(node) => node.id === parentId,
-					)?.context;
+		if (parentContext) {
+			parentContext.__position.setFloatingPointerEvents("inherit");
+		}
 
-					if (parentContext?.floating) {
-						parentContext.__position.floatingPointerEvents = undefined;
-					}
+		body.style.pointerEvents = "none";
+		domReferenceEl.style.pointerEvents = "auto";
 
-					body.style.pointerEvents = "none";
-					domReference.style.pointerEvents = "auto";
-					context.__position.floatingPointerEvents = "auto";
+		context.__position.setFloatingPointerEvents("auto");
 
-					console.log(getComputedStyle(floating).pointerEvents);
+		return () => {
+			body.style.pointerEvents = "";
+			domReferenceEl.style.pointerEvents = "";
+			context.__position.setFloatingPointerEvents("inherit");
+			parentContext?.__position.setFloatingPointerEvents(undefined);
+		};
+	});
 
-					return () => {
-						body.style.pointerEvents = "";
-						domReference.style.pointerEvents = "";
-						context.__position.floatingPointerEvents = undefined;
-					};
-				}
-			}
-		},
-	);
+	$effect.pre(() => {
+		if (context.open) return;
+		pointerType = undefined;
+		restTimeoutPending = false;
+		cleanupMouseMoveHandler();
+		clearPointerEvents();
+	});
 
-	watch.pre(
-		() => context.open,
-		(isOpen) => {
-			if (isOpen) return;
-			pointerType = undefined;
-			restTimeoutPending = false;
-			cleanupMouseMoveHandler();
-			clearPointerEvents();
-		},
-	);
-
-	watch([() => enabled, () => context.domReference], () => {
+	$effect(() => {
+		[enabled, context.domReference];
 		return () => {
 			cleanupMouseMoveHandler();
-			window.clearTimeout(timeout);
-			window.clearTimeout(restTimeout);
+			window.clearTimeout(openChangeTimeout);
+			window.clearTimeout(restOpenChangeTimeout);
 			clearPointerEvents();
 		};
 	});
 
+	function handleReferenceMouseMove(event: MouseEvent) {
+		/**
+		 * if we aren't blocking the mousemove event and the floating element isn't open,
+		 * we open the floating element on mousemove via the reference.
+		 */
+		if (!blockMouseMove && !context.open) {
+			context.onOpenChange(true, event, "hover");
+		}
+	}
+
+	/**
+	 * Set the latest pointer type that triggered an event on the
+	 * reference element.
+	 */
 	function setPointerType(event: PointerEvent) {
 		pointerType = isPointerType(event.pointerType)
 			? event.pointerType
 			: undefined;
 	}
 
+	function isInsignificantMovement(event: MouseEvent) {
+		return (
+			restTimeoutPending && event.movementX ** 2 + event.movementY ** 2 < 2
+		);
+	}
+
+	function onReferenceMouseMove(event: MouseEvent) {
+		if (mouseOnly && !isMouseLikePointerType(pointerType)) return;
+		// if the floating element is open, or the rest timeout is 0, we don't
+		// do anything here.
+		if (context.open || restMs === 0) return;
+
+		// ignore insignificant mouse movements to account for tremors
+		if (isInsignificantMovement(event)) return;
+
+		// clear open change rest timeout
+		window.clearTimeout(restOpenChangeTimeout);
+
+		// if it is a touch event, we cut to the chase and handle the mousemove
+		if (pointerType === "touch") {
+			handleReferenceMouseMove(event);
+		} else {
+			// otherwise, we set a timeout to handle the mousemove event
+			// based on the restMs prop
+			restTimeoutPending = true;
+			restOpenChangeTimeout = window.setTimeout(
+				() => handleReferenceMouseMove(event),
+				restMs,
+			);
+		}
+	}
+
 	const reference: ElementProps["reference"] = {
-		onpointerdown: (event) => setPointerType(event),
-		onpointerenter: (event) => setPointerType(event),
-		onmouseenter: (event) => {
-			onMouseEnter(event);
-		},
-		onmousemove: (event) => {
-			const isOpen = context.open;
-			function handleMouseMove() {
-				if (!blockMouseMove && !isOpen) {
-					context.onOpenChange(true, event, "hover");
-				}
-			}
-
-			if (mouseOnly && !isMouseLikePointerType(pointerType)) {
-				return;
-			}
-
-			if (isOpen || restMs === 0) return;
-
-			// ignore insignificant mouse movements to account for tremors
-			if (
-				restTimeoutPending &&
-				event.movementX ** 2 + event.movementY ** 2 < 2
-			) {
-				return;
-			}
-
-			window.clearTimeout(restTimeout);
-
-			if (pointerType === "touch") {
-				handleMouseMove();
-			} else {
-				restTimeoutPending = true;
-				restTimeout = window.setTimeout(handleMouseMove, restMs);
-			}
-		},
-		onmouseleave: (event) => {
-			onMouseLeave(event);
-			if (!context.open) return;
-			onScrollMouseLeave(event);
-		},
+		onpointerdown: setPointerType,
+		onpointerenter: setPointerType,
+		onmouseenter: onReferenceMouseEnter,
+		onmousemove: onReferenceMouseMove,
+		onmouseleave: onReferenceMouseLeave,
 	};
 
 	const floating: ElementProps["floating"] = {
 		onmouseenter: () => {
-			window.clearTimeout(timeout);
+			// when we enter the floating element, we clear any existing open change timeouts
+			// to prevent a close event from firing
+			window.clearTimeout(openChangeTimeout);
 		},
 		onmouseleave: (event) => {
-			onScrollMouseLeave(event);
-			if (!isClickLikeOpenEvent()) {
+			// when we leave, if not opened via a click-like event, we close it.
+			if (!isClickLikeOpenEvent) {
 				closeWithDelay(event, false);
 			}
 		},

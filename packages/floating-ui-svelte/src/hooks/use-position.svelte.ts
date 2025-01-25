@@ -8,7 +8,7 @@ import {
 } from "@floating-ui/dom";
 import { getDPR, roundByDPR } from "../internal/dpr.js";
 import { styleObjectToString } from "../internal/style-object-to-string.js";
-import type { ReferenceType, WhileElementsMounted } from "../types.js";
+import type { Boxed, ReferenceType, WhileElementsMounted } from "../types.js";
 import type { FloatingOptions } from "./use-floating.svelte.js";
 import type { FloatingRootContext } from "./use-floating-root-context.svelte.js";
 import type { PropertiesHyphen } from "csstype";
@@ -118,16 +118,26 @@ class PositionState<RT extends ReferenceType = ReferenceType> {
 		middlewareData: {},
 		isPositioned: false,
 	});
-	floatingPointerEvents: PropertiesHyphen["pointer-events"] | undefined =
-		$state(undefined);
+	floatingPointerEventsDeps = $state(0);
+
+	floatingPointerEvents = $state.raw<
+		Boxed<PropertiesHyphen["pointer-events"] | undefined>
+	>({ current: undefined });
+
+	setFloatingPointerEvents(
+		pointerEvents: PropertiesHyphen["pointer-events"] | undefined,
+	) {
+		this.floatingPointerEvents = { current: pointerEvents };
+	}
 
 	floatingStyles = $derived.by(() => {
+		const pointerEvents = $state.snapshot(this.floatingPointerEvents);
 		const initialStyles: PropertiesHyphen = {
 			position: this.options.strategy.current,
 			left: "0px",
 			top: "0px",
-			...(this.floatingPointerEvents && {
-				"pointer-events": this.floatingPointerEvents,
+			...(pointerEvents.current && {
+				"pointer-events": pointerEvents.current,
 			}),
 		};
 
@@ -152,8 +162,8 @@ class PositionState<RT extends ReferenceType = ReferenceType> {
 			position: this.options.strategy.current,
 			left: `${x}px`,
 			top: `${y}px`,
-			...(this.floatingPointerEvents && {
-				"pointer-events": this.floatingPointerEvents,
+			...(pointerEvents.current && {
+				"pointer-events": pointerEvents.current,
 			}),
 		});
 	});
