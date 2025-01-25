@@ -127,8 +127,8 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 	let restTimeoutPending = false;
 	let handler: ((e: MouseEvent) => void) | undefined = noop;
 	let blockMouseMove = true;
-	let performedPointerEventsMutation = false;
 	let unbindMouseMove = noop;
+	let clearPointerEvents = noop;
 
 	const isHoverOpen = $derived.by(() => {
 		const type = context.data.openEvent?.type;
@@ -191,15 +191,6 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 	function cleanupMouseMoveHandler() {
 		unbindMouseMove();
 		handler = undefined;
-	}
-
-	function clearPointerEvents() {
-		if (performedPointerEventsMutation) {
-			const body = getDocument(context.floating).body;
-			body.style.pointerEvents = "";
-			body.removeAttribute(safePolygonIdentifier);
-			performedPointerEventsMutation = false;
-		}
 	}
 
 	// Ensure the floating element closes after scrolling even if the pointer
@@ -265,9 +256,11 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 		restTimeoutPending = false;
 
 		if (handleClose && context.data.floatingContext) {
+			console.log("handling close");
 			// if not open already, we clear any open change timeouts that may
 			// be pending
 			if (!context.open) {
+				console.log("not open");
 				window.clearTimeout(openChangeTimeout);
 			}
 
@@ -306,29 +299,6 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 		}
 	}
 
-	// $effect(() => {
-	// 	const floatingEl = context.floating;
-	// 	if (!floatingEl) return;
-
-	// 	const observer = new MutationObserver(() => {
-	// 		console.log(
-	// 			"floatingEl:",
-	// 			floatingEl.id,
-	// 			"pointer-events",
-	// 			getComputedStyle(floatingEl).pointerEvents,
-	// 		);
-	// 	});
-
-	// 	observer.observe(floatingEl, {
-	// 		attributes: true,
-	// 		attributeFilter: ["style"],
-	// 	});
-
-	// 	return () => {
-	// 		observer.disconnect();
-	// 	};
-	// });
-
 	$effect(() => {
 		if (!enabled) return;
 		if (isElement(context.domReference) && move) {
@@ -336,10 +306,6 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 				context.domReference,
 				"mousemove",
 				(e) => {
-					console.log(
-						"calling once on mousemove for floatingId:",
-						context.floatingId,
-					);
 					onReferenceMouseEnter(e);
 				},
 				{
@@ -348,6 +314,17 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 			);
 		}
 	});
+
+	function disableBodyPointerEvents() {
+		const body = getDocument(context.floating).body;
+		body.setAttribute(safePolygonIdentifier, "");
+		body.style.pointerEvents = "none";
+
+		return () => {
+			body.style.pointerEvents = "";
+			body.removeAttribute(safePolygonIdentifier);
+		};
+	}
 
 	// Block pointer-events of every element other than the reference and floating
 	// while the floating element is open and has a `handleClose` handler. Also
@@ -365,11 +342,7 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 
 		const floatingEl = context.floating;
 		const domReferenceEl = context.domReference;
-		performedPointerEventsMutation = true;
 		if (!isElement(domReferenceEl) || !floatingEl) return;
-
-		const body = getDocument(floatingEl).body;
-		body.setAttribute(safePolygonIdentifier, "");
 
 		const parentContext = tree?.nodes?.find(
 			(node) => node.id === parentId,
@@ -379,16 +352,15 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 			parentContext.__position.setFloatingPointerEvents("inherit");
 		}
 
-		body.style.pointerEvents = "none";
+		clearPointerEvents = disableBodyPointerEvents();
 		domReferenceEl.style.pointerEvents = "auto";
 
 		context.__position.setFloatingPointerEvents("auto");
 
 		return () => {
-			body.style.pointerEvents = "";
+			clearPointerEvents();
 			domReferenceEl.style.pointerEvents = "";
-			context.__position.setFloatingPointerEvents("inherit");
-			parentContext?.__position.setFloatingPointerEvents(undefined);
+			context.__position.setFloatingPointerEvents(undefined);
 		};
 	});
 
