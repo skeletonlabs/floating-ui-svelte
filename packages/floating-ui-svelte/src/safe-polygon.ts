@@ -55,51 +55,42 @@ function safePolygon(options: SafePolygonOptions = {}) {
 		requireIntent = true,
 	} = options;
 
-	let timeoutId: number;
-	let hasLanded = false;
-
-	const intentState: IntentState = {
-		velocities: [],
-		maxSamples: 5,
-	};
-
-	function updateIntentState(x: number, y: number): boolean {
-		const now = performance.now();
-		const velocities = intentState.velocities;
-
-		if (velocities.length >= intentState.maxSamples) {
-			velocities.shift();
-		}
-
-		velocities.push({ x, y, timestamp: now });
-
-		if (velocities.length < 3) return false;
-
-		// Calculate average velocity over last few samples
-		const avgVelocity =
-			velocities.reduce((acc, curr, i, arr) => {
-				if (i === 0) return acc;
-				const prev = arr[i - 1];
-				const dt = curr.timestamp - prev.timestamp;
-				const dx = curr.x - prev.x;
-				const dy = curr.y - prev.y;
-				return acc + Math.sqrt(dx * dx + dy * dy) / dt;
-			}, 0) /
-			(velocities.length - 1);
-
-		return avgVelocity < 0.03;
-	}
-
 	const fn: HandleCloseFn = (context) => {
-		return function onMouseMove(event: MouseEvent) {
-			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-			function log(...args: any[]) {
-				const enabled = context.floatingId === "copy-as-floating";
-				if (enabled) {
-					console.log(context.floatingId, ...args);
-				}
+		let timeoutId: number;
+		let hasLanded = false;
+
+		const intentState: IntentState = {
+			velocities: [],
+			maxSamples: 5,
+		};
+
+		function updateIntentState(x: number, y: number): boolean {
+			const now = performance.now();
+			const velocities = intentState.velocities;
+
+			if (velocities.length >= intentState.maxSamples) {
+				velocities.shift();
 			}
 
+			velocities.push({ x, y, timestamp: now });
+
+			if (velocities.length < 3) return false;
+
+			// Calculate average velocity over last few samples
+			const avgVelocity =
+				velocities.reduce((acc, curr, i, arr) => {
+					if (i === 0) return acc;
+					const prev = arr[i - 1];
+					const dt = curr.timestamp - prev.timestamp;
+					const dx = curr.x - prev.x;
+					const dy = curr.y - prev.y;
+					return acc + Math.sqrt(dx * dx + dy * dy) / dt;
+				}, 0) /
+				(velocities.length - 1);
+
+			return avgVelocity < 0.03;
+		}
+		return function onMouseMove(event: MouseEvent) {
 			function close() {
 				window.clearTimeout(timeoutId);
 				context.onClose();
@@ -183,7 +174,6 @@ function safePolygon(options: SafePolygonOptions = {}) {
 				(side === "left" && context.x >= refRect.right - 1) ||
 				(side === "right" && context.x <= refRect.left + 1)
 			) {
-				log("1");
 				return close();
 			}
 
@@ -391,12 +381,10 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			}
 
 			if (hasLanded && !isOverReferenceRect) {
-				log("2");
 				return close();
 			}
 
 			if (!isLeave && requireIntent && updateIntentState(clientX, clientY)) {
-				log("3");
 				return close();
 			}
 
@@ -406,14 +394,9 @@ function safePolygon(options: SafePolygonOptions = {}) {
 					getPolygon([context.x, context.y]),
 				)
 			) {
-				log("4");
 				close();
 			} else if (!hasLanded && requireIntent) {
-				const here = () => {
-					log("5");
-					close();
-				};
-				timeoutId = window.setTimeout(here, 40);
+				timeoutId = window.setTimeout(close, 40);
 			}
 		};
 	};

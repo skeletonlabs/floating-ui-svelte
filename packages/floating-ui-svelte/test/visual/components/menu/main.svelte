@@ -8,7 +8,6 @@
 	class="grid place-items-center border border-slate-400 rounded lg:w-[40rem] h-[20rem] mb-4">
 	<Menu label="Edit" floatingId="main-floating" id="main-ref">
 		<MenuItem label="Undo" onclick={() => console.log("Undo")} />
-		<MenuItem label="Redo" />
 		<MenuItem label="Cut" disabled />
 		<Menu
 			label="Copy as"
@@ -29,6 +28,7 @@
 			</Menu>
 			<MenuItem label="Audio" />
 		</Menu>
+		<MenuItem label="Redo" />
 		<Menu label="Share">
 			<MenuItem label="Mail" />
 			<MenuItem label="Instagram" />

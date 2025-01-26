@@ -118,12 +118,6 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 	const restMs = $derived(extract(opts.restMs, 0));
 	const move = $derived(extract(opts.move, true));
 
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-	function log(...args: any) {
-		if (context.floatingId === "copy-as-floating")
-			console.log(context.floatingId, ": ", ...args);
-	}
-
 	const tree = useFloatingTree();
 	const parentId = useFloatingParentNodeId();
 
@@ -164,7 +158,6 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 			if (open) return;
 			window.clearTimeout(openChangeTimeout);
 			window.clearTimeout(restOpenChangeTimeout);
-			log("setting blockMouseMove to true");
 			blockMouseMove = true;
 			restTimeoutPending = false;
 		}
@@ -206,14 +199,12 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 	}
 
 	function cleanupMouseMoveHandler() {
-		// log("cleanup mouse move handler");
 		removeMouseMoveListener();
 		handler = undefined;
 	}
 
 	function onReferenceMouseEnter(event: MouseEvent) {
 		window.clearTimeout(openChangeTimeout);
-		log("onReferenceMouseEnter, setting blockMouseMove to false");
 		blockMouseMove = false;
 
 		const failedMouseOnlyCheck =
@@ -239,12 +230,8 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 	}
 
 	function onReferenceMouseLeave(event: MouseEvent) {
-		log("onReferenceMouseLeave");
 		// if opened via a click-like event, we don't handle the mouseleave event
 		if (isClickLikeOpenEvent) return;
-
-		// clean up any existing mousemove listeners
-		cleanupMouseMoveHandler();
 
 		const doc = getDocument(context.floating);
 
@@ -275,9 +262,9 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 
 			const localHandler = handler;
 
-			// log("starting doc mousemove listener");
+			// clean up any existing mousemove listeners
 			doc.addEventListener("mousemove", localHandler);
-
+			mouseMoveListener();
 			mouseMoveListener = () => {
 				doc.removeEventListener("mousemove", localHandler);
 			};
@@ -316,13 +303,11 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 	});
 
 	function disableBodyPointerEvents() {
-		// log("disabling body pointer events");
 		const body = getDocument(context.floating).body;
 		body.setAttribute(safePolygonIdentifier, "");
 		body.style.pointerEvents = "none";
 
 		return () => {
-			// log("enabling body pointer events");
 			body.style.pointerEvents = "";
 			body.removeAttribute(safePolygonIdentifier);
 		};
@@ -332,7 +317,7 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 	// while the floating element is open and has a `handleClose` handler. Also
 	// handles nested floating elements.
 	// https://github.com/floating-ui/floating-ui/issues/1722
-	$effect.pre(() => {
+	$effect(() => {
 		if (
 			!enabled ||
 			!context.open ||
@@ -361,14 +346,13 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 		const body = getDocument(context.floating).body;
 
 		return () => {
-			log("setting pointer events to auto");
 			body.style.pointerEvents = "";
 			domReferenceEl.style.pointerEvents = "";
 			context.__position.setFloatingPointerEvents(undefined);
 		};
 	});
 
-	$effect.pre(() => {
+	$effect(() => {
 		if (context.open) return;
 		pointerType = undefined;
 		restTimeoutPending = false;
@@ -387,7 +371,6 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 	});
 
 	function handleReferenceMouseMove(event: MouseEvent) {
-		log("handleReferenceMouseMove - blockMouseMove", blockMouseMove);
 		/**
 		 * if we aren't blocking the mousemove event and the floating element isn't open,
 		 * we open the floating element on mousemove via the reference.
@@ -427,14 +410,12 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 
 		// if it is a touch event, we cut to the chase and handle the mousemove
 		if (pointerType === "touch") {
-			log("onReferenceMouseMove");
 			handleReferenceMouseMove(event);
 		} else {
 			// otherwise, we set a timeout to handle the mousemove event
 			// based on the restMs prop
 			restTimeoutPending = true;
 			restOpenChangeTimeout = window.setTimeout(() => {
-				log("onReferenceMouseMove, handling reference mousemove");
 				handleReferenceMouseMove(event);
 			}, restMs);
 		}
