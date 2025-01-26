@@ -1,8 +1,8 @@
 import { isElement } from "@floating-ui/utils/dom";
 import type { Rect, Side } from "./types.js";
-import type { HandleCloseFn } from "./hooks/use-hover.svelte.js";
 import { contains, getTarget } from "./internal/dom.js";
 import { getChildren } from "./internal/get-children.js";
+import type { HandleCloseFn } from "./hooks/use-hover.svelte.js";
 
 type Point = [number, number];
 type Polygon = Point[];
@@ -92,6 +92,14 @@ function safePolygon(options: SafePolygonOptions = {}) {
 
 	const fn: HandleCloseFn = (context) => {
 		return function onMouseMove(event: MouseEvent) {
+			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+			function log(...args: any[]) {
+				const enabled = context.floatingId === "copy-as-floating";
+				if (enabled) {
+					console.log(context.floatingId, ...args);
+				}
+			}
+
 			function close() {
 				window.clearTimeout(timeoutId);
 				context.onClose();
@@ -175,7 +183,7 @@ function safePolygon(options: SafePolygonOptions = {}) {
 				(side === "left" && context.x >= refRect.right - 1) ||
 				(side === "right" && context.x <= refRect.left + 1)
 			) {
-				console.log("1");
+				log("1");
 				return close();
 			}
 
@@ -383,12 +391,12 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			}
 
 			if (hasLanded && !isOverReferenceRect) {
-				console.log("2");
+				log("2");
 				return close();
 			}
 
 			if (!isLeave && requireIntent && updateIntentState(clientX, clientY)) {
-				console.log("3");
+				log("3");
 				return close();
 			}
 
@@ -398,11 +406,11 @@ function safePolygon(options: SafePolygonOptions = {}) {
 					getPolygon([context.x, context.y]),
 				)
 			) {
-				console.log("4");
+				log("4");
 				close();
 			} else if (!hasLanded && requireIntent) {
 				const here = () => {
-					console.log("5");
+					log("5");
 					close();
 				};
 				timeoutId = window.setTimeout(here, 40);
