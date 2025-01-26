@@ -2,8 +2,10 @@ import { act, render, screen, waitFor } from "@testing-library/svelte";
 import { expect, it, vi } from "vitest";
 import Combobox from "./wrapper-components/use-typeahead/typeahead-combobox.svelte";
 import Full from "./wrapper-components/use-typeahead/typeahead-full.svelte";
+import Select from "./wrapper-components/use-typeahead/typeahead-select.svelte";
 import { userEvent } from "@testing-library/user-event";
 import { sleep, testKbd } from "../../utils.js";
+import Menu from "../../visual/components/menu/main.svelte";
 
 vi.useFakeTimers({ shouldAdvanceTime: true });
 
@@ -132,4 +134,68 @@ it("calls onTypingChange when typing starts or stops", async () => {
 	vi.advanceTimersByTime(750);
 	expect(spy).toHaveBeenCalledTimes(2);
 	expect(spy).toHaveBeenCalledWith(false);
+});
+
+it("Menu - skips disabled items and opens submenu on space if no match", async () => {
+	vi.useRealTimers();
+
+	render(Menu);
+
+	await userEvent.click(screen.getByText("Edit"));
+	await act(async () => {});
+	expect(screen.getByRole("menu")).toBeInTheDocument();
+
+	await userEvent.keyboard("copy as ");
+
+	expect(screen.getByText("Copy as").getAttribute("aria-expanded")).toBe(
+		"false",
+	);
+
+	await sleep(750);
+	await userEvent.keyboard(" ");
+
+	await waitFor(() =>
+		expect(screen.getByText("Copy as").getAttribute("aria-expanded")).toBe(
+			"true",
+		),
+	);
+});
+
+it("Menu - resets once a match is no longer found", async () => {
+	vi.useRealTimers();
+
+	render(Menu);
+
+	await userEvent.click(screen.getByText("Edit"));
+
+	expect(screen.getByRole("menu")).toBeInTheDocument();
+
+	await userEvent.keyboard("undr");
+
+	await waitFor(() => expect(screen.getByText("Undo")).toHaveFocus());
+
+	await userEvent.keyboard("r");
+
+	expect(screen.getByText("Redo")).toHaveFocus();
+});
+
+it("typing spaces on <div> references does not open the menu", async () => {
+	const spy = vi.fn();
+	render(Select, { onMatch: spy });
+
+	vi.useFakeTimers({ shouldAdvanceTime: true });
+
+	await userEvent.click(screen.getByRole("combobox"));
+
+	await userEvent.keyboard("h");
+	await userEvent.keyboard(" ");
+
+	expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+
+	vi.advanceTimersByTime(750);
+
+	await userEvent.keyboard(" ");
+	await act(async () => {});
+
+	expect(screen.queryByRole("listbox")).toBeInTheDocument();
 });

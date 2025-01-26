@@ -4,7 +4,6 @@
 	import { useFloatingParentNodeId } from "../../../../src/index.js";
 	import FloatingTree from "../../../../src/components/floating-tree/floating-tree.svelte";
 	import MenuImpl from "./menu-impl.svelte";
-	import DebugPolygon from "../utils/debug-polygon.svelte";
 
 	let props: MenuProps & HTMLButtonAttributes & { floatingId?: string } =
 		$props();

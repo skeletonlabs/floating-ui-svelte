@@ -92,7 +92,6 @@
 		delay: { open: 75 },
 		handleClose: safePolygon({
 			blockPointerEvents: true,
-			requireIntent: false,
 		}),
 	});
 

@@ -98,7 +98,6 @@ function useRole(
 
 	const item: ElementProps["item"] = $derived.by(() => {
 		return ({ active, selected }: ExtendedUserProps) => {
-			if (!enabled) return {};
 			const commonProps = {
 				role: "option",
 				...(active && { id: `${context.floatingId}-option` }),
