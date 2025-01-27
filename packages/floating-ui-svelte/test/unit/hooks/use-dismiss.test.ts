@@ -13,6 +13,8 @@ import { userEvent } from "@testing-library/user-event";
 import ThirdParty from "./wrapper-components/use-dismiss/third-party.svelte";
 import DismissNestedPopovers from "./wrapper-components/use-dismiss/dismiss-nested-popovers.svelte";
 import DismissPortaledChildren from "./wrapper-components/use-dismiss/dismiss-portaled-children.svelte";
+import { normalizeProp } from "../../../src/index.js";
+import DismissNestedNested from "./wrapper-components/use-dismiss/dismiss-nested-nested.svelte";
 
 describe("true", () => {
 	it("dismisses with escape key", async () => {
@@ -181,5 +183,98 @@ describe("false", () => {
 		await waitFor(() =>
 			expect(screen.queryByTestId("portaled-button")).toBeInTheDocument(),
 		);
+	});
+
+	it("respects outsidePress function guard", async () => {
+		render(Dismiss, { outsidePress: () => true });
+		await userEvent.click(document.body);
+		expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+	});
+});
+
+describe("bubbles", () => {
+	describe("prop resolution", () => {
+		it("undefined", () => {
+			const { escapeKey: escapeKeyBubbles, outsidePress: outsidePressBubbles } =
+				normalizeProp();
+
+			expect(escapeKeyBubbles).toBe(false);
+			expect(outsidePressBubbles).toBe(true);
+		});
+
+		it("false", () => {
+			const { escapeKey: escapeKeyBubbles, outsidePress: outsidePressBubbles } =
+				normalizeProp(false);
+
+			expect(escapeKeyBubbles).toBe(false);
+			expect(outsidePressBubbles).toBe(false);
+		});
+
+		it("{}", () => {
+			const { escapeKey: escapeKeyBubbles, outsidePress: outsidePressBubbles } =
+				normalizeProp({});
+
+			expect(escapeKeyBubbles).toBe(false);
+			expect(outsidePressBubbles).toBe(true);
+		});
+
+		it("{ escapeKey: false }", () => {
+			const { escapeKey: escapeKeyBubbles, outsidePress: outsidePressBubbles } =
+				normalizeProp({
+					escapeKey: false,
+				});
+
+			expect(escapeKeyBubbles).toBe(false);
+			expect(outsidePressBubbles).toBe(true);
+		});
+
+		it("{ outsidePress: false }", () => {
+			const { escapeKey: escapeKeyBubbles, outsidePress: outsidePressBubbles } =
+				normalizeProp({
+					outsidePress: false,
+				});
+
+			expect(escapeKeyBubbles).toBe(false);
+			expect(outsidePressBubbles).toBe(false);
+		});
+	});
+
+	describe("outsidePress", () => {
+		it("true", async () => {
+			render(DismissNestedNested);
+
+			expect(screen.queryByTestId("outer")).toBeInTheDocument();
+			expect(screen.queryByTestId("inner")).toBeInTheDocument();
+
+			await fireEvent.pointerDown(document.body);
+
+			expect(screen.queryByTestId("outer")).not.toBeInTheDocument();
+			expect(screen.queryByTestId("inner")).not.toBeInTheDocument();
+		});
+
+		it("false", async () => {
+			render(DismissNestedNested, { outsidePress: [false, false] });
+
+			expect(screen.queryByTestId("outer")).toBeInTheDocument();
+			expect(screen.queryByTestId("inner")).toBeInTheDocument();
+
+			await fireEvent.pointerDown(document.body);
+
+			await waitFor(() =>
+				expect(screen.queryByTestId("outer")).toBeInTheDocument(),
+			);
+			await waitFor(() =>
+				expect(screen.queryByTestId("inner")).not.toBeInTheDocument(),
+			);
+
+			await fireEvent.pointerDown(document.body);
+
+			await waitFor(() =>
+				expect(screen.queryByTestId("outer")).not.toBeInTheDocument(),
+			);
+			await waitFor(() =>
+				expect(screen.queryByTestId("inner")).not.toBeInTheDocument(),
+			);
+		});
 	});
 });

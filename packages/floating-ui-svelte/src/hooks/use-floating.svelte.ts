@@ -149,6 +149,7 @@ class FloatingOptions<RT extends ReferenceType = ReferenceType> {
 		this.onFloatingChange = options.onFloatingChange ?? noop;
 		this.whileElementsMounted = options.whileElementsMounted;
 		this.nodeId = box.with(() => extract(options.nodeId));
+
 		this.rootContext = box.with(
 			() => extract(options.rootContext) as FloatingRootContext<RT> | undefined,
 		);
@@ -296,6 +297,12 @@ class FloatingContext<RT extends ReferenceType = ReferenceType>
 	// Used to handle pointer event style synchronization between tree nodes.
 	// Marked as internal and deprecated, deprecated will push it to the bottom of intellisense.
 	__position: PositionState<RT>;
+
+	/**
+	 * @internal - do not use
+	 * @deprecated
+	 */
+	// Used to handle checking if events occurred within children portals of the floating element.
 }
 
 class FloatingState<RT extends ReferenceType = ReferenceType> {
@@ -337,12 +344,13 @@ class FloatingState<RT extends ReferenceType = ReferenceType> {
 			positionState: this.#position,
 		});
 
-		$effect(() => {
+		$effect.pre(() => {
 			this.#rootContext.data.floatingContext = this.context;
 
 			const node = this.#tree?.nodes.find(
 				(node) => node.id === this.options.nodeId.current,
 			);
+
 			if (node) {
 				node.context = this.context;
 			}

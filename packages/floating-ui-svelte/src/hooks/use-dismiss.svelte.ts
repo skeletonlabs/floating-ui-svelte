@@ -15,7 +15,7 @@ import {
 	isRootElement,
 } from "../internal/dom.js";
 import type { FloatingContext } from "./use-floating.svelte.js";
-import type { FloatingTreeType, MaybeGetter } from "../types.js";
+import type { MaybeGetter } from "../types.js";
 import { useFloatingTree } from "../components/floating-tree/hooks.svelte.js";
 import { getChildren } from "../internal/get-children.js";
 import { on } from "svelte/events";
@@ -23,6 +23,7 @@ import { extract } from "../internal/extract.js";
 import { watch } from "../internal/watch.svelte.js";
 import type { ElementProps } from "./use-interactions.svelte.js";
 import { untrack } from "svelte";
+import { FLOATING_ID_ATTRIBUTE } from "../internal/attributes.js";
 
 const bubbleHandlerKeys = {
 	pointerdown: "onpointerdown",
@@ -164,18 +165,22 @@ function useDismiss(
 		if (isComposing) return;
 
 		const nodeId = context.data.floatingContext?.nodeId;
-		const children = tree ? getChildren(tree.nodes, nodeId) : [];
+		const children = tree ? getChildren(tree?.nodes, nodeId) : [];
 
 		if (!bubbleOptions.escapeKey) {
 			event.stopPropagation();
 
 			if (children.length > 0) {
-				const hasOpenChild = children.some(
-					(child) =>
-						child.context?.open && !child.context.data.__escapeKeyBubbles,
-				);
+				let shouldDismiss = true;
 
-				if (hasOpenChild) return;
+				for (const child of children) {
+					if (child.context?.open && !child.context.data.__escapeKeyBubbles) {
+						shouldDismiss = false;
+						break;
+					}
+				}
+
+				if (!shouldDismiss) return;
 			}
 		}
 
@@ -285,11 +290,9 @@ function useDismiss(
 
 		const nodeId = context.data.floatingContext?.nodeId;
 
-		const children = tree ? getChildren(tree.nodes, nodeId) : [];
-
 		const targetIsInsideChildren =
-			children.length &&
-			children.some((node) =>
+			tree &&
+			getChildren(tree?.nodes, nodeId).some((node) =>
 				isEventTargetWithin(event, node.context?.floating),
 			);
 
@@ -301,14 +304,33 @@ function useDismiss(
 			return;
 		}
 
-		if (children.length > 0) {
-			const hasOpenChild = children.some(
-				(child) =>
-					child.context?.open && !child.context.data.__outsidePressBubbles,
-			);
+		console.log("treeNodes", tree?.nodes);
+		const children = tree ? getChildren(tree?.nodes, nodeId) : [];
 
-			if (hasOpenChild) return;
+		if (children.length > 0) {
+			let shouldDismiss = true;
+
+			for (const child of children) {
+				if (child.context?.open && !child.context.data.__outsidePressBubbles) {
+					shouldDismiss = false;
+					break;
+				}
+			}
+
+			if (!shouldDismiss) return;
 		}
+
+		// if the event occurred inside a portal created within this floating element, return
+		const closestPortalOrigin = isElement(target)
+			? target.closest("[data-floating-ui-origin-id]")
+			: null;
+
+		if (
+			closestPortalOrigin &&
+			closestPortalOrigin.getAttribute("data-floating-ui-origin-id") ===
+				context.floatingId
+		)
+			return;
 
 		context.onOpenChange(false, event, "outside-press");
 	}
@@ -321,12 +343,10 @@ function useDismiss(
 		getTarget(event)?.addEventListener(outsidePressEvent, callback);
 	}
 
-	$effect(() => {
+	$effect.pre(() => {
 		if (!context.open || !enabled) return;
-		untrack(() => {
-			context.data.__escapeKeyBubbles = bubbleOptions.escapeKey;
-			context.data.__outsidePressBubbles = bubbleOptions.outsidePress;
-		});
+		context.data.__escapeKeyBubbles = bubbleOptions.escapeKey;
+		context.data.__outsidePressBubbles = bubbleOptions.outsidePress;
 
 		let compositionTimeout = -1;
 
@@ -455,6 +475,7 @@ function useDismiss(
 		[captureHandlerKeys[outsidePressEvent]]: () => {
 			insideTree = true;
 		},
+		[FLOATING_ID_ATTRIBUTE]: context.floatingId,
 	});
 
 	return {
@@ -470,4 +491,4 @@ function useDismiss(
 }
 
 export type { UseDismissOptions };
-export { useDismiss };
+export { useDismiss, normalizeProp };

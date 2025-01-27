@@ -1,4 +1,5 @@
 import { useId } from "../../hooks/use-id.js";
+import { ORIGIN_ID_ATTRIBUTE } from "../../internal/attributes.js";
 import { Context } from "../../internal/context.js";
 import { createAttribute } from "../../internal/dom.js";
 import { extract } from "../../internal/extract.js";
@@ -32,16 +33,27 @@ function usePortalContext() {
 interface UseFloatingPortalNodeProps {
 	id?: MaybeGetter<string | undefined>;
 	root?: MaybeGetter<HTMLElement | null | undefined>;
+	originFloatingId?: MaybeGetter<string | null | undefined>;
 }
 
 function useFloatingPortalNode(props: UseFloatingPortalNodeProps = {}) {
 	const id = $derived(extract(props.id));
 	const root = $derived(extract(props.root));
+	const originFloatingId = $derived(extract(props.originFloatingId));
 
 	const uniqueId = useId();
 	const portalContext = usePortalContext();
 
 	let portalNode = $state<HTMLElement | null>(null);
+
+	watch(
+		() => originFloatingId,
+		() => {
+			if (originFloatingId && portalNode) {
+				portalNode.setAttribute(ORIGIN_ID_ATTRIBUTE, originFloatingId);
+			}
+		},
+	);
 
 	$effect.pre(() => {
 		return () => {

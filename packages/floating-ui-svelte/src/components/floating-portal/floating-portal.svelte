@@ -43,6 +43,7 @@
 	import Portal from "./portal.svelte";
 	import { sleep } from "../../internal/sleep.js";
 	import { handleGuardFocus } from "../../internal/handle-guard-focus.js";
+	import { FLOATING_ID_ATTRIBUTE } from "../../internal/attributes.js";
 
 	let {
 		children,
@@ -51,16 +52,36 @@
 		preserveTabOrder = true,
 	}: FloatingPortalProps = $props();
 
-	const portalNode = useFloatingPortalNode({
-		id: () => id,
-		root: () => root,
-	});
-
 	let focusManagerState = $state.raw<FocusManagerState>(null);
 	let beforeOutsideGuard = $state<HTMLSpanElement | null>(null);
 	let afterOutsideGuard = $state<HTMLSpanElement | null>(null);
 	let beforeInsideGuard = $state<HTMLSpanElement | null>(null);
 	let afterInsideGuard = $state<HTMLSpanElement | null>(null);
+	let portalOriginMarker = $state<HTMLSpanElement | null>(null);
+	let originFloatingId = $state<string | null>(null);
+
+	const portalNode = useFloatingPortalNode({
+		id: () => id,
+		root: () => root,
+		originFloatingId: () => originFloatingId,
+	});
+
+	$effect(() => {
+		if (!portalOriginMarker) {
+			originFloatingId = null;
+			return;
+		}
+		const closestFloatingNode = portalOriginMarker.closest(
+			`[${FLOATING_ID_ATTRIBUTE}]`
+		);
+		if (closestFloatingNode) {
+			originFloatingId = closestFloatingNode.getAttribute(
+				FLOATING_ID_ATTRIBUTE
+			);
+		} else {
+			originFloatingId = null;
+		}
+	});
 
 	const modal = $derived(focusManagerState?.modal);
 	const open = $derived(focusManagerState?.open);
@@ -137,6 +158,11 @@
 		},
 	});
 </script>
+
+<span
+	data-floating-ui-portal-origin
+	bind:this={portalOriginMarker}
+	style="display: none !important;"></span>
 
 {#if shouldRenderGuards && portalNode.current}
 	<FocusGuard
