@@ -30,7 +30,7 @@
 			bind:this={f.floating}
 			{...ints.getFloatingProps()}
 			data-testid="floating">
-			<button tabIndex={-1}>one</button>
+			<button tabindex={-1}>one</button>
 		</div>
 	</FloatingFocusManager>
 {/if}

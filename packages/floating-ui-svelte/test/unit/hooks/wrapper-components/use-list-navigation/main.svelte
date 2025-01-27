@@ -41,7 +41,7 @@
 					role="option"
 					data-testid={`item-${index}`}
 					aria-selected={activeIndex === index}
-					tabIndex={-1}
+					tabindex={-1}
 					{...ints.getItemProps()}
 					bind:this={listRef[index]}>
 					{str}

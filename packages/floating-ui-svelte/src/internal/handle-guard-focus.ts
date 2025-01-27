@@ -1,10 +1,13 @@
 import { sleep } from "./sleep.js";
 
 /**
- * Guards have an `aria-hidden` attribute on them, as they should not be visible to screen readers,
- * however, they are used as an intermediary to focus the real target. When they receive focus in
- * chromium browsers, an error is logged informing that an `aria-hidden` element should not be
- * focused.
+ *
+ * We apply the `aria-hidden` attribute to elements that should not be visible to screen readers
+ * under specific circumstances, mostly when in a "modal" context or when they are strictly for
+ * utility purposes, like the focus guards.
+ *
+ * When these elements receive focus before we can remove the aria-hidden attribute, we need to
+ * handle the focus in a way that does not cause an error to be logged.
  *
  * This function handles the focus of the guard element first by momentary removing the
  * `aria-hidden` attribute, focusing the guard (which will cause something else to focus), and then

@@ -70,7 +70,7 @@ function useRole(
 			"aria-expanded": context.open ? "true" : "false",
 			"aria-haspopup": ariaRole === "alertdialog" ? "dialog" : ariaRole,
 			"aria-controls": context.open ? context.floatingId : undefined,
-			...(ariaRole === "listbox" && { role: "combobox " }),
+			...(ariaRole === "listbox" && { role: "combobox" }),
 			...(ariaRole === "menu" && { id: referenceId }),
 			...(ariaRole === "menu" && isNested && { role: "menuitem" }),
 			...(role === "select" && { "aria-autocomplete": "none" }),

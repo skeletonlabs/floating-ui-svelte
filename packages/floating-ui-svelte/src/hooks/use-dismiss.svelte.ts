@@ -332,7 +332,6 @@ function useDismiss(
 	}
 
 	function closeOnPressOutsideCapture(event: MouseEvent) {
-		console.log("close on press outside capture", context.floatingId);
 		const callback = () => {
 			closeOnPressOutside(event);
 			getTarget(event)?.removeEventListener(outsidePressEvent, callback);

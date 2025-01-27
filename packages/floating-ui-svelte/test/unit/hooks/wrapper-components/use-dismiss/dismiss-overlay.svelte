@@ -9,7 +9,6 @@
 <div
 	style={styleObjectToString({ width: "100vw", height: "100vh" })}
 	onpointerdown={(e) => {
-		console.log("prop stopped");
 		e.stopPropagation();
 	}}
 	onkeydown={(e) => {
