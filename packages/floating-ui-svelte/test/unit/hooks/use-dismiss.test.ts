@@ -363,7 +363,20 @@ describe("bubbles", () => {
 	});
 });
 
-describe("capture", () => {
+/**
+ * We don't have first party portal support with Svelte, meaning we lose the ability to
+ * test this scenario following the original floating-ui, where they call `e.stopPropagation()`
+ * on the component that wraps the portalled content, thus stopping it from reaching the portalled
+ * content.
+ *
+ * With our implementation, the event nevers goes through that wrapper component, since events don't
+ * bubble/propagate through the "component tree", but rather through the DOM tree.
+ *
+ * I've explored a few ideas around handling this via a proxy element that would be inserted in
+ * the DOM tree where the portal component is called vs rendered and then dispatching events back
+ * and forth but I need to spend some more time on it.
+ */
+describe.todo("capture", () => {
 	describe("prop resolution", () => {
 		it("undefined", () => {
 			const { escapeKey: escapeKeyCapture, outsidePress: outsidePressCapture } =
@@ -435,5 +448,38 @@ describe("capture", () => {
 			expect(screen.getByText("outer")).toBeInTheDocument();
 			expect(screen.getByText("inner")).toBeInTheDocument();
 		});
+	});
+});
+
+describe("outsidePressEvent click", () => {
+	it("does not close when dragging outside the floating element", async () => {
+		render(Dismiss, { outsidePressEvent: "click" });
+
+		const floatingEl = screen.getByRole("tooltip");
+		await fireEvent.mouseDown(floatingEl);
+		await fireEvent.mouseUp(document.body);
+		expect(screen.queryByRole("tooltip")).toBeInTheDocument();
+	});
+
+	it("does not close when dragging inside the floating element", async () => {
+		render(Dismiss, { outsidePressEvent: "click" });
+
+		const floatingEl = screen.getByRole("tooltip");
+
+		await fireEvent.mouseDown(document.body);
+		await fireEvent.mouseUp(floatingEl);
+		expect(screen.queryByRole("tooltip")).toBeInTheDocument();
+	});
+
+	it("closes when dragging outside the floating element and then clicking outside", async () => {
+		render(Dismiss, { outsidePressEvent: "click" });
+		const floatingEl = screen.getByRole("tooltip");
+		await fireEvent.mouseDown(floatingEl);
+		await fireEvent.mouseUp(document.body);
+		// a click event will have fired before the proper "outside" click
+		await fireEvent.click(document.body);
+		await fireEvent.click(document.body);
+
+		expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
 	});
 });
