@@ -5,7 +5,7 @@ function getChildren<RT extends ReferenceType = ReferenceType>(
 	id: string | undefined,
 ) {
 	let allChildren = nodes.filter(
-		(node) => node.parentId === id && node.context?.data?.open,
+		(node) => node.parentId === id && node.context?.open,
 	);
 	let currentChildren = allChildren;
 
