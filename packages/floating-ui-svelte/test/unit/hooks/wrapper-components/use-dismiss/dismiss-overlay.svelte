@@ -8,7 +8,10 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	style={styleObjectToString({ width: "100vw", height: "100vh" })}
-	onpointerdown={(e) => e.stopPropagation()}
+	onpointerdown={(e) => {
+		console.log("prop stopped");
+		e.stopPropagation();
+	}}
 	onkeydown={(e) => {
 		if (e.key === "Escape") {
 			e.stopPropagation();

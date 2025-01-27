@@ -22,7 +22,6 @@ import { on } from "svelte/events";
 import { extract } from "../internal/extract.js";
 import { watch } from "../internal/watch.svelte.js";
 import type { ElementProps } from "./use-interactions.svelte.js";
-import { untrack } from "svelte";
 import { FLOATING_ID_ATTRIBUTE } from "../internal/attributes.js";
 
 const bubbleHandlerKeys = {
@@ -128,7 +127,7 @@ function useDismiss(
 ): ElementProps {
 	const enabled = $derived(extract(opts.enabled, true));
 	const escapeKey = $derived(extract(opts.escapeKey, true));
-	const unstable_outsidePress = $derived(opts.outsidePress ?? true);
+	const outsidePressProp = $derived(opts.outsidePress ?? true);
 	const outsidePressEvent = $derived(
 		extract(opts.outsidePressEvent, "pointerdown"),
 	);
@@ -139,21 +138,19 @@ function useDismiss(
 	const ancestorScroll = $derived(extract(opts.ancestorScroll, false));
 	const bubbles = $derived(extract(opts.bubbles));
 	const capture = $derived(extract(opts.capture));
+	const tree = useFloatingTree();
+
 	const outsidePressFn = $derived(
-		typeof unstable_outsidePress === "function"
-			? unstable_outsidePress
-			: () => false,
+		typeof outsidePressProp === "function" ? outsidePressProp : () => false,
 	);
 	const outsidePress = $derived(
-		typeof unstable_outsidePress === "function"
-			? outsidePressFn
-			: unstable_outsidePress,
+		typeof outsidePressProp === "function" ? outsidePressFn : outsidePressProp,
 	);
 	const bubbleOptions = $derived(normalizeProp(bubbles));
 	const captureOptions = $derived(normalizeProp(capture));
+
 	let endedOrStartedInside = false;
 	let isComposing = false;
-	const tree = useFloatingTree();
 	let insideTree = false;
 
 	function closeOnEscapeKeyDown(event: KeyboardEvent) {
@@ -304,7 +301,6 @@ function useDismiss(
 			return;
 		}
 
-		console.log("treeNodes", tree?.nodes);
 		const children = tree ? getChildren(tree?.nodes, nodeId) : [];
 
 		if (children.length > 0) {
@@ -336,6 +332,7 @@ function useDismiss(
 	}
 
 	function closeOnPressOutsideCapture(event: MouseEvent) {
+		console.log("close on press outside capture", context.floatingId);
 		const callback = () => {
 			closeOnPressOutside(event);
 			getTarget(event)?.removeEventListener(outsidePressEvent, callback);
@@ -343,38 +340,37 @@ function useDismiss(
 		getTarget(event)?.addEventListener(outsidePressEvent, callback);
 	}
 
+	function onScroll(event: Event) {
+		context.onOpenChange(false, event, "ancestor-scroll");
+	}
+
+	let compositionTimeout = -1;
+
+	function handleCompositionStart() {
+		window.clearTimeout(compositionTimeout);
+		isComposing = true;
+	}
+
+	function handleCompositionEnd() {
+		// Safari fires `compositionend` before `keydown`, so we need to wait
+		// until the next tick to set `isComposing` to `false`.
+		// https://bugs.webkit.org/show_bug.cgi?id=165004
+		compositionTimeout = window.setTimeout(
+			() => {
+				isComposing = false;
+			},
+			// 0ms or 1ms don't work in Safari. 5ms appears to consistently work.
+			// Only apply to WebKit for the test to remain 0ms.
+			isWebKit() ? 5 : 0,
+		);
+	}
+
 	$effect.pre(() => {
 		if (!context.open || !enabled) return;
 		context.data.__escapeKeyBubbles = bubbleOptions.escapeKey;
 		context.data.__outsidePressBubbles = bubbleOptions.outsidePress;
 
-		let compositionTimeout = -1;
-
-		const onScroll = (event: Event) => {
-			context.onOpenChange(false, event, "ancestor-scroll");
-		};
-
-		const handleCompositionStart = () => {
-			window.clearTimeout(compositionTimeout);
-			isComposing = true;
-		};
-
-		const handleCompositionEnd = () => {
-			// Safari fires `compositionend` before `keydown`, so we need to wait
-			// until the next tick to set `isComposing` to `false`.
-			// https://bugs.webkit.org/show_bug.cgi?id=165004
-			compositionTimeout = window.setTimeout(
-				() => {
-					isComposing = false;
-				},
-				// 0ms or 1ms don't work in Safari. 5ms appears to consistently work.
-				// Only apply to WebKit for the test to remain 0ms.
-				isWebKit() ? 5 : 0,
-			);
-		};
-
 		const doc = getDocument(context.floating);
-
 		const listenersToRemove: Array<() => void> = [];
 
 		if (escapeKey) {
@@ -446,7 +442,7 @@ function useDismiss(
 		};
 	});
 
-	watch([() => outsidePress, () => outsidePressEvent], () => {
+	watch.pre([() => outsidePress, () => outsidePressEvent], () => {
 		insideTree = false;
 	});
 

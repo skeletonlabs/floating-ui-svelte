@@ -22,32 +22,6 @@ function getChildren<RT extends ReferenceType = ReferenceType>(
 	return allChildren;
 }
 
-function getRawChildren<RT extends ReferenceType = ReferenceType>(
-	nodes: Array<{
-		id: string | undefined;
-		parentId: string | null;
-		open: boolean;
-		__outsidePressBubbles: boolean;
-	}>,
-	id: string | undefined,
-) {
-	console.log("nodes in getRaw", nodes);
-	console.log("id", id);
-	let allChildren = nodes.filter((node) => node.parentId === id && node.open);
-	console.log("all children", allChildren);
-	let currentChildren = allChildren;
-
-	while (currentChildren.length) {
-		currentChildren = nodes.filter((node) =>
-			currentChildren?.some((n) => node.parentId === n.id && node.open),
-		);
-
-		allChildren = allChildren.concat(currentChildren);
-	}
-
-	return allChildren;
-}
-
 function getDeepestNode<RT extends ReferenceType = ReferenceType>(
 	nodes: Array<FloatingNodeType<RT>>,
 	id: string | undefined,
@@ -73,4 +47,4 @@ function getDeepestNode<RT extends ReferenceType = ReferenceType>(
 	return nodes.find((node) => node.id === deepestNodeId);
 }
 
-export { getChildren, getDeepestNode, getRawChildren };
+export { getChildren, getDeepestNode };

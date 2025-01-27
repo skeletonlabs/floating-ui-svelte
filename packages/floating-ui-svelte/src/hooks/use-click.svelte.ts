@@ -114,9 +114,7 @@ function useClick(
 			return;
 		}
 
-		if (isMouseLikePointerType(pointerType, true) && ignoreMouse) {
-			return;
-		}
+		if (isMouseLikePointerType(pointerType, true) && ignoreMouse) return;
 
 		if (
 			context.open &&

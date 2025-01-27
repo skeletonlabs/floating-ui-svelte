@@ -420,8 +420,6 @@ describe("capture", () => {
 
 	describe("outsidePress", () => {
 		it("false", async () => {
-			const user = userEvent.setup();
-
 			render(DismissCaptureDialogsMulti, { outsidePress: [false, false] });
 
 			expect(screen.getByText("outer")).toBeInTheDocument();
@@ -429,12 +427,10 @@ describe("capture", () => {
 
 			await sleep(30);
 
-			await user.click(screen.getByText("outer"));
-
+			await userEvent.click(screen.getByText("outer"));
 			expect(screen.getByText("outer")).toBeInTheDocument();
 			expect(screen.getByText("inner")).toBeInTheDocument();
-
-			await user.click(screen.getByText("outside"));
+			await userEvent.click(screen.getByText("outside"));
 
 			expect(screen.getByText("outer")).toBeInTheDocument();
 			expect(screen.getByText("inner")).toBeInTheDocument();

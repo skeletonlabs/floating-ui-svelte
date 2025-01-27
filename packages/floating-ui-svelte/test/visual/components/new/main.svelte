@@ -6,15 +6,11 @@
 	}: { outsidePress?: [boolean, boolean] } = $props();
 </script>
 
-<DismissNestedDialog
-	testId="outer"
-	bubbles={{
-		escapeKey: false,
-	}}>
+<DismissNestedDialog testId="outer" capture={{ outsidePress: false }}>
 	<DismissNestedDialog
 		testId="inner"
-		bubbles={{
-			escapeKey: false,
+		capture={{
+			outsidePress: false,
 		}}>
 		<button>test button</button>
 	</DismissNestedDialog>

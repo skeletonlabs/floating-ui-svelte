@@ -584,7 +584,6 @@ describe("Navigation", () => {
 		render(Navigation);
 		await userEvent.hover(screen.getByText("Product"));
 
-		// biome-ignore lint/style/noNonNullAssertion: <explanation>
 		await userEvent.click(screen.getByText("Close").parentElement!);
 		await userEvent.keyboard(testKbd.TAB);
 		await waitFor(() => expect(screen.getByText("Close")).toHaveFocus());
