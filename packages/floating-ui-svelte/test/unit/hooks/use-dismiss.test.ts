@@ -6,15 +6,16 @@ import {
 	waitFor,
 } from "@testing-library/svelte";
 import { describe, expect, it, vi } from "vitest";
-import App from "./wrapper-components/use-dismiss.svelte";
 import Dismiss from "./wrapper-components/use-dismiss/dismiss.svelte";
-import { sleep } from "../../utils.js";
+import { sleep, testKbd } from "../../utils.js";
 import { userEvent } from "@testing-library/user-event";
 import ThirdParty from "./wrapper-components/use-dismiss/third-party.svelte";
 import DismissNestedPopovers from "./wrapper-components/use-dismiss/dismiss-nested-popovers.svelte";
 import DismissPortaledChildren from "./wrapper-components/use-dismiss/dismiss-portaled-children.svelte";
 import { normalizeProp } from "../../../src/index.js";
 import DismissNestedNested from "./wrapper-components/use-dismiss/dismiss-nested-nested.svelte";
+import DismissWithoutFloatingTree from "./wrapper-components/use-dismiss/dismiss-without-floating-tree.svelte";
+import DismissCaptureDialogsMulti from "./wrapper-components/use-dismiss/dismiss-capture-dialogs-multi.svelte";
 
 describe("true", () => {
 	it("dismisses with escape key", async () => {
@@ -275,6 +276,168 @@ describe("bubbles", () => {
 			await waitFor(() =>
 				expect(screen.queryByTestId("inner")).not.toBeInTheDocument(),
 			);
+		});
+
+		it("mixed", async () => {
+			render(DismissNestedNested, { outsidePress: [true, false] });
+
+			expect(screen.queryByTestId("outer")).toBeInTheDocument();
+			expect(screen.queryByTestId("inner")).toBeInTheDocument();
+
+			await fireEvent.pointerDown(document.body);
+
+			expect(screen.queryByTestId("outer")).toBeInTheDocument();
+			expect(screen.queryByTestId("inner")).not.toBeInTheDocument();
+
+			await fireEvent.pointerDown(document.body);
+
+			expect(screen.queryByTestId("outer")).not.toBeInTheDocument();
+			expect(screen.queryByTestId("inner")).not.toBeInTheDocument();
+		});
+	});
+
+	describe("escapeKey", () => {
+		it("without FloatingTree", async () => {
+			render(DismissWithoutFloatingTree);
+
+			screen.getByTestId("focus-button").focus();
+			await waitFor(() =>
+				expect(screen.queryByRole("tooltip")).toBeInTheDocument(),
+			);
+
+			await userEvent.keyboard(testKbd.ESCAPE);
+
+			expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+			expect(screen.queryByRole("dialog")).toBeInTheDocument();
+		});
+
+		it("true", async () => {
+			render(DismissNestedNested, { bubbles: true });
+			expect(screen.queryByTestId("outer")).toBeInTheDocument();
+			expect(screen.queryByTestId("inner")).toBeInTheDocument();
+
+			await userEvent.keyboard(testKbd.ESCAPE);
+
+			expect(screen.queryByTestId("outer")).not.toBeInTheDocument();
+			expect(screen.queryByTestId("inner")).not.toBeInTheDocument();
+		});
+
+		it("false", async () => {
+			render(DismissNestedNested, { escapeKey: [false, false] });
+
+			expect(screen.queryByTestId("outer")).toBeInTheDocument();
+			expect(screen.queryByTestId("inner")).toBeInTheDocument();
+
+			await sleep(30);
+
+			await userEvent.keyboard(testKbd.ESCAPE);
+
+			expect(screen.queryByTestId("outer")).toBeInTheDocument();
+			await waitFor(() => {
+				expect(screen.queryByTestId("inner")).not.toBeInTheDocument();
+			});
+
+			await userEvent.keyboard(testKbd.ESCAPE);
+
+			expect(screen.queryByTestId("outer")).not.toBeInTheDocument();
+			expect(screen.queryByTestId("inner")).not.toBeInTheDocument();
+		});
+
+		it("mixed", async () => {
+			render(DismissNestedNested, { escapeKey: [true, false] });
+
+			expect(screen.queryByTestId("outer")).toBeInTheDocument();
+			expect(screen.queryByTestId("inner")).toBeInTheDocument();
+			await sleep(30);
+
+			await userEvent.keyboard(testKbd.ESCAPE);
+
+			expect(screen.queryByTestId("outer")).toBeInTheDocument();
+			expect(screen.queryByTestId("inner")).not.toBeInTheDocument();
+
+			await userEvent.keyboard(testKbd.ESCAPE);
+
+			expect(screen.queryByTestId("outer")).not.toBeInTheDocument();
+			expect(screen.queryByTestId("inner")).not.toBeInTheDocument();
+		});
+	});
+});
+
+describe("capture", () => {
+	describe("prop resolution", () => {
+		it("undefined", () => {
+			const { escapeKey: escapeKeyCapture, outsidePress: outsidePressCapture } =
+				normalizeProp();
+
+			expect(escapeKeyCapture).toBe(false);
+			expect(outsidePressCapture).toBe(true);
+		});
+
+		it("{}", () => {
+			const { escapeKey: escapeKeyCapture, outsidePress: outsidePressCapture } =
+				normalizeProp({});
+
+			expect(escapeKeyCapture).toBe(false);
+			expect(outsidePressCapture).toBe(true);
+		});
+
+		it("true", () => {
+			const { escapeKey: escapeKeyCapture, outsidePress: outsidePressCapture } =
+				normalizeProp(true);
+
+			expect(escapeKeyCapture).toBe(true);
+			expect(outsidePressCapture).toBe(true);
+		});
+
+		it("false", () => {
+			const { escapeKey: escapeKeyCapture, outsidePress: outsidePressCapture } =
+				normalizeProp(false);
+
+			expect(escapeKeyCapture).toBe(false);
+			expect(outsidePressCapture).toBe(false);
+		});
+
+		it("{ escapeKey: true }", () => {
+			const { escapeKey: escapeKeyCapture, outsidePress: outsidePressCapture } =
+				normalizeProp({
+					escapeKey: true,
+				});
+
+			expect(escapeKeyCapture).toBe(true);
+			expect(outsidePressCapture).toBe(true);
+		});
+
+		it("{ outsidePress: false }", () => {
+			const { escapeKey: escapeKeyCapture, outsidePress: outsidePressCapture } =
+				normalizeProp({
+					outsidePress: false,
+				});
+
+			expect(escapeKeyCapture).toBe(false);
+			expect(outsidePressCapture).toBe(false);
+		});
+	});
+
+	describe("outsidePress", () => {
+		it("false", async () => {
+			const user = userEvent.setup();
+
+			render(DismissCaptureDialogsMulti, { outsidePress: [false, false] });
+
+			expect(screen.getByText("outer")).toBeInTheDocument();
+			expect(screen.getByText("inner")).toBeInTheDocument();
+
+			await sleep(30);
+
+			await user.click(screen.getByText("outer"));
+
+			expect(screen.getByText("outer")).toBeInTheDocument();
+			expect(screen.getByText("inner")).toBeInTheDocument();
+
+			await user.click(screen.getByText("outside"));
+
+			expect(screen.getByText("outer")).toBeInTheDocument();
+			expect(screen.getByText("inner")).toBeInTheDocument();
 		});
 	});
 });

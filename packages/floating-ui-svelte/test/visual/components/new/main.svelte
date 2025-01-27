@@ -8,14 +8,14 @@
 
 <DismissNestedDialog
 	testId="outer"
-	bubbles={outsidePress === undefined
-		? undefined
-		: { outsidePress: outsidePress[0] }}>
+	bubbles={{
+		escapeKey: false,
+	}}>
 	<DismissNestedDialog
 		testId="inner"
-		bubbles={outsidePress === undefined
-			? undefined
-			: { outsidePress: outsidePress[1] }}>
+		bubbles={{
+			escapeKey: false,
+		}}>
 		<button>test button</button>
 	</DismissNestedDialog>
 </DismissNestedDialog>

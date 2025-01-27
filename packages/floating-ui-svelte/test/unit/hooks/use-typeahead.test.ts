@@ -162,7 +162,7 @@ it("Menu - skips disabled items and opens submenu on space if no match", async (
 });
 
 it("Menu - resets once a match is no longer found", async () => {
-	vi.useRealTimers();
+	vi.useFakeTimers({ shouldAdvanceTime: true });
 
 	render(Menu);
 
@@ -172,7 +172,7 @@ it("Menu - resets once a match is no longer found", async () => {
 
 	await userEvent.keyboard("undr");
 
-	await waitFor(() => expect(screen.getByText("Undo")).toHaveFocus());
+	expect(screen.getByText("Undo")).toHaveFocus();
 
 	await userEvent.keyboard("r");
 
@@ -180,10 +180,9 @@ it("Menu - resets once a match is no longer found", async () => {
 });
 
 it("typing spaces on <div> references does not open the menu", async () => {
+	vi.useFakeTimers({ shouldAdvanceTime: true });
 	const spy = vi.fn();
 	render(Select, { onMatch: spy });
-
-	vi.useFakeTimers({ shouldAdvanceTime: true });
 
 	await userEvent.click(screen.getByRole("combobox"));
 

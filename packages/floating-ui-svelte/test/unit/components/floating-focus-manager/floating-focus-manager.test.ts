@@ -172,7 +172,9 @@ describe("guards", () => {
 		await userEvent.tab();
 		await userEvent.tab();
 
-		expect(document.activeElement).toHaveAttribute("data-floating-ui-inert");
+		await waitFor(() =>
+			expect(document.activeElement).toHaveAttribute("data-floating-ui-inert"),
+		);
 	});
 });
 
