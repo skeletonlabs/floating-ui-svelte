@@ -8,7 +8,7 @@
 		active,
 		children,
 		...rest
-	}: WithRef &
+	}: Required<WithRef> &
 		HTMLAttributes<HTMLDivElement> & { active: boolean } = $props();
 </script>
 

@@ -17,7 +17,7 @@
 		active: boolean;
 		selected: boolean;
 		index: number;
-	} & Partial<WithRef<HTMLElement>> = $props();
+	} & WithRef<HTMLElement> = $props();
 </script>
 
 <button

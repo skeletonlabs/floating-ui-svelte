@@ -43,7 +43,7 @@
 		floatingId,
 		...rest
 	}: MenuProps &
-		Partial<WithRef<HTMLButtonElement>> &
+		WithRef<HTMLElement> &
 		HTMLButtonAttributes & { floatingId?: string } = $props();
 
 	let open = $state(false);

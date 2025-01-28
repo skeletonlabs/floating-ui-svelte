@@ -26,6 +26,12 @@ export { default as FloatingDelayGroup } from "./components/floating-delay-group
 export * from "./components/floating-list/floating-list.svelte";
 export { default as FloatingList } from "./components/floating-list/floating-list.svelte";
 
+export * from "./components/composite/composite-item.svelte";
+export { default as CompositeItem } from "./components/composite/composite-item.svelte";
+
+export * from "./components/composite/composite.svelte";
+export { default as Composite } from "./components/composite/composite.svelte";
+
 /**
  * Hooks
  */

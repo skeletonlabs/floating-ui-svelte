@@ -97,7 +97,7 @@ interface WithRef<T extends Element = HTMLElement> {
 	/**
 	 * A bindable reference to the element.
 	 */
-	ref: T | null;
+	ref?: T | null;
 }
 
 export type {

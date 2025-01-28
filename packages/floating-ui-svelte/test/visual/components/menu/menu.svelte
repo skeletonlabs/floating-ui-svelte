@@ -1,22 +1,29 @@
 <script lang="ts">
 	import type { HTMLButtonAttributes } from "svelte/elements";
 	import type { MenuProps } from "./types.js";
-	import { useFloatingParentNodeId } from "../../../../src/index.js";
+	import {
+		useFloatingParentNodeId,
+		type WithRef,
+	} from "../../../../src/index.js";
 	import FloatingTree from "../../../../src/components/floating-tree/floating-tree.svelte";
 	import MenuImpl from "./menu-impl.svelte";
 
-	let props: MenuProps & HTMLButtonAttributes & { floatingId?: string } =
-		$props();
+	let {
+		ref = $bindable(null),
+		...rest
+	}: WithRef<HTMLElement> &
+		MenuProps &
+		HTMLButtonAttributes & { floatingId?: string } = $props();
 
 	const parentId = useFloatingParentNodeId();
 </script>
 
 {#if parentId === null}
 	<FloatingTree>
-		<MenuImpl {...props} />
+		<MenuImpl {...rest} bind:ref />
 	</FloatingTree>
 {:else}
-	<MenuImpl {...props} />
+	<MenuImpl {...rest} bind:ref />
 {/if}
 
 <!-- <DebugPolygon /> -->

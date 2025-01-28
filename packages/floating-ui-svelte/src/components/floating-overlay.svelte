@@ -9,7 +9,7 @@
 	globalThis.fuiLockCleanup ??= { current: () => {} };
 
 	interface FloatingOverlayProps
-		extends Partial<WithRef>,
+		extends WithRef,
 			HTMLAttributes<HTMLDivElement> {
 		/**
 		 * Whether the overlay should lock scrolling on the document body.
