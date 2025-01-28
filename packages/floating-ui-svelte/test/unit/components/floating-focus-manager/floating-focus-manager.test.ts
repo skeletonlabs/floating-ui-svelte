@@ -22,6 +22,7 @@ import Connected from "./components/connected.svelte";
 import FloatingWrapper from "./components/floating-wrapper.svelte";
 import ModalCombobox from "./components/modal-combobox.svelte";
 import Hover from "./components/hover.svelte";
+import Menubar from "../../../visual/components/menubar/main.svelte";
 
 describe("initialFocus", () => {
 	it("handles numbers", async () => {
@@ -795,4 +796,22 @@ it("uses aria-hidden instead of inert on outside nodes if opened with hover and 
 	await waitFor(() =>
 		expect(screen.getByText("outside")).toHaveAttribute("aria-hidden", "true"),
 	);
+});
+
+it("returns focus to the appropriate trigger when navigating submenus with keyboard", async () => {
+	render(Menubar);
+
+	await userEvent.click(screen.getByText("Edit"));
+	await sleep(20);
+	await userEvent.keyboard(testKbd.ARROW_DOWN);
+	await userEvent.keyboard(testKbd.ARROW_DOWN);
+	await userEvent.keyboard(testKbd.ARROW_DOWN);
+	await userEvent.keyboard(testKbd.ARROW_DOWN);
+	await waitFor(() => expect(screen.getByText("Submenu")).toHaveFocus());
+	await userEvent.keyboard(testKbd.ARROW_RIGHT);
+	await sleep(20);
+	await waitFor(() => expect(screen.getByText("Second level")).toHaveFocus());
+	await userEvent.keyboard(testKbd.ARROW_LEFT);
+	await sleep(20);
+	await waitFor(() => expect(screen.getByText("Submenu")).toHaveFocus());
 });

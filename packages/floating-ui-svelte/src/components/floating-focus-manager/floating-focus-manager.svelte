@@ -188,7 +188,7 @@
 	);
 
 	const inertSupported = supportsInert();
-	const guards = $derived(inertSupported ? _guards : true);
+	const guards = inertSupported ? _guards : true;
 	const useInert = $derived(
 		!guards || (inertSupported && outsideElementsInert)
 	);
@@ -200,7 +200,7 @@
 
 	let preventReturnFocus = false;
 	let isPointerDown = false;
-	let tabbableIndex = $state(-1);
+	let tabbableIndex = -1;
 	let prevActiveElement: Element | null = null;
 
 	let beforeGuardRef = $state<HTMLSpanElement | null>(null);
@@ -323,8 +323,6 @@
 			() => context.floating,
 			() => floatingFocusElement,
 			() => modal,
-			() => tree,
-			() => portalContext,
 			() => closeOnFocusOut,
 			() => restoreFocus,
 			() => isUntrappedTypeableCombobox,
@@ -548,7 +546,6 @@
 			() => returnFocus,
 			() => context.data,
 			() => context.events,
-			() => tree?.nodes,
 			() => isInsidePortal,
 			() => context.domReference,
 		],
