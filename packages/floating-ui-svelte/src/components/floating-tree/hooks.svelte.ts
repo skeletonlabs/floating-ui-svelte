@@ -5,7 +5,7 @@ import type {
 	FloatingTreeType,
 	ReferenceType,
 } from "../../types.js";
-import { onMountEffect } from "../../internal/on-mount-effect.svelte.js";
+import { untrack } from "svelte";
 
 const FloatingNodeContext = new Context<FloatingNodeType>(
 	"FloatingNodeContext",
@@ -42,12 +42,14 @@ function useFloatingNodeId(customParentId?: string): string | undefined {
 	const _parentId = useFloatingParentNodeId();
 	const parentId = customParentId || _parentId;
 
-	onMountEffect.pre(() => {
-		const node = { id, parentId };
-		tree?.addNode(node);
-		return () => {
-			tree?.removeNode(node);
-		};
+	$effect.pre(() => {
+		return untrack(() => {
+			const node = { id, parentId };
+			tree?.addNode(node);
+			return () => {
+				tree?.removeNode(node);
+			};
+		});
 	});
 
 	return id;

@@ -168,6 +168,7 @@ describe("guards", () => {
 	it("respects false", async () => {
 		render(Main, { guards: false });
 		await fireEvent.click(screen.getByTestId("reference"));
+		await sleep(20);
 
 		await userEvent.tab();
 		await userEvent.tab();
