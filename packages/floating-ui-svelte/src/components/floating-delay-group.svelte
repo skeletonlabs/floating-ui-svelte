@@ -199,23 +199,20 @@
 		initialDelay: box.with(() => stableInitialDelay),
 	});
 
-	watch.pre(
-		[() => delayGroupState.currentId, () => delayGroupState.isInstantPhase],
-		() => {
-			if (delayGroupState.currentId) {
-				if (initialCurrentId === null) {
-					initialCurrentId = delayGroupState.currentId;
-				} else if (!delayGroupState.isInstantPhase) {
-					delayGroupState.isInstantPhase = true;
-				}
-			} else {
-				if (delayGroupState.isInstantPhase) {
-					delayGroupState.isInstantPhase = false;
-				}
-				initialCurrentId = null;
+	$effect.pre(() => {
+		if (delayGroupState.currentId) {
+			if (initialCurrentId === null) {
+				initialCurrentId = delayGroupState.currentId;
+			} else if (!delayGroupState.isInstantPhase) {
+				delayGroupState.isInstantPhase = true;
 			}
+		} else {
+			if (delayGroupState.isInstantPhase) {
+				delayGroupState.isInstantPhase = false;
+			}
+			initialCurrentId = null;
 		}
-	);
+	});
 
 	FloatingDelayGroupContext.set(delayGroupState);
 </script>

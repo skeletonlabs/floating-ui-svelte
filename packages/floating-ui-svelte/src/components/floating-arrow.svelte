@@ -54,7 +54,6 @@
 		styleObjectToString,
 		styleStringToObject,
 	} from "../internal/style-object-to-string.js";
-	import { watch } from "../internal/watch.svelte.js";
 
 	let {
 		ref = $bindable(null),
@@ -80,15 +79,13 @@
 	let isRTL = $state(false);
 
 	// https://github.com/floating-ui/floating-ui/issues/2932
-	watch(
-		() => context.floating,
-		(floatingEl) => {
-			if (!floatingEl) return;
-			if (getComputedStyle(floatingEl).direction === "rtl") {
-				isRTL = true;
-			}
+
+	$effect(() => {
+		if (!context.floating) return;
+		if (getComputedStyle(context.floating).direction === "rtl") {
+			isRTL = true;
 		}
-	);
+	});
 
 	const [side, alignment] = $derived(
 		context.placement.split("-") as [Side, Alignment]
