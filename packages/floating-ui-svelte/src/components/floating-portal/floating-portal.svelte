@@ -5,7 +5,6 @@
 		PortalContext,
 		useFloatingPortalNode,
 	} from "./hooks.svelte.js";
-	import { watch } from "../../internal/watch.svelte.js";
 	import {
 		disableFocusInside,
 		enableFocusInside,

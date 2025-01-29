@@ -20,7 +20,6 @@ import { useFloatingTree } from "../components/floating-tree/hooks.svelte.js";
 import { getChildren } from "../internal/get-children.js";
 import { on } from "svelte/events";
 import { extract } from "../internal/extract.js";
-import { watch } from "../internal/watch.svelte.js";
 import type { ElementProps } from "./use-interactions.svelte.js";
 import { FLOATING_ID_ATTRIBUTE } from "../internal/attributes.js";
 
@@ -441,7 +440,8 @@ function useDismiss(
 		};
 	});
 
-	watch.pre([() => outsidePress, () => outsidePressEvent], () => {
+	$effect.pre(() => {
+		[outsidePress, outsidePressEvent];
 		insideTree = false;
 	});
 

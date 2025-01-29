@@ -159,7 +159,6 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 
 	$effect(() => {
 		if (!enabled) return;
-
 		return context.events.on("openchange", onOpenChange);
 	});
 

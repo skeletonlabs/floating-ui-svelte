@@ -8,7 +8,6 @@ import { extract } from "../internal/extract.js";
 import type { ContextData, MaybeGetter } from "../types.js";
 import type { FloatingContext } from "./use-floating.svelte.js";
 import type { ElementProps } from "./use-interactions.svelte.js";
-import { watch } from "../internal/watch.svelte.js";
 
 function createVirtualElement(
 	domElement: Element | null | undefined,
@@ -214,12 +213,10 @@ function useClientPoint(
 		pointerType = event.pointerType;
 	}
 
-	watch(
-		() => listenerDeps,
-		() => {
-			return addListener();
-		},
-	);
+	$effect(() => {
+		listenerDeps;
+		return addListener();
+	});
 
 	$effect(() => {
 		if (enabled && !context.floating) {

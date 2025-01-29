@@ -357,24 +357,22 @@ function useListNavigation(
 
 	// Ensure the parent floating element has focus when a nested child closes
 	// to allow arrow key navigation to work after the pointer leaves the child.
-	watch.pre(
-		[() => enabled, () => context.floating, () => tree?.nodes, () => virtual],
-		() => {
-			if (!enabled || context.floating || !tree || virtual || !mounted) return;
 
-			const nodes = tree.nodes;
-			const parent = nodes.find((node) => node.id === parentId)?.context
-				?.floating;
-			const activeEl = activeElement(getDocument(context.floating));
-			const treeContainsActiveEl = nodes.some(
-				(node) => node.context && contains(node.context.floating, activeEl),
-			);
+	$effect.pre(() => {
+		if (!enabled || context.floating || !tree || virtual || !mounted) return;
 
-			if (parent && !treeContainsActiveEl && isPointerModality) {
-				parent.focus({ preventScroll: true });
-			}
-		},
-	);
+		const nodes = tree.nodes;
+		const parent = nodes.find((node) => node.id === parentId)?.context
+			?.floating;
+		const activeEl = activeElement(getDocument(context.floating));
+		const treeContainsActiveEl = nodes.some(
+			(node) => node.context && contains(node.context.floating, activeEl),
+		);
+
+		if (parent && !treeContainsActiveEl && isPointerModality) {
+			parent.focus({ preventScroll: true });
+		}
+	});
 
 	watch.pre(
 		[() => enabled, () => virtual, () => virtualItemRef?.current],

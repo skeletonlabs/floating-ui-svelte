@@ -14,8 +14,6 @@ import type { FloatingContext } from "./use-floating.svelte.js";
 import { on } from "svelte/events";
 import { executeCallbacks } from "../internal/execute-callbacks.js";
 import { extract } from "../internal/extract.js";
-import { watch } from "../internal/watch.svelte.js";
-import type { ElementProps } from "./use-interactions.svelte.js";
 
 interface UseFocusOptions {
 	/**
