@@ -32,10 +32,10 @@ function useDelayUnmount(options: UseDelayUnmountOptions): Boxed<boolean> {
 
 	$effect(() => {
 		if (!open && isMounted) {
-			const timeout = setTimeout(() => {
+			const timeout = window.setTimeout(() => {
 				isMounted = false;
 			}, durationMs);
-			return () => clearTimeout(timeout);
+			return () => window.clearTimeout(timeout);
 		}
 	});
 
@@ -70,11 +70,13 @@ function useTransitionStatus(
 		}
 		return duration.close || 0;
 	});
-	let status: TransitionStatus = $state("unmounted");
+
 	const isMounted = useDelayUnmount({
 		open: () => context.open,
 		durationMs: () => closeDuration,
 	});
+
+	let status: TransitionStatus = $state("unmounted");
 
 	$effect.pre(() => {
 		if (!isMounted.current && status === "close") {
@@ -82,9 +84,8 @@ function useTransitionStatus(
 		}
 	});
 
-	watch.pre([() => context.open, () => context.floating], () => {
+	$effect.pre(() => {
 		if (!context.floating) return;
-
 		if (context.open) {
 			status = "initial";
 

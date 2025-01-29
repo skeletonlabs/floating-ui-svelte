@@ -97,33 +97,29 @@
 			!!(root || portalNode.current)
 	);
 
-	watch.pre(
-		[() => portalNode.current, () => preserveTabOrder, () => modal],
-		() => {
-			if (!portalNode.current || !preserveTabOrder || modal) return;
+	// Make sure elements inside the portal element are tabbable only when the
+	// portal has already been focused, either by tabbing into a focus trap
+	// element outside or using the mouse.
+	function onFocus(event: FocusEvent) {
+		if (portalNode.current && isOutsideEvent(event)) {
+			const focusing = event.type === "focusin";
+			const manageFocus = focusing
+				? enableFocusInside
+				: disableFocusInside;
 
-			// Make sure elements inside the portal element are tabbable only when the
-			// portal has already been focused, either by tabbing into a focus trap
-			// element outside or using the mouse.
-			function onFocus(event: FocusEvent) {
-				if (portalNode.current && isOutsideEvent(event)) {
-					const focusing = event.type === "focusin";
-					const manageFocus = focusing
-						? enableFocusInside
-						: disableFocusInside;
-
-					manageFocus(portalNode.current);
-				}
-			}
-
-			return executeCallbacks(
-				on(portalNode.current, "focusin", onFocus, { capture: true }),
-				on(portalNode.current, "focusout", onFocus, { capture: true })
-			);
+			manageFocus(portalNode.current);
 		}
-	);
+	}
 
-	watch.pre([() => portalNode.current, () => open], () => {
+	$effect.pre(() => {
+		if (!portalNode.current || !preserveTabOrder || modal) return;
+		return executeCallbacks(
+			on(portalNode.current, "focusin", onFocus, { capture: true }),
+			on(portalNode.current, "focusout", onFocus, { capture: true })
+		);
+	});
+
+	$effect.pre(() => {
 		if (!portalNode.current || open) return;
 		enableFocusInside(portalNode.current);
 	});

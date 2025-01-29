@@ -242,63 +242,48 @@
 		return ordered;
 	}
 
-	watch(
-		[
-			() => disabled,
-			() => context.domReference,
-			() => floatingFocusElement,
-			() => modal,
-			() => order,
-			() => isUntrappedTypeableCombobox,
-		],
-		() => {
-			if (disabled || !modal) return;
+	function onKeyDown(event: KeyboardEvent) {
+		if (event.key !== "Tab") return;
 
-			function onKeyDown(event: KeyboardEvent) {
-				if (event.key !== "Tab") return;
-
-				// The focus guards have nothing to focus, so we need to stop the event.
-				if (
-					contains(
-						floatingFocusElement,
-						activeElement(getDocument(floatingFocusElement))
-					) &&
-					getTabbableContent().length === 0 &&
-					!isUntrappedTypeableCombobox
-				) {
-					stopEvent(event);
-				}
-
-				const els = getTabbableElements();
-				const target = getTarget(event);
-
-				if (
-					order[0] === "reference" &&
-					target === context.domReference
-				) {
-					stopEvent(event);
-					if (event.shiftKey) {
-						enqueueFocus(els[els.length - 1]);
-					} else {
-						enqueueFocus(els[1]);
-					}
-				}
-
-				if (
-					order[1] === "floating" &&
-					target === floatingFocusElement &&
-					event.shiftKey
-				) {
-					stopEvent(event);
-					enqueueFocus(els[0]);
-				}
-			}
-
-			const doc = getDocument(floatingFocusElement);
-
-			return on(doc, "keydown", onKeyDown);
+		// The focus guards have nothing to focus, so we need to stop the event.
+		if (
+			contains(
+				floatingFocusElement,
+				activeElement(getDocument(floatingFocusElement))
+			) &&
+			getTabbableContent().length === 0 &&
+			!isUntrappedTypeableCombobox
+		) {
+			stopEvent(event);
 		}
-	);
+
+		const els = getTabbableElements();
+		const target = getTarget(event);
+
+		if (order[0] === "reference" && target === context.domReference) {
+			stopEvent(event);
+			if (event.shiftKey) {
+				enqueueFocus(els[els.length - 1]);
+			} else {
+				enqueueFocus(els[1]);
+			}
+		}
+
+		if (
+			order[1] === "floating" &&
+			target === floatingFocusElement &&
+			event.shiftKey
+		) {
+			stopEvent(event);
+			enqueueFocus(els[0]);
+		}
+	}
+
+	$effect(() => {
+		if (disabled || !modal) return;
+		const doc = getDocument(floatingFocusElement);
+		return on(doc, "keydown", onKeyDown);
+	});
 
 	watch([() => disabled, () => context.floating], () => {
 		if (disabled || !context.floating) return;

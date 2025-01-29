@@ -116,7 +116,6 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 	const mouseOnly = $derived(extract(opts.mouseOnly, false));
 	const restMs = $derived(extract(opts.restMs, 0));
 	const move = $derived(extract(opts.move, true));
-
 	const tree = useFloatingTree();
 	const parentId = useFloatingParentNodeId();
 
@@ -150,16 +149,16 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 			: false,
 	);
 
+	function onOpenChange({ open }: { open: boolean }) {
+		if (open) return;
+		window.clearTimeout(openChangeTimeout);
+		window.clearTimeout(restOpenChangeTimeout);
+		blockMouseMove = true;
+		restTimeoutPending = false;
+	}
+
 	$effect(() => {
 		if (!enabled) return;
-
-		function onOpenChange({ open }: { open: boolean }) {
-			if (open) return;
-			window.clearTimeout(openChangeTimeout);
-			window.clearTimeout(restOpenChangeTimeout);
-			blockMouseMove = true;
-			restTimeoutPending = false;
-		}
 
 		return context.events.on("openchange", onOpenChange);
 	});

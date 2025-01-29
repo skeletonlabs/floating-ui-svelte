@@ -114,54 +114,43 @@ function useFocus(context: FloatingContext, opts: UseFocusOptions = {}) {
 		});
 	}
 
-	watch(
-		[() => enabled, () => context.domReference],
-		([enabled, domReference]) => {
-			if (!enabled) return;
+	// If the domReference was focused and the user left the tab/window, and the
+	// floating element was not open, the focus should be blocked when they
+	// return to the tab/window.
+	function handleBlur() {
+		if (
+			!context.open &&
+			isHTMLElement(context.domReference) &&
+			context.domReference === activeElement(getDocument(context.domReference))
+		) {
+			blockFocus = true;
+		}
+	}
 
-			const win = getWindow(domReference);
+	function handleKeyDown() {
+		keyboardModality = true;
+	}
 
-			// If the domReference was focused and the user left the tab/window, and the
-			// floating element was not open, the focus should be blocked when they
-			// return to the tab/window.
-			const onBlur = () => {
-				if (
-					!context.open &&
-					isHTMLElement(domReference) &&
-					domReference === activeElement(getDocument(domReference))
-				) {
-					blockFocus = true;
-				}
-			};
+	$effect(() => {
+		if (!enabled) return;
+		const win = getWindow(context.domReference);
 
-			const onKeyDown = () => {
-				keyboardModality = true;
-			};
+		return executeCallbacks(
+			on(win, "blur", handleBlur),
+			on(win, "keydown", handleKeyDown, { capture: true }),
+		);
+	});
 
-			return executeCallbacks(
-				on(win, "blur", onBlur),
-				on(win, "keydown", onKeyDown, { capture: true }),
-			);
-		},
-	);
+	function onOpenChange({ reason }: { reason: OpenChangeReason }) {
+		if (reason === "reference-press" || reason === "escape-key") {
+			blockFocus = true;
+		}
+	}
 
-	watch(
-		() => enabled,
-		(enabled) => {
-			if (!enabled) return;
-
-			const onOpenChange = ({ reason }: { reason: OpenChangeReason }) => {
-				if (reason === "reference-press" || reason === "escape-key") {
-					blockFocus = true;
-				}
-			};
-
-			context.events.on("openchange", onOpenChange);
-			return () => {
-				context.events.off("openchange", onOpenChange);
-			};
-		},
-	);
+	$effect(() => {
+		if (!enabled) return;
+		return context.events.on("openchange", onOpenChange);
+	});
 
 	$effect(() => {
 		return () => {

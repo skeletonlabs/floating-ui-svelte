@@ -76,30 +76,22 @@ function useTypeahead(
 	const selectedIndex = $derived(extract(opts.selectedIndex, null));
 
 	let prevIndex: number | null = selectedIndex ?? activeIndex ?? -1;
-
 	let timeoutId = -1;
 	let str = "";
 	let matchIndex: number | null = null;
 
-	watch.pre(
-		() => context.open,
-		() => {
-			if (!context.open) return;
-			clearTimeout(timeoutId);
-			matchIndex = null;
-			str = "";
-		},
-	);
+	$effect.pre(() => {
+		if (!context.open) return;
+		window.clearTimeout(timeoutId);
+		matchIndex = null;
+		str = "";
+	});
 
-	watch.pre(
-		[() => context.open, () => selectedIndex, () => activeIndex],
-		() => {
-			// sync arrow key nav but not typeahead nav
-			if (context.open && str === "") {
-				prevIndex = selectedIndex ?? activeIndex ?? -1;
-			}
-		},
-	);
+	$effect.pre(() => {
+		if (context.open && str === "") {
+			prevIndex = selectedIndex ?? activeIndex ?? -1;
+		}
+	});
 
 	function setTypingChange(value: boolean) {
 		if (value) {

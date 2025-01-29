@@ -221,39 +221,36 @@ function useClientPoint(
 		},
 	);
 
-	watch([() => enabled, () => context.floating], () => {
+	$effect(() => {
 		if (enabled && !context.floating) {
 			initial = false;
 		}
 	});
 
-	watch([() => enabled, () => context.floating], () => {
+	$effect(() => {
 		if (!enabled && context.open) {
 			initial = true;
 		}
 	});
 
-	watch.pre([() => enabled, () => x, () => y], () => {
+	$effect.pre(() => {
 		if (enabled && (x != null || y != null)) {
 			initial = false;
 			setReference(x, y);
 		}
 	});
 
-	watch([() => enabled, () => context.open], () => {
+	$effect(() => {
 		if (enabled && context.open) {
 			listenerDeps = [];
 		}
 	});
 
-	watch(
-		() => openCheck,
-		() => {
-			if (!openCheck && cleanupListener) {
-				cleanupListener();
-			}
-		},
-	);
+	$effect(() => {
+		if (!openCheck && cleanupListener) {
+			cleanupListener();
+		}
+	});
 
 	const reference = $derived({
 		onpointerdown: setPointerType,
