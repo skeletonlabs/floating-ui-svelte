@@ -25,7 +25,6 @@ import { snapshotFloatingContext } from "../internal/snapshot.svelte.js";
 import { extract } from "../internal/extract.js";
 import type { ElementProps } from "./use-interactions.svelte.js";
 import { on } from "svelte/events";
-import { sleep } from "../internal/sleep.js";
 import { untrack } from "svelte";
 
 interface DelayOptions {

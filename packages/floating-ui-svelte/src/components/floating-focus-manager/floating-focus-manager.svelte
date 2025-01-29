@@ -155,8 +155,8 @@
 	import VisuallyHiddenDismiss from "./visually-hidden-dismiss.svelte";
 	import { box } from "../../internal/box.svelte.js";
 	import { reactiveActiveElement } from "../../internal/active-element.svelte.js";
-	import { sleep } from "../../internal/sleep.js";
 	import { handleGuardFocus } from "../../internal/handle-guard-focus.js";
+	import { afterSleep } from "../../internal/after-sleep.js";
 
 	let {
 		context,
@@ -453,7 +453,6 @@
 			() => isUntrappedTypeableCombobox,
 			() => guards,
 			() => useInert,
-			() => tree?.nodes,
 		],
 		() => {
 			if (disabled || !context.floating) return;
@@ -544,8 +543,6 @@
 			() => context.floating,
 			() => floatingFocusElement,
 			() => returnFocus,
-			() => context.data,
-			() => context.events,
 			() => isInsidePortal,
 			() => context.domReference,
 		],
@@ -687,7 +684,6 @@
 	watch.pre(
 		[
 			() => disabled,
-			() => portalContext,
 			() => modal,
 			() => context.open,
 			() => closeOnFocusOut,
@@ -790,7 +786,7 @@
 		bind:ref={() => beforeGuardRef, (v) => (beforeGuardRef = v)}
 		onfocus={(event) => {
 			if (modal) {
-				sleep().then(() => {
+				afterSleep(0, () => {
 					const els = getTabbableElements();
 					enqueueFocus(
 						order[0] === "reference" ? els[0] : els[els.length - 1]
@@ -802,7 +798,7 @@
 			) {
 				preventReturnFocus = false;
 				if (isOutsideEvent(event, portalContext.portalNode)) {
-					sleep().then(() => {
+					afterSleep(0, () => {
 						const nextTabbable =
 							getNextTabbable() || context.domReference;
 						nextTabbable?.focus();
@@ -828,7 +824,7 @@ will have a dismiss button.
 		bind:ref={() => afterGuardRef, (v) => (afterGuardRef = v)}
 		onfocus={(event) => {
 			if (modal) {
-				sleep().then(() => {
+				afterSleep(0, () => {
 					enqueueFocus(getTabbableElements()[0]);
 				});
 			} else if (
@@ -840,7 +836,7 @@ will have a dismiss button.
 				}
 
 				if (isOutsideEvent(event, portalContext.portalNode)) {
-					sleep().then(() => {
+					afterSleep(0, () => {
 						const prevTabbable =
 							getPreviousTabbable() || context.domReference;
 

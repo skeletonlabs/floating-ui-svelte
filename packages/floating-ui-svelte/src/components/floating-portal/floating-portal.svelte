@@ -41,9 +41,9 @@
 
 <script lang="ts">
 	import Portal from "./portal.svelte";
-	import { sleep } from "../../internal/sleep.js";
 	import { handleGuardFocus } from "../../internal/handle-guard-focus.js";
 	import { FLOATING_ID_ATTRIBUTE } from "../../internal/attributes.js";
+	import { afterSleep } from "../../internal/after-sleep.js";
 
 	let {
 		children,
@@ -173,7 +173,7 @@
 			if (isOutsideEvent(event, portalNode.current)) {
 				handleGuardFocus(beforeInsideGuard);
 			} else {
-				sleep().then(() => {
+				afterSleep(0, () => {
 					const prevTabbable =
 						getPreviousTabbable() ||
 						focusManagerState?.domReference;
@@ -200,7 +200,7 @@
 			if (isOutsideEvent(event, portalNode.current)) {
 				handleGuardFocus(afterInsideGuard);
 			} else {
-				sleep().then(() => {
+				afterSleep(0, () => {
 					const nextTabbable =
 						getNextTabbable() || focusManagerState?.domReference;
 

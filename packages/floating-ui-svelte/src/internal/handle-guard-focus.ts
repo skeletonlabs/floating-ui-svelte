@@ -1,4 +1,4 @@
-import { sleep } from "./sleep.js";
+import { afterSleep } from "./after-sleep.js";
 
 /**
  *
@@ -13,7 +13,6 @@ import { sleep } from "./sleep.js";
  * `aria-hidden` attribute, focusing the guard (which will cause something else to focus), and then
  * restoring the attribute.
  */
-
 function handleGuardFocus(
 	guard: HTMLElement | null,
 	focusOptions?: Parameters<HTMLElement["focus"]>[0],
@@ -22,7 +21,7 @@ function handleGuardFocus(
 	const ariaHidden = guard.getAttribute("aria-hidden");
 	guard.removeAttribute("aria-hidden");
 	guard.focus(focusOptions);
-	sleep().then(() => {
+	afterSleep(0, () => {
 		if (ariaHidden === null) {
 			guard.setAttribute("aria-hidden", "");
 		} else {
