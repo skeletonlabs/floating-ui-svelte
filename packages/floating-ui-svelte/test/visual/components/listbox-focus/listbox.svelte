@@ -1,6 +1,14 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
-	import { useFloating, useListNavigation } from "../../../../src/index.js";
+	import {
+		useFloating,
+		useInteractions,
+		useListNavigation,
+		useRole,
+		useTypeahead,
+	} from "../../../../src/index.js";
+	import { SelectContext } from "./context.js";
+	import FloatingList from "../../../../src/components/floating-list/floating-list.svelte";
 
 	let { children }: { children: Snippet } = $props();
 
@@ -29,4 +37,35 @@
 		onNavigate: (v) => (activeIndex = v),
 		focusItemOnHover: false,
 	});
+
+	const typeahead = useTypeahead(f.context, {
+		listRef: () => labels,
+		activeIndex: () => activeIndex,
+		selectedIndex: () => selectedIndex,
+		onMatch: handleTypeaheadMatch,
+	});
+
+	const role = useRole(f.context, { role: "listbox" });
+
+	const ints = useInteractions([listNav, typeahead, role]);
+
+	SelectContext.set({
+		get activeIndex() {
+			return activeIndex;
+		},
+		get selectedIndex() {
+			return selectedIndex;
+		},
+		getItemProps: ints.getItemProps,
+		handleSelect,
+	});
 </script>
+
+<button onclick={() => (selectedIndex = 1)} data-testid="reference">
+	Select
+</button>
+<div bind:this={f.floating} {...ints.getFloatingProps()}>
+	<FloatingList bind:elements {labels}>
+		{@render children?.()}
+	</FloatingList>
+</div>

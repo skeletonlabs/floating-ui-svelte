@@ -15,6 +15,10 @@ import ComplexGrid from "../../visual/components/complex-grid/main.svelte";
 import Scheduled from "./wrapper-components/use-list-navigation/scheduled.svelte";
 import Select from "./wrapper-components/use-list-navigation/select.svelte";
 import EmojiPicker from "../../visual/components/emoji-picker/main.svelte";
+import ListboxFocus from "../../visual/components/listbox-focus/main.svelte";
+import NestedMenu from "../../visual/components/menu/main.svelte";
+import VirtualNested from "../../visual/components/menu-virtual/virtual-nested.svelte";
+import HomeEndIgnore from "./wrapper-components/use-list-navigation/home-end-ignore.svelte";
 
 it("opens on ArrowDown and focuses first item", async () => {
 	render(Main);
@@ -1114,12 +1118,79 @@ it("grid navigation with disabled list items", async () => {
 	);
 });
 
-it.todo("selectedIndex changing does not steal focus");
+it("selectedIndex changing does not steal focus", async () => {
+	render(ListboxFocus);
 
-it.todo("focus management in nested lists");
+	await userEvent.click(screen.getByTestId("reference"));
+	await waitFor(() => expect(screen.getByTestId("reference")).toHaveFocus());
+});
 
-it.todo("virtual nested home or end key presses");
+it("focus management in nested lists", async () => {
+	render(NestedMenu);
+	await userEvent.click(screen.getByRole("button", { name: "Edit" }));
+	await sleep(20);
+	await userEvent.keyboard(testKbd.ARROW_DOWN);
+	await userEvent.keyboard(testKbd.ARROW_DOWN);
+	await userEvent.keyboard(testKbd.ARROW_DOWN);
+	await userEvent.keyboard(testKbd.ARROW_RIGHT);
 
-it.todo("domReference trigger in nested virtual menu is set as virtual item");
+	await waitFor(() => expect(screen.getByText("Text")).toHaveFocus());
+});
 
-it.todo("Home or End key press is ignored for typeable combobox reference");
+it("virtual nested home or end key presses", async () => {
+	render(VirtualNested);
+
+	await act(() => {
+		screen.getByRole("combobox").focus();
+	});
+
+	await userEvent.keyboard(testKbd.ARROW_DOWN); // open menu
+	await userEvent.keyboard(testKbd.ARROW_DOWN);
+	await userEvent.keyboard(testKbd.ARROW_DOWN); // focus Copy as menu
+	await userEvent.keyboard(testKbd.ARROW_RIGHT); // open Copy as submenu
+	await userEvent.keyboard(testKbd.END);
+
+	expect(screen.getByText("Audio")).toHaveAttribute("aria-selected", "true");
+	expect(screen.getByText("Share")).not.toHaveAttribute(
+		"aria-selected",
+		"true",
+	);
+});
+
+it("domReference trigger in nested virtual menu is set as virtual item", async () => {
+	render(VirtualNested);
+
+	await act(() => {
+		screen.getByRole("combobox").focus();
+	});
+
+	await userEvent.keyboard(testKbd.ARROW_DOWN); // open menu
+	await userEvent.keyboard(testKbd.ARROW_DOWN);
+	await userEvent.keyboard(testKbd.ARROW_DOWN); // focus Copy as menu
+	await userEvent.keyboard(testKbd.ARROW_RIGHT); // open Copy as submenu
+
+	expect(screen.getByText("Text")).toHaveAttribute("aria-selected", "true");
+
+	await userEvent.keyboard(testKbd.ARROW_LEFT); // close Copy as submenu
+
+	expect(screen.getByTestId("value")).toHaveTextContent("copy");
+});
+
+it("Home or End key press is ignored for typeable combobox reference", async () => {
+	render(HomeEndIgnore);
+	await userEvent.click(screen.getByRole("combobox"));
+
+	await userEvent.keyboard(testKbd.ARROW_DOWN);
+	await sleep(20);
+
+	await waitFor(() => expect(screen.getByTestId("item-0")).toHaveFocus());
+
+	await userEvent.keyboard(testKbd.END);
+
+	await waitFor(() => expect(screen.getByTestId("item-0")).toHaveFocus());
+
+	await userEvent.keyboard(testKbd.ARROW_DOWN);
+	await userEvent.keyboard(testKbd.HOME);
+
+	await waitFor(() => expect(screen.getByTestId("item-1")).toHaveFocus());
+});
