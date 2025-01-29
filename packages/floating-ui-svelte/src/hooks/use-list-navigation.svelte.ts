@@ -377,12 +377,7 @@ function useListNavigation(
 	);
 
 	watch.pre(
-		[
-			() => enabled,
-			() => tree?.nodes,
-			() => virtual,
-			() => virtualItemRef?.current,
-		],
+		[() => enabled, () => virtual, () => virtualItemRef?.current],
 		() => {
 			if (!enabled) return;
 			if (!tree) return;
@@ -395,12 +390,11 @@ function useListNavigation(
 					virtualItemRef.current = item;
 				}
 			};
-			const localTree = tree;
 
-			localTree.events.on("virtualfocus", handleVirtualFocus);
+			tree.events.on("virtualfocus", handleVirtualFocus);
 
 			return () => {
-				localTree.events.off("virtualfocus", handleVirtualFocus);
+				tree.events.off("virtualfocus", handleVirtualFocus);
 			};
 		},
 	);

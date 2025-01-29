@@ -25,10 +25,6 @@
 	const ctx = CompositeContext.get();
 	const listItem = useListItem();
 
-	$effect(() => {
-		console.log("listitem index", listItem.index);
-	});
-
 	const isActive = $derived(ctx.activeIndex === listItem.index);
 
 	const mergedProps: HTMLAttributes<HTMLElement> = $derived({
