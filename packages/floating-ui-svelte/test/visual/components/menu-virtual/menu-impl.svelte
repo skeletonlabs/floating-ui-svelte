@@ -233,7 +233,7 @@
 			{...ints.getReferenceProps({
 				onkeydown(event: KeyboardEvent) {
 					if (event.key === " " || event.key === "Enter") {
-						console.log("clicked", virtualItemRef.current);
+						// console.log("clicked", virtualItemRef.current);
 					}
 				},
 			})} />

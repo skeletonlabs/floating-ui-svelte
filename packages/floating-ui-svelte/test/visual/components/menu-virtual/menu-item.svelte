@@ -30,10 +30,6 @@
 	const isActive = $derived(item.index === menu.activeIndex);
 	const id = useId();
 
-	$effect(() => {
-		console.log("menu active index", menu.activeIndex);
-	});
-
 	const mergedRef = box.with(
 		() => ref,
 		(v) => {
@@ -68,12 +64,10 @@
 		onmouseenter(event: MouseEvent & { currentTarget: HTMLElement }) {
 			rest.onmouseenter?.(event);
 			if (menu.allowHover && menu.open) {
-				console.log("setting allow hover");
 				menu.activeIndex = item.index;
 			}
 		},
 		onkeydown(event: KeyboardEvent & { currentTarget: HTMLElement }) {
-			console.log("handling keydown");
 			function closeParents(parent: MenuContextType | null) {
 				if (!parent) return;
 				parent.open = false;
