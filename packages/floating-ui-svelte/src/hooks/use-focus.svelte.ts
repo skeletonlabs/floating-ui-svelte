@@ -10,10 +10,10 @@ import {
 import { isMac, isSafari } from "../internal/environment.js";
 import { isTypeableElement } from "../internal/is-typeable-element.js";
 import type { MaybeGetter, OpenChangeReason } from "../types.js";
-import type { FloatingContext } from "./use-floating.svelte.js";
 import { on } from "svelte/events";
 import { executeCallbacks } from "../internal/execute-callbacks.js";
 import { extract } from "../internal/extract.js";
+import type { FloatingContextData } from "./use-floating-context.svelte.js";
 
 interface UseFocusOptions {
 	/**
@@ -30,7 +30,7 @@ interface UseFocusOptions {
 	visibleOnly?: MaybeGetter<boolean>;
 }
 
-function useFocus(context: FloatingContext, opts: UseFocusOptions = {}) {
+function useFocus(context: FloatingContextData, opts: UseFocusOptions = {}) {
 	const enabled = $derived(extract(opts.enabled, true));
 	const visibleOnly = $derived(extract(opts.visibleOnly, true));
 	let blockFocus = false;
@@ -85,13 +85,13 @@ function useFocus(context: FloatingContext, opts: UseFocusOptions = {}) {
 		// Wait for the window blur listener to fire.
 		timeout = window.setTimeout(() => {
 			const activeEl = activeElement(
-				isElement(context.domReference)
-					? context.domReference.ownerDocument
+				isElement(context.elements.domReference)
+					? context.elements.domReference.ownerDocument
 					: document,
 			);
 
 			// Focus left the page, keep it open.
-			if (!relatedTarget && activeEl === context.domReference) return;
+			if (!relatedTarget && activeEl === context.elements.domReference) return;
 
 			// When focusing the reference element (e.g. regular click), then
 			// clicking into the floating element, prevent it from hiding.
@@ -101,8 +101,8 @@ function useFocus(context: FloatingContext, opts: UseFocusOptions = {}) {
 			// and not the element that actually has received focus if it is located
 			// inside a shadow root.
 			if (
-				contains(context.floating, activeEl) ||
-				contains(context.domReference, activeEl) ||
+				contains(context.elements.floating, activeEl) ||
+				contains(context.elements.domReference, activeEl) ||
 				movedToFocusGuard
 			) {
 				return;
@@ -118,8 +118,9 @@ function useFocus(context: FloatingContext, opts: UseFocusOptions = {}) {
 	function handleBlur() {
 		if (
 			!context.open &&
-			isHTMLElement(context.domReference) &&
-			context.domReference === activeElement(getDocument(context.domReference))
+			isHTMLElement(context.elements.domReference) &&
+			context.elements.domReference ===
+				activeElement(getDocument(context.elements.domReference))
 		) {
 			blockFocus = true;
 		}
@@ -131,7 +132,7 @@ function useFocus(context: FloatingContext, opts: UseFocusOptions = {}) {
 
 	$effect(() => {
 		if (!enabled) return;
-		const win = getWindow(context.domReference);
+		const win = getWindow(context.elements.domReference);
 
 		return executeCallbacks(
 			on(win, "blur", handleBlur),

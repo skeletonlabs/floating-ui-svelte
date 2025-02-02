@@ -9,5 +9,8 @@
 	const impl = useImpl(props);
 </script>
 
-<input bind:this={impl.floating.reference} {...impl.getReferenceProps()} />
-<div bind:this={impl.floating.floating} {...impl.getFloatingProps()}></div>
+<input
+	bind:this={impl.floating.elements.reference}
+	{...impl.getReferenceProps()} />
+<div bind:this={impl.floating.elements.floating} {...impl.getFloatingProps()}>
+</div>

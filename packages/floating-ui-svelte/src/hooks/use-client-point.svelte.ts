@@ -6,8 +6,8 @@ import {
 } from "../internal/dom.js";
 import { extract } from "../internal/extract.js";
 import type { ContextData, MaybeGetter } from "../types.js";
-import type { FloatingContext } from "./use-floating.svelte.js";
 import type { ElementProps } from "./use-interactions.svelte.js";
+import type { FloatingContextData } from "./use-floating-context.svelte.js";
 
 function createVirtualElement(
 	domElement: Element | null | undefined,
@@ -114,7 +114,7 @@ interface UseClientPointOptions {
 }
 
 function useClientPoint(
-	context: FloatingContext,
+	context: FloatingContextData,
 	opts: UseClientPointOptions = {},
 ): ElementProps {
 	const enabled = $derived(extract(opts.enabled, true));
@@ -131,7 +131,9 @@ function useClientPoint(
 	// devices, this is undesirable because the floating element will move to
 	// the dismissal touch point.
 	const openCheck = $derived(
-		isMouseLikePointerType(pointerType) ? context.floating : context.open,
+		isMouseLikePointerType(pointerType)
+			? context.elements.floating
+			: context.open,
 	);
 
 	function setReference(x: number | null, y: number | null) {
@@ -145,7 +147,7 @@ function useClientPoint(
 		}
 
 		context.setPositionReference(
-			createVirtualElement(context.domReference, {
+			createVirtualElement(context.elements.domReference, {
 				x,
 				y,
 				axis: axis,
@@ -184,11 +186,11 @@ function useClientPoint(
 			cleanupListener = null;
 		}
 
-		const win = getWindow(context.floating);
+		const win = getWindow(context.elements.floating);
 
 		const handleMouseMove = (event: MouseEvent) => {
 			const target = getTarget(event) as Element | null;
-			if (!contains(context.floating, target)) {
+			if (!contains(context.elements.floating, target)) {
 				setReference(event.clientX, event.clientY);
 			} else {
 				win.removeEventListener("mousemove", handleMouseMove);
@@ -206,7 +208,7 @@ function useClientPoint(
 			return cleanup;
 		}
 
-		context.setPositionReference(context.domReference);
+		context.setPositionReference(context.elements.domReference);
 	}
 
 	function setPointerType(event: PointerEvent) {
@@ -219,7 +221,7 @@ function useClientPoint(
 	});
 
 	$effect(() => {
-		if (enabled && !context.floating) {
+		if (enabled && !context.elements.floating) {
 			initial = false;
 		}
 	});

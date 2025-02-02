@@ -23,7 +23,7 @@
 
 <button
 	data-testid="reference"
-	bind:this={floating.reference}
+	bind:this={floating.elements.reference}
 	{...interactions.getReferenceProps()}>
 	button
 </button>
@@ -31,7 +31,7 @@
 {#if open}
 	<div
 		data-testid="floating"
-		bind:this={floating.floating}
+		bind:this={floating.elements.floating}
 		style={floating.floatingStyles}
 		{...interactions.getFloatingProps()}>
 		{#each [1, 2, 3] as i}

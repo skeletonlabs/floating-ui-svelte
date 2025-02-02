@@ -25,14 +25,14 @@
 </script>
 
 <button
-	bind:this={f.reference}
+	bind:this={f.elements.reference}
 	{...ints.getReferenceProps({
 		onclick: () => (open = !open),
 	})}>
 	Open
 </button>
 {#if open}
-	<div bind:this={f.floating} {...ints.getFloatingProps()}>
+	<div bind:this={f.elements.floating} {...ints.getFloatingProps()}>
 		{#each ["one", "two", "three"] as option, index (option)}
 			<ScheduledOption
 				bind:listRef

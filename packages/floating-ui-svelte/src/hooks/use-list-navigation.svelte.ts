@@ -1,8 +1,6 @@
 import { DEV } from "esm-env";
 import { extract } from "../internal/extract.js";
 import type { Boxed, Dimensions, MaybeGetter } from "../types.js";
-import type { FloatingRootContext } from "./use-floating-root-context.svelte.js";
-import type { FloatingContext } from "./use-floating.svelte.js";
 import { warn } from "../internal/log.js";
 import { getFloatingFocusElement } from "../internal/get-floating-focus-element.js";
 import {
@@ -43,6 +41,8 @@ import {
 } from "../internal/dom.js";
 import { isElement, isHTMLElement } from "@floating-ui/utils/dom";
 import { getDeepestNode } from "../internal/get-children.js";
+import type { FloatingContextData } from "./use-floating-context.svelte.js";
+import type { FloatingRootContext } from "./use-floating-root-context.svelte.js";
 
 interface UseListNavigationOptions {
 	/**
@@ -180,7 +180,7 @@ interface UseListNavigationOptions {
 }
 
 function useListNavigation(
-	context: FloatingContext | FloatingRootContext,
+	context: FloatingContextData | FloatingRootContext,
 	opts: UseListNavigationOptions,
 ) {
 	const { virtualItemRef, onNavigate: onNavigateProp } = opts;
@@ -203,12 +203,12 @@ function useListNavigation(
 	const itemSizes = $derived(extract(opts.itemSizes));
 	const dense = $derived(extract(opts.dense, false));
 	const floatingFocusElement = $derived(
-		getFloatingFocusElement(context.floating),
+		getFloatingFocusElement(context.elements.floating),
 	);
 	const parentId = useFloatingParentNodeId();
 	const tree = useFloatingTree();
 	const typeableComboboxReference = $derived(
-		isTypeableCombobox(context.domReference),
+		isTypeableCombobox(context.elements.domReference),
 	);
 
 	const hasActiveIndex = $derived(activeIndex != null);
@@ -229,7 +229,7 @@ function useListNavigation(
 	let forceScrollIntoView = false;
 	let activeId = $state<string | undefined>();
 	let virtualId = $state<string | undefined>();
-	let mounted = !!context.floating;
+	let mounted = !!context.elements.floating;
 	let focusItemOnOpen = $state(focusItemOnOpenProp);
 
 	const onNavigate = () => {
@@ -261,13 +261,13 @@ function useListNavigation(
 		[
 			() => enabled,
 			() => context.open,
-			() => context.floating,
+			() => context.elements.floating,
 			() => selectedIndex,
 		],
 		(_, [__, ___, prevFloating]) => {
 			if (!enabled) return;
 			const prevMounted = !!prevFloating;
-			if (context.open && context.floating) {
+			if (context.open && context.elements.floating) {
 				if (focusItemOnOpen && selectedIndex != null) {
 					// Regardless of the pointer modality, we want to ensure the selected
 					// item comes into view when the floating element is opened.
@@ -288,7 +288,7 @@ function useListNavigation(
 		[
 			() => enabled,
 			() => context.open,
-			() => context.floating,
+			() => context.elements.floating,
 			() => activeIndex,
 			() => selectedIndex,
 			() => nested,
@@ -301,7 +301,7 @@ function useListNavigation(
 			const prevMounted = !!prevFloating;
 			if (!enabled) return;
 			if (!context.open) return;
-			if (!context.floating) return;
+			if (!context.elements.floating) return;
 
 			if (activeIndex == null) {
 				forceSyncFocus = false;
@@ -359,14 +359,16 @@ function useListNavigation(
 	// to allow arrow key navigation to work after the pointer leaves the child.
 
 	$effect.pre(() => {
-		if (!enabled || context.floating || !tree || virtual || !mounted) return;
+		if (!enabled || context.elements.floating || !tree || virtual || !mounted)
+			return;
 
 		const nodes = tree.nodes;
-		const parent = nodes.find((node) => node.id === parentId)?.context
-			?.floating;
-		const activeEl = activeElement(getDocument(context.floating));
+		const parent = nodes.find((node) => node.id === parentId)?.context?.elements
+			.floating;
+		const activeEl = activeElement(getDocument(context.elements.floating));
 		const treeContainsActiveEl = nodes.some(
-			(node) => node.context && contains(node.context.floating, activeEl),
+			(node) =>
+				node.context && contains(node.context.elements.floating, activeEl),
 		);
 
 		if (parent && !treeContainsActiveEl && isPointerModality) {
@@ -398,7 +400,7 @@ function useListNavigation(
 	);
 
 	$effect.pre(() => {
-		mounted = !!context.floating;
+		mounted = !!context.elements.floating;
 	});
 
 	$effect.pre(() => {
@@ -525,11 +527,11 @@ function useListNavigation(
 			stopEvent(event);
 			context.onOpenChange(false, event, "list-navigation");
 
-			if (isHTMLElement(context.domReference)) {
+			if (isHTMLElement(context.elements.domReference)) {
 				if (virtual) {
-					tree?.events.emit("virtualfocus", context.domReference);
+					tree?.events.emit("virtualfocus", context.elements.domReference);
 				} else {
-					context.domReference.focus();
+					context.elements.domReference.focus();
 				}
 			}
 
@@ -762,10 +764,10 @@ function useListNavigation(
 
 				if (isCrossOpenKey || isCrossCloseKey) {
 					const isCurrentTarget =
-						deepestNode.context?.domReference === event.currentTarget;
+						deepestNode.context?.elements.domReference === event.currentTarget;
 					const dispatchItem =
 						isCrossCloseKey && !isCurrentTarget
-							? deepestNode.context?.domReference
+							? deepestNode.context?.elements.domReference
 							: isCrossOpenKey
 								? listRef.find((item) => item?.id === activeId)
 								: null;
@@ -781,10 +783,12 @@ function useListNavigation(
 					if (
 						deepestNode.context.open &&
 						deepestNode.parentId &&
-						event.currentTarget !== deepestNode.context.domReference
+						event.currentTarget !== deepestNode.context.elements.domReference
 					) {
 						stopEvent(event);
-						deepestNode.context.domReference?.dispatchEvent(eventObject);
+						deepestNode.context.elements.domReference?.dispatchEvent(
+							eventObject,
+						);
 						return;
 					}
 				}

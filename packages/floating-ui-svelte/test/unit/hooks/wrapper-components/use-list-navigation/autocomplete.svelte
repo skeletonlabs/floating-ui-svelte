@@ -50,7 +50,7 @@
 </script>
 
 <input
-	bind:this={f.reference}
+	bind:this={f.elements.reference}
 	{...ints.getReferenceProps({
 		placeholder: "Enter fruit",
 		"aria-autocomplete": "list",
@@ -59,7 +59,7 @@
 	data-testid="reference" />
 {#if open}
 	<div
-		bind:this={f.floating}
+		bind:this={f.elements.floating}
 		{...ints.getFloatingProps({
 			style: styleObjectToString({
 				position: f.strategy,
@@ -79,7 +79,7 @@
 						onclick: () => {
 							inputValue = item;
 							open = false;
-							f.domReference?.focus();
+							f.elements.domReference?.focus();
 						},
 					})}>
 					{item}

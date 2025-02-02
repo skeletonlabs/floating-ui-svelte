@@ -18,9 +18,12 @@
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div
 	tabindex={0}
-	bind:this={impl.floating.reference}
+	bind:this={impl.floating.elements.reference}
 	{...impl.getReferenceProps()}>
 </div>
 {#if open}
-	<div bind:this={impl.floating.floating} {...impl.getFloatingProps()}></div>
+	<div
+		bind:this={impl.floating.elements.floating}
+		{...impl.getFloatingProps()}>
+	</div>
 {/if}

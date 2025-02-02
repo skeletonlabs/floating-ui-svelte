@@ -27,7 +27,7 @@
 
 <button
 	data-testid="reference"
-	bind:this={floating.reference}
+	bind:this={floating.elements.reference}
 	{...interactions.getReferenceProps()}>
 	button
 </button>

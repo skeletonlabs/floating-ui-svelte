@@ -69,7 +69,7 @@
 			if (
 				event.key === "ArrowRight" &&
 				// If the root reference is in a menubar, close parents
-				tree?.nodes[0].context?.domReference?.closest(
+				tree?.nodes[0].context?.elements.domReference?.closest(
 					'[role="menubar"]'
 				)
 			) {

@@ -1,9 +1,8 @@
 import { stopEvent } from "../internal/dom.js";
 import { extract } from "../internal/extract.js";
-import { watch } from "../internal/watch.svelte.js";
 import type { MaybeGetter } from "../types.js";
+import type { FloatingContextData } from "./use-floating-context.svelte.js";
 import type { FloatingRootContext } from "./use-floating-root-context.svelte.js";
-import type { FloatingContext } from "./use-floating.svelte.js";
 import type { ElementProps } from "./use-interactions.svelte.js";
 
 interface UseTypeaheadOptions {
@@ -64,7 +63,7 @@ interface UseTypeaheadOptions {
  * types, often used in tandem with `useListNavigation()`.
  */
 function useTypeahead(
-	context: FloatingContext | FloatingRootContext,
+	context: FloatingContextData | FloatingRootContext,
 	opts: UseTypeaheadOptions,
 ): ElementProps {
 	const listRef = $derived(extract(opts.listRef, []));

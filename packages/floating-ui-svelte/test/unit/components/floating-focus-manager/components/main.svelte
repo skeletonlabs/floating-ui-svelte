@@ -20,7 +20,7 @@
 	let open = $state(false);
 	let inputRef = $state<HTMLInputElement | null>(null);
 
-	const floating = useFloating({
+	const f = useFloating({
 		open: () => open,
 		onOpenChange: (v) => {
 			open = v;
@@ -40,7 +40,7 @@
 
 <button
 	data-testid="reference"
-	bind:this={floating.reference}
+	bind:this={f.elements.reference}
 	onclick={() => {
 		open = !open;
 	}}>button</button>
@@ -54,8 +54,11 @@
 		{...rest}
 		initialFocus={initialFocus === "two" ? ref : initialFocus}
 		returnFocus={returnFocus === "inputRef" ? inputRef : returnFocus}
-		context={floating.context}>
-		<div role="dialog" bind:this={floating.floating} data-testid="floating">
+		context={f.context}>
+		<div
+			role="dialog"
+			bind:this={f.elements.floating}
+			data-testid="floating">
 			<button data-testid="one">close</button>
 			<button data-testid="two" bind:this={ref}> confirm </button>
 			<button data-testid="three" onclick={() => (open = false)}>

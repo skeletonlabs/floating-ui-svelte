@@ -2,9 +2,9 @@ import type { PropertiesHyphen } from "csstype";
 import { extract } from "../internal/extract.js";
 import { watch } from "../internal/watch.svelte.js";
 import type { Boxed, Getter, MaybeGetter } from "../types.js";
-import type { FloatingContext } from "./use-floating.svelte.js";
 import type { Placement, Side } from "@floating-ui/utils";
 import { styleObjectToString } from "../internal/style-object-to-string.js";
+import type { FloatingContextData } from "./use-floating-context.svelte.js";
 
 function execWithArgsOrReturn<Value extends object | undefined, SidePlacement>(
 	valueOrFn: Value | ((args: SidePlacement) => Value),
@@ -60,7 +60,7 @@ type TransitionStatus = "unmounted" | "initial" | "open" | "close";
  * correctly handling placement-aware transitions.
  */
 function useTransitionStatus(
-	context: FloatingContext,
+	context: FloatingContextData,
 	opts: UseTransitionStatusOptions = {},
 ): { isMounted: boolean; status: TransitionStatus } {
 	const duration = $derived(extract(opts.duration, 250));
@@ -85,7 +85,7 @@ function useTransitionStatus(
 	});
 
 	$effect.pre(() => {
-		if (!context.floating) return;
+		if (!context.elements.floating) return;
 		if (context.open) {
 			status = "initial";
 
@@ -137,7 +137,7 @@ interface UseTransitionStylesOptions extends UseTransitionStatusOptions {
 }
 
 function useTransitionStyles(
-	context: FloatingContext,
+	context: FloatingContextData,
 	opts: UseTransitionStylesOptions = {},
 ): {
 	styles: string;

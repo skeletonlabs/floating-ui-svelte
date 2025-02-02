@@ -35,7 +35,7 @@
 
 	const ints = useInteractions([clientPoint]);
 
-	const rect = $derived(f.reference?.getBoundingClientRect());
+	const rect = $derived(f.elements.reference?.getBoundingClientRect());
 </script>
 
 <button onclick={() => (open = !open)} data-testid="toggle-open"
@@ -44,14 +44,14 @@
 	>toggle enabled</button>
 <div
 	data-testid="reference"
-	bind:this={f.reference}
+	bind:this={f.elements.reference}
 	{...ints.getReferenceProps()}>
 	Reference
 </div>
 {#if open}
 	<div
 		data-testid="floating"
-		bind:this={f.floating}
+		bind:this={f.elements.floating}
 		{...ints.getFloatingProps()}>
 		Floating
 	</div>

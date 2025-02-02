@@ -64,7 +64,7 @@
 <button onclick={() => (selectedIndex = 1)} data-testid="reference">
 	Select
 </button>
-<div bind:this={f.floating} {...ints.getFloatingProps()}>
+<div bind:this={f.elements.floating} {...ints.getFloatingProps()}>
 	<FloatingList bind:elements {labels}>
 		{@render children?.()}
 	</FloatingList>

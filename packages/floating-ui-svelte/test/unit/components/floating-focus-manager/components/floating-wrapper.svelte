@@ -19,7 +19,7 @@
 </script>
 
 <button
-	bind:this={f.reference}
+	bind:this={f.elements.reference}
 	{...ints.getReferenceProps({
 		onclick: () => (open = !open),
 	})}>
@@ -28,7 +28,7 @@
 
 {#if open}
 	<FloatingFocusManager context={f.context}>
-		<div bind:this={f.floating} data-testid="outer">
+		<div bind:this={f.elements.floating} data-testid="outer">
 			<div {...ints.getFloatingProps()} data-testid="inner"></div>
 		</div>
 	</FloatingFocusManager>

@@ -122,7 +122,7 @@
 			Select balloon color
 		</label>
 		<Button
-			bind:ref={f.reference}
+			bind:ref={f.elements.reference}
 			aria-labelledby="select-label"
 			data-open={open ? "" : undefined}
 			class="flex items-center gap-2 bg-slate-200 rounded w-[10rem]"
@@ -139,7 +139,7 @@
 			<FloatingPortal>
 				<FloatingFocusManager context={f.context} modal={false}>
 					<div
-						bind:this={f.floating}
+						bind:this={f.elements.floating}
 						style={f.floatingStyles}
 						class="bg-slate-200/50 max-h-[20rem] overflow-y-auto rounded outline-none p-1 backdrop-blur-sm"
 						{...ints.getFloatingProps()}>

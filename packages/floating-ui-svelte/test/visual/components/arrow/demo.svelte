@@ -48,13 +48,13 @@
 
 <div>
 	<span
-		bind:this={f.reference}
+		bind:this={f.elements.reference}
 		style="background: royalblue; padding: 5; color: white;">
 		{f.placement}
 	</span>
 	{#if open}
 		<div
-			bind:this={f.floating}
+			bind:this={f.elements.floating}
 			class="bg-black text-white p-2 bg-clip-padding"
 			{...floatingProps}
 			style={mergeStyles(

@@ -21,11 +21,11 @@
 
 <button
 	data-testid="reference"
-	bind:this={f.reference}
+	bind:this={f.elements.reference}
 	{...ints.getReferenceProps()}>reference</button>
 <FloatingFocusManager context={f.context} disabled={!open} modal={false}>
 	<div
-		bind:this={f.floating}
+		bind:this={f.elements.floating}
 		data-testid="floating"
 		{...ints.getFloatingProps()}>
 		<button data-testid="child">child</button>

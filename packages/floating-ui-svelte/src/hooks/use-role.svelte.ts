@@ -1,7 +1,7 @@
 import { useFloatingParentNodeId } from "../components/floating-tree/hooks.svelte.js";
 import { extract } from "../internal/extract.js";
 import type { MaybeGetter } from "../types.js";
-import type { FloatingContext } from "./use-floating.svelte.js";
+import type { FloatingContextData } from "./use-floating-context.svelte.js";
 import { useId } from "./use-id.js";
 import type {
 	ElementProps,
@@ -43,7 +43,7 @@ const componentRoleToAriaRoleMap = new Map<
 ]);
 
 function useRole(
-	context: FloatingContext,
+	context: FloatingContextData,
 	opts: UseRoleOptions = {},
 ): ElementProps {
 	const enabled = $derived(extract(opts.enabled, true));

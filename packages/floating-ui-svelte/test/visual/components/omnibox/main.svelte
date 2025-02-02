@@ -101,7 +101,7 @@
 <div
 	class="grid place-items-center border border-slate-400 rounded lg:w-[40rem] h-[20rem] mb-4">
 	<input
-		bind:this={f.reference}
+		bind:this={f.elements.reference}
 		class="rounded-full sm:w-48 md:w-96 bg-gray-100 px-4 py-2 border border-transparent focus:bg-white focus focus:border-blue-500 outline-none"
 		placeholder="Search"
 		{...ints.getReferenceProps({
@@ -118,7 +118,7 @@
 			modal={false}>
 			<div
 				class="bg-white bg-clip-padding rounded-lg shadow-md border border-slate-900/10 text-left overflow-y-auto"
-				bind:this={f.floating}
+				bind:this={f.elements.floating}
 				style={f.floatingStyles}
 				{...ints.getFloatingProps()}>
 				<div class="flex justify-between align-items-center p-4">
@@ -151,13 +151,16 @@
 								options = options.filter((o) => o !== option);
 							}}
 							onclick={() => {
-								if (activeIndex === null || !f.domReference) {
+								if (
+									activeIndex === null ||
+									!f.elements.domReference
+								) {
 									return;
 								}
 								open = false;
 								isFocusEnabled = false;
-								const domRef =
-									f.domReference as HTMLInputElement;
+								const domRef = f.elements
+									.domReference as HTMLInputElement;
 								domRef.value = options[activeIndex];
 							}} />
 					{/each}

@@ -27,23 +27,24 @@
 	]);
 </script>
 
-<button bind:this={popover.reference} {...popoverInts.getReferenceProps()}
-	>open popover</button>
+<button
+	bind:this={popover.elements.reference}
+	{...popoverInts.getReferenceProps()}>open popover</button>
 {#if popoverOpen}
 	<div
 		role="dialog"
-		bind:this={popover.floating}
+		bind:this={popover.elements.floating}
 		{...popoverInts.getFloatingProps()}>
 		<button
 			data-testid="focus-button"
-			bind:this={tooltip.reference}
+			bind:this={tooltip.elements.reference}
 			{...tooltipInts.getReferenceProps()}>open tooltip</button>
 	</div>
 {/if}
 {#if tooltipOpen}
 	<div
 		role="tooltip"
-		bind:this={tooltip.floating}
+		bind:this={tooltip.elements.floating}
 		{...tooltipInts.getFloatingProps()}>
 	</div>
 {/if}

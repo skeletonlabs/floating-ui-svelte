@@ -17,10 +17,14 @@
 	const ints = useInteractions([dismiss]);
 </script>
 
-<button bind:this={f.reference} {...ints.getReferenceProps()}>open</button>
+<button bind:this={f.elements.reference} {...ints.getReferenceProps()}
+	>open</button>
 {#if open}
 	<FloatingFocusManager context={f.context}>
-		<div role="dialog" bind:this={f.floating} {...ints.getFloatingProps()}>
+		<div
+			role="dialog"
+			bind:this={f.elements.floating}
+			{...ints.getFloatingProps()}>
 		</div>
 	</FloatingFocusManager>
 {/if}

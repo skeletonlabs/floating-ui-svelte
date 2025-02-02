@@ -1,10 +1,10 @@
 import { isHTMLElement } from "@floating-ui/utils/dom";
 import { isMouseLikePointerType, isPointerType } from "../internal/dom.js";
 import { isTypeableElement } from "../internal/is-typeable-element.js";
-import type { FloatingContext } from "./use-floating.svelte.js";
 import type { MaybeGetter, ReferenceType } from "../types.js";
 import { extract } from "../internal/extract.js";
 import type { ElementProps } from "./use-interactions.svelte.js";
+import type { FloatingContextData } from "./use-floating-context.svelte.js";
 
 interface UseClickOptions {
 	/**
@@ -67,7 +67,7 @@ const pointerTypes = ["mouse", "pen", "touch"] as const;
 type PointerType = (typeof pointerTypes)[number];
 
 function useClick(
-	context: FloatingContext,
+	context: FloatingContextData,
 	opts: UseClickOptions = {},
 ): ElementProps {
 	const enabled = $derived(extract(opts.enabled, true));
@@ -136,7 +136,7 @@ function useClick(
 			return;
 		}
 
-		if (event.key === " " && !isSpaceIgnored(context.domReference)) {
+		if (event.key === " " && !isSpaceIgnored(context.elements.domReference)) {
 			// Prevent scrolling
 			event.preventDefault();
 			didKeyDown = true;
@@ -156,7 +156,7 @@ function useClick(
 			event.defaultPrevented ||
 			!keyboardHandlers ||
 			isButtonTarget(event) ||
-			isSpaceIgnored(context.domReference)
+			isSpaceIgnored(context.elements.domReference)
 		) {
 			return;
 		}

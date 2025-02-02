@@ -39,11 +39,13 @@
 	];
 </script>
 
-<button bind:this={f.reference} {...ints.getReferenceProps()}> Open </button>
+<button bind:this={f.elements.reference} {...ints.getReferenceProps()}>
+	Open
+</button>
 {#if open}
 	<FloatingFocusManager context={f.context} modal={false}>
 		<div
-			bind:this={f.floating}
+			bind:this={f.elements.floating}
 			style={f.floatingStyles}
 			{...ints.getFloatingProps()}>
 			<FloatingList bind:elements>

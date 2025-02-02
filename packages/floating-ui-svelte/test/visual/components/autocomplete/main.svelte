@@ -199,7 +199,7 @@
 <div
 	class="grid place-items-center border border-slate-400 rounded lg:w-[40rem] h-[20rem] mb-4">
 	<input
-		bind:this={f.reference}
+		bind:this={f.elements.reference}
 		bind:value={() => inputValue,
 		(v) => {
 			inputValue = v;
@@ -230,7 +230,7 @@
 				initialFocus={-1}
 				visuallyHiddenDismiss>
 				<div
-					bind:this={f.floating}
+					bind:this={f.elements.floating}
 					class="bg-slate-100 rounded overflow-y-auto"
 					style={f.floatingStyles}
 					{...ints.getFloatingProps()}>
@@ -243,7 +243,7 @@
 								onclick() {
 									inputValue = item;
 									open = false;
-									f.domReference?.focus();
+									f.elements.domReference?.focus();
 								},
 							})}
 							active={activeIndex === index}>

@@ -13,10 +13,6 @@ import type {
 	MaybeGetter,
 	OpenChangeReason,
 } from "../types.js";
-import type {
-	FloatingContext,
-	FloatingContextData,
-} from "./use-floating.svelte.js";
 import {
 	useFloatingParentNodeId,
 	useFloatingTree,
@@ -26,6 +22,7 @@ import { extract } from "../internal/extract.js";
 import type { ElementProps } from "./use-interactions.svelte.js";
 import { on } from "svelte/events";
 import { untrack } from "svelte";
+import type { FloatingContextData } from "./use-floating-context.svelte.js";
 
 interface DelayOptions {
 	/**
@@ -109,7 +106,7 @@ function getDelay(
 	return value?.[prop];
 }
 
-function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
+function useHover(context: FloatingContextData, opts: UseHoverOptions = {}) {
 	const enabled = $derived(extract(opts.enabled, true));
 	const delay = $derived(extract(opts.delay, 0));
 	const handleClose = opts.handleClose ?? null;
@@ -173,7 +170,7 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 		if (!handleClose) return;
 		if (!context.open) return;
 
-		const html = getDocument(context.floating).documentElement;
+		const html = getDocument(context.elements.floating).documentElement;
 		return on(html, "mouseleave", htmlOnLeave);
 	});
 
@@ -230,7 +227,7 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 		// if opened via a click-like event, we don't handle the mouseleave event
 		if (isClickLikeOpenEvent) return;
 
-		const doc = getDocument(context.floating);
+		const doc = getDocument(context.elements.floating);
 
 		// clear the rest timeout and set pending to false
 		window.clearTimeout(restOpenChangeTimeout);
@@ -274,7 +271,10 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 		// consistently.
 		const shouldClose =
 			pointerType === "touch"
-				? !contains(context.floating, event.relatedTarget as Element | null)
+				? !contains(
+						context.elements.floating,
+						event.relatedTarget as Element | null,
+					)
 				: true;
 
 		if (shouldClose) {
@@ -285,9 +285,9 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 	$effect(() => {
 		if (!enabled) return;
 
-		if (isElement(context.domReference) && move) {
+		if (isElement(context.elements.domReference) && move) {
 			return on(
-				context.domReference,
+				context.elements.domReference,
 				"mousemove",
 				(e) => {
 					onReferenceMouseEnter(e);
@@ -300,7 +300,7 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 	});
 
 	function disableBodyPointerEvents() {
-		const body = getDocument(context.floating).body;
+		const body = getDocument(context.elements.floating).body;
 		body.setAttribute(safePolygonIdentifier, "");
 		body.style.pointerEvents = "none";
 
@@ -324,8 +324,8 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 			return;
 		}
 
-		const floatingEl = context.floating;
-		const domReferenceEl = context.domReference;
+		const floatingEl = context.elements.floating;
+		const domReferenceEl = context.elements.domReference;
 		if (!isElement(domReferenceEl) || !floatingEl) return;
 
 		const parentContext = tree?.nodes?.find(
@@ -333,19 +333,19 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 		)?.context;
 
 		if (parentContext) {
-			parentContext.__position.setFloatingPointerEvents("inherit");
+			parentContext["~position"].setFloatingPointerEvents("inherit");
 		}
 
 		clearPointerEvents = disableBodyPointerEvents();
 		domReferenceEl.style.pointerEvents = "auto";
 
-		context.__position.setFloatingPointerEvents("auto");
-		const body = getDocument(context.floating).body;
+		context["~position"].setFloatingPointerEvents("auto");
+		const body = getDocument(context.elements.floating).body;
 
 		return () => {
 			body.style.pointerEvents = "";
 			domReferenceEl.style.pointerEvents = "";
-			context.__position.setFloatingPointerEvents(undefined);
+			context["~position"].setFloatingPointerEvents(undefined);
 		};
 	});
 
@@ -358,7 +358,7 @@ function useHover(context: FloatingContext, opts: UseHoverOptions = {}) {
 	});
 
 	$effect(() => {
-		[enabled, context.domReference];
+		[enabled, context.elements.domReference];
 		return () => {
 			cleanupMouseMoveHandler();
 			window.clearTimeout(openChangeTimeout);

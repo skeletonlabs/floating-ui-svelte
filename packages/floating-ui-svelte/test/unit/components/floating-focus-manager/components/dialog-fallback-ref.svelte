@@ -12,26 +12,26 @@
 	let open = $state(false);
 	let removed = $state(false);
 
-	const floating = useFloating({
+	const f = useFloating({
 		open: () => open,
 		onOpenChange: (v) => {
 			open = v;
 		},
 	});
 
-	const ints = useInteractions([useClick(floating.context)]);
+	const ints = useInteractions([useClick(f.context)]);
 </script>
 
 {#if !removed}
 	<button
-		bind:this={floating.reference}
+		bind:this={f.elements.reference}
 		{...ints.getReferenceProps()}
 		data-testid="reference">reference</button>
 {/if}
 {#if open}
 	<FloatingPortal>
-		<FloatingFocusManager context={floating.context} {modal}>
-			<div bind:this={floating.floating} {...ints.getFloatingProps()}>
+		<FloatingFocusManager context={f.context} {modal}>
+			<div bind:this={f.elements.floating} {...ints.getFloatingProps()}>
 				<button
 					data-testid="remove"
 					onclick={() => {

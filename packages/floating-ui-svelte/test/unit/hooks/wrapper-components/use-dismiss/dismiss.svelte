@@ -32,10 +32,15 @@
 	const ints = useInteractions([useDismiss(f.context, props)]);
 </script>
 
-<button bind:this={f.reference} {...ints.getReferenceProps()}> open </button>
+<button bind:this={f.elements.reference} {...ints.getReferenceProps()}>
+	open
+</button>
 
 {#if open}
-	<div bind:this={f.floating} role="tooltip" {...ints.getFloatingProps()}>
+	<div
+		bind:this={f.elements.floating}
+		role="tooltip"
+		{...ints.getFloatingProps()}>
 		<input />
 	</div>
 {/if}

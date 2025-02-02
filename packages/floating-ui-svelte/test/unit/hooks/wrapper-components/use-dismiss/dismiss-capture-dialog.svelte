@@ -30,11 +30,14 @@
 </script>
 
 <FloatingNode id={nodeId}>
-	<button bind:this={f.reference} {...ints.getReferenceProps()}>open</button>
+	<button bind:this={f.elements.reference} {...ints.getReferenceProps()}
+		>open</button>
 	{#if open}
 		<FloatingPortal>
 			<FloatingFocusManager context={f.context}>
-				<div bind:this={f.floating} {...ints.getFloatingProps()}>
+				<div
+					bind:this={f.elements.floating}
+					{...ints.getFloatingProps()}>
 					<span>{id}</span>
 					{@render children?.()}
 				</div>

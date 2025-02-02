@@ -30,21 +30,23 @@
 
 	const referenceRef = box<Element | null>(null);
 
-	const floating = useFloating({
+	const f = useFloating({
+		elements: {
+			reference: () => referenceRef.current,
+		},
 		open: () => open,
 		onOpenChange: (v) => {
 			open = v;
 		},
 		nodeId: () => nodeId,
-		reference: () => referenceRef.current,
 		onReferenceChange: (v) => {
 			referenceRef.current = v;
 		},
 	});
 
 	const ints = useInteractions([
-		useClick(floating.context),
-		useDismiss(floating.context, { bubbles: false }),
+		useClick(f.context),
+		useDismiss(f.context, { bubbles: false }),
 	]);
 </script>
 
@@ -52,8 +54,10 @@
 	{@render reference(referenceRef, ints.getReferenceProps())}
 	<FloatingPortal>
 		{#if open}
-			<FloatingFocusManager context={floating.context}>
-				<div {...ints.getFloatingProps()} bind:this={floating.floating}>
+			<FloatingFocusManager context={f.context}>
+				<div
+					{...ints.getFloatingProps()}
+					bind:this={f.elements.floating}>
 					{@render content(close)}
 				</div>
 			</FloatingFocusManager>

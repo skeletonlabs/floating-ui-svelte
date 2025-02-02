@@ -53,7 +53,9 @@
 	const ref = box<Element | null>(null);
 
 	const f = useFloating({
-		reference: () => ref.current,
+		elements: {
+			reference: () => ref.current,
+		},
 		onReferenceChange: (v) => {
 			ref.current = v;
 		},
@@ -89,7 +91,7 @@
 			<FloatingFocusManager context={f.context} {modal}>
 				<div
 					class="bg-white border border-slate-900/10 shadow-md rounded px-4 py-6 bg-clip-padding"
-					bind:this={f.floating}
+					bind:this={f.elements.floating}
 					style={f.floatingStyles}
 					aria-labelledby={labelId}
 					aria-describedby={descriptionId}

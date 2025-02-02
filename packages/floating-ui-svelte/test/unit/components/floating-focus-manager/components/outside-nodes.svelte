@@ -19,7 +19,7 @@
 
 <input
 	data-testid="reference"
-	bind:this={floating.reference}
+	bind:this={floating.elements.reference}
 	onclick={() => (open = !open)} />
 <div>
 	<div data-testid="aria-live" aria-live="polite"></div>
@@ -31,6 +31,7 @@
 		context={floating.context}
 		{outsideElementsInert}
 		{modal}>
-		<div bind:this={floating.floating} data-testid="floating"></div>
+		<div bind:this={floating.elements.floating} data-testid="floating">
+		</div>
 	</FloatingFocusManager>
 {/if}

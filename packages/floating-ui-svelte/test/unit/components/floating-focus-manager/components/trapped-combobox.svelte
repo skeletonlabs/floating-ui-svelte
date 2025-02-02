@@ -27,14 +27,14 @@
 <div class="App">
 	<!-- svelte-ignore a11y_role_has_required_aria_props -->
 	<input
-		bind:this={f.reference}
+		bind:this={f.elements.reference}
 		{...ints.getReferenceProps()}
 		data-testid="input"
 		role="combobox" />
 	{#if open}
 		<FloatingFocusManager context={f.context}>
 			<div
-				bind:this={f.floating}
+				bind:this={f.elements.floating}
 				style={f.floatingStyles}
 				{...ints.getFloatingProps()}>
 				<button>one</button>

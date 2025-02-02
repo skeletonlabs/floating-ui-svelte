@@ -16,9 +16,10 @@
 	const ints = useInteractions([useDismiss(f.context)]);
 </script>
 
-<button bind:this={f.reference} {...ints.getReferenceProps()}>open</button>
+<button bind:this={f.elements.reference} {...ints.getReferenceProps()}
+	>open</button>
 {#if open}
-	<div bind:this={f.floating} {...ints.getFloatingProps()}>
+	<div bind:this={f.elements.floating} {...ints.getFloatingProps()}>
 		<FloatingPortal>
 			<button data-testid="portaled-button">portaled-button</button>
 		</FloatingPortal>

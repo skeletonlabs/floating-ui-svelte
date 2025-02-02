@@ -27,7 +27,9 @@
 	const ref = box<Element | null>(null);
 
 	const f = useFloating({
-		reference: () => ref.current,
+		elements: {
+			reference: () => ref.current,
+		},
 		onReferenceChange: (v) => {
 			ref.current = v;
 		},
@@ -49,7 +51,7 @@
 {#if open}
 	<div
 		data-testid={`floating-${label}`}
-		bind:this={f.floating}
+		bind:this={f.elements.floating}
 		style={styleObjectToString({
 			position: f.strategy,
 			top: f.y ? `${f.y}` : "",

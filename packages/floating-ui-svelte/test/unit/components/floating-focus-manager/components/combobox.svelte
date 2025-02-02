@@ -8,7 +8,7 @@
 	}: { outsideElementsInert?: boolean; modal?: boolean } = $props();
 
 	let open = $state(false);
-	const floating = useFloating({
+	const f = useFloating({
 		open: () => open,
 		onOpenChange: (v) => {
 			open = v;
@@ -20,20 +20,20 @@
 <input
 	role="combobox"
 	data-testid="reference"
-	bind:this={floating.reference}
+	bind:this={f.elements.reference}
 	onfocus={() => (open = true)} />
 <button data-testid="btn-1">btn1</button>
 <button data-testid="btn-2">btn2</button>
 
 {#if open}
 	<FloatingFocusManager
-		context={floating.context}
+		context={f.context}
 		{modal}
 		order={["reference"]}
 		{outsideElementsInert}>
 		<div
 			role="listbox"
-			bind:this={floating.floating}
+			bind:this={f.elements.floating}
 			data-testid="floating">
 		</div>
 	</FloatingFocusManager>

@@ -33,7 +33,9 @@
 	const isLargeScreen = new MediaQuery("min-width: 1400px");
 
 	const f = useFloating({
-		reference: () => ref.current,
+		elements: {
+			reference: () => ref.current,
+		},
 		onReferenceChange: (v) => {
 			ref.current = v;
 		},
@@ -63,7 +65,7 @@
 {#snippet Content()}
 	<FloatingFocusManager context={f.context} {modal} closeOnFocusOut={modal}>
 		<div
-			bind:this={f.floating}
+			bind:this={f.elements.floating}
 			aria-labelledby={labelId}
 			aria-describedby={descriptionId}
 			class="absolute top-0 right-0 h-full w-48 bg-slate-100 p-4"

@@ -25,7 +25,7 @@
 <button
 	id="reference"
 	data-testid="reference"
-	bind:this={f.reference}
+	bind:this={f.elements.reference}
 	onclick={() => (open = true)}>ref</button>
 {#if open}
 	<FloatingPortal>
@@ -33,7 +33,7 @@
 			<div
 				id="floating"
 				data-testid="floating"
-				bind:this={f.floating}
+				bind:this={f.elements.floating}
 				class="bg-blue-800 w-48 z-[1000] fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
 				<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 				<span id="inside" tabindex={0} data-testid="inside"></span>

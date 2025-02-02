@@ -151,7 +151,7 @@
 	class="grid place-items-center border border-slate-400 rounded lg:w-[40rem] h-[20rem] mb-4">
 	<div class="text-center">
 		<Button
-			bind:ref={f.reference}
+			bind:ref={f.elements.reference}
 			class="text-2xl"
 			aria-label="Choose emoji"
 			aria-describedby="emoji-label"
@@ -176,7 +176,7 @@
 			<FloatingPortal>
 				<FloatingFocusManager context={f.context} modal={false}>
 					<div
-						bind:this={f.floating}
+						bind:this={f.elements.floating}
 						class="bg-white/70 backdrop-blur-sm border border-slate-900/10 shadow-md rounded-lg p-4 bg-clip-padding"
 						style={f.floatingStyles}
 						{...openInts.getFloatingProps(

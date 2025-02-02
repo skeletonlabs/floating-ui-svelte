@@ -12,11 +12,7 @@ import { useFloatingParentNodeId } from "../components/floating-tree/hooks.svelt
 import { DEV } from "esm-env";
 import { isElement } from "@floating-ui/utils/dom";
 import { error } from "../internal/log.js";
-import {
-	box,
-	type ReadableBox,
-	type WritableBox,
-} from "../internal/box.svelte.js";
+import { box } from "../internal/box.svelte.js";
 import { extract } from "../internal/extract.js";
 import { noop } from "../internal/noop.js";
 
@@ -35,106 +31,124 @@ interface UseFloatingRootContextOptions {
 	floatingId?: MaybeGetter<string | undefined | null>;
 }
 
-class FloatingRootContextOptions {
-	open: ReadableBox<boolean>;
-	onOpenChange: OnOpenChange;
-	onReferenceChange: (node: Element | null) => void;
-	onFloatingChange: (node: HTMLElement | null) => void;
-	#stableReference = $state<Element | null>(null);
-	#stableFloating = $state<HTMLElement | null>(null);
-	reference: WritableBox<Element | null>;
-	floating: WritableBox<HTMLElement | null>;
-	floatingProp = $derived.by(() => extract(this.options.floating, null));
-	referenceProp = $derived.by(() => extract(this.options.reference, null));
-	floatingId = $derived.by(() => extract(this.options.floatingId, useId()));
+interface FloatingRootContextOptions
+	extends ReturnType<typeof useFloatingRootContextOptions> {}
 
-	constructor(readonly options: UseFloatingRootContextOptions) {
-		this.open = box.with(() => extract(options.open, false));
-		this.onOpenChange = options.onOpenChange ?? noop;
-		this.onReferenceChange = options.onReferenceChange ?? noop;
-		this.onFloatingChange = options.onFloatingChange ?? noop;
-		this.reference = box.with(
-			() => this.#stableReference,
-			(node) => {
-				this.#stableReference = node;
-				this.onReferenceChange(node as Element | null);
-			},
-		);
-		this.floating = box.with(
-			() => this.#stableFloating,
-			(node) => {
-				this.#stableFloating = node;
-				this.onFloatingChange(node);
-			},
-		);
+function useFloatingRootContextOptions(opts: UseFloatingRootContextOptions) {
+	const open = box.with(() => extract(opts.open, false));
+	const floatingId = $derived(extract(opts.floatingId, useId()) ?? useId());
+	let _stableReference = $state<Element | null>(null);
+	let _stableFloating = $state<HTMLElement | null>(null);
+	const reference = box.with(
+		() => _stableReference,
+		(node) => {
+			_stableReference = node;
+			opts.onReferenceChange?.(node as Element | null);
+		},
+	);
+	const floating = box.with(
+		() => _stableFloating,
+		(node) => {
+			_stableFloating = node;
+			opts.onFloatingChange?.(node);
+		},
+	);
 
-		this.reference.current = this.referenceProp;
-		this.floating.current = this.floatingProp;
+	reference.current = extract(opts.reference, null);
+	floating.current = extract(opts.floating, null);
 
-		$effect.pre(() => {
-			this.reference.current = this.referenceProp;
-		});
+	$effect.pre(() => {
+		reference.current = extract(opts.reference, null);
+	});
 
-		$effect.pre(() => {
-			this.floating.current = this.floatingProp;
-		});
-	}
+	$effect.pre(() => {
+		floating.current = extract(opts.floating, null);
+	});
+
+	return {
+		open,
+		onOpenChange: opts.onOpenChange ?? noop,
+		onReferenceChange: opts.onReferenceChange ?? noop,
+		onFloatingChange: opts.onFloatingChange ?? noop,
+		reference,
+		floating,
+		get floatingId() {
+			return floatingId;
+		},
+	};
 }
 
-class FloatingRootContext<RT extends ReferenceType = ReferenceType> {
-	floatingId = $derived.by(() => extract(this.options.floatingId) ?? useId());
-	data: ContextData<RT> = $state({});
-	events = createPubSub();
-	open = $derived.by(() => this.options.open.current);
-	/** Whether the floating element is nested inside another floating element. */
-	#nested: boolean;
-	/** Enables the user to specify a position reference after initialization. */
-	#positionReference = $state<ReferenceElement | null>(null);
-	reference = $derived.by(
-		() =>
-			(this.#positionReference ||
-				this.options.reference.current ||
-				null) as RT | null,
-	);
-	floating = $derived.by(() => this.options.floating.current);
-	domReference = $derived.by(() => this.options.reference.current);
+export interface FloatingRootContext<RT extends ReferenceType = ReferenceType>
+	extends ReturnType<typeof useFloatingRootContext<RT>> {}
 
-	constructor(private readonly options: FloatingRootContextOptions) {
-		this.#nested = useFloatingParentNodeId() != null;
+export function useFloatingRootContext<
+	RT extends ReferenceType = ReferenceType,
+>(_opts: UseFloatingRootContextOptions) {
+	const opts = useFloatingRootContextOptions(_opts);
 
-		if (DEV) {
-			if (options.reference.current && !isElement(options.reference.current)) {
-				error(
-					"Cannot pass a virtual element to the `elements.reference` option,",
-					"as it must be a real DOM element. Use `floating.setPositionReference()`",
-					"instead.",
-				);
-			}
+	if (DEV) {
+		if (opts.reference.current && !isElement(opts.reference.current)) {
+			error(
+				"Cannot pass a virtual element to the `elements.reference` option,",
+				"as it must be a real DOM element. Use `floating.setPositionReference()`",
+				"instead.",
+			);
 		}
-		this.#positionReference = this.options.reference.current;
-		this.onOpenChange = this.onOpenChange.bind(this);
-		this.setPositionReference = this.setPositionReference.bind(this);
 	}
+	const data: ContextData<RT> = $state({});
+	const events = createPubSub();
+	/** Whether the floating element is nested inside another floating element. */
+	const nested = useFloatingParentNodeId() != null;
+	/** Enables the user to specify a position reference after initialization. */
+	let positionReference = $state<ReferenceElement | null>(
+		opts.reference.current,
+	);
+	const reference = $derived(
+		(positionReference || opts.reference.current || null) as RT | null,
+	);
 
-	onOpenChange(open: boolean, event?: Event, reason?: OpenChangeReason) {
-		this.data.openEvent = open ? event : undefined;
-		this.events.emit("openchange", {
+	function onOpenChange(
+		open: boolean,
+		event?: Event,
+		reason?: OpenChangeReason,
+	) {
+		data.openEvent = open ? event : undefined;
+		events.emit("openchange", {
 			open,
 			event,
 			reason,
-			nested: this.#nested,
+			nested,
 		});
-		this.options.onOpenChange?.(open, event, reason);
+		opts.onOpenChange?.(open, event, reason);
 	}
 
-	setPositionReference(node: ReferenceElement | null) {
-		this.#positionReference = node;
+	function setPositionReference(node: ReferenceElement | null) {
+		positionReference = node;
 	}
-}
 
-export function useFloatingRootContext(options: UseFloatingRootContextOptions) {
-	return new FloatingRootContext(new FloatingRootContextOptions(options));
-}
+	const elements = $state({
+		get reference() {
+			return reference;
+		},
+		get floating() {
+			return opts.floating.current;
+		},
+		get domReference() {
+			return opts.reference.current;
+		},
+	});
 
-export type { UseFloatingRootContextOptions };
-export { FloatingRootContext };
+	return {
+		get floatingId() {
+			return opts.floatingId;
+		},
+		data,
+		events,
+		get open() {
+			return opts.open.current;
+		},
+		elements,
+		onOpenChange,
+		setPositionReference,
+	};
+}

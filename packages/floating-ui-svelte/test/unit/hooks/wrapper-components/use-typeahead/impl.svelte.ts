@@ -4,12 +4,12 @@ import type {
 } from "svelte/elements";
 import {
 	useClick,
-	useFloating,
 	useInteractions,
 	useTypeahead,
 	type UseTypeaheadOptions,
 } from "../../../../../src/index.js";
 import type { Getter } from "../../../../../src/types.js";
+import { useFloating } from "../../../../../src/hooks/use-floating.svelte.js";
 
 export function useImpl({
 	addUseClick = false,

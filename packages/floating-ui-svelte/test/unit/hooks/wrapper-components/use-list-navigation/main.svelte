@@ -32,9 +32,14 @@
 	]);
 </script>
 
-<button {...ints.getReferenceProps()} bind:this={f.reference}> Open </button>
+<button {...ints.getReferenceProps()} bind:this={f.elements.reference}>
+	Open
+</button>
 {#if open}
-	<div role="menu" {...ints.getFloatingProps()} bind:this={f.floating}>
+	<div
+		role="menu"
+		{...ints.getFloatingProps()}
+		bind:this={f.elements.floating}>
 		<ul>
 			{#each ["one", "two", "three"] as str, index (str)}
 				<li

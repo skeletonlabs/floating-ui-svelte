@@ -22,12 +22,12 @@
 </script>
 
 <button
-	bind:this={f.reference}
+	bind:this={f.elements.reference}
 	data-testid="parent-reference"
 	{...ints.getReferenceProps()}>ref</button>
 {#if open}
 	<FloatingFocusManager context={f.context}>
-		<div bind:this={f.floating} {...ints.getFloatingProps()}>
+		<div bind:this={f.elements.floating} {...ints.getFloatingProps()}>
 			Parent Floating
 			<button
 				data-testid="parent-floating-reference"

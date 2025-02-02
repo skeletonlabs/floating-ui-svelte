@@ -45,14 +45,14 @@
 
 <h1>Grid</h1>
 <div class="container">
-	<button bind:this={f.reference} {...ints.getReferenceProps()}>
+	<button bind:this={f.elements.reference} {...ints.getReferenceProps()}>
 		Reference
 	</button>
 	{#if open}
 		<FloatingFocusManager context={f.context}>
 			<div
 				role="menu"
-				bind:this={f.floating}
+				bind:this={f.elements.floating}
 				data-testid="floating"
 				class="grid gap-2"
 				style={mergeStyles(f.floatingStyles, {

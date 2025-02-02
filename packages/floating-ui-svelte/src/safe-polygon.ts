@@ -99,8 +99,8 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			window.clearTimeout(timeoutId);
 
 			if (
-				!context.domReference ||
-				!context.floating ||
+				!context.elements.domReference ||
+				!context.elements.floating ||
 				context.placement == null ||
 				context.x == null ||
 				context.y == null
@@ -112,10 +112,10 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			const clientPoint: Point = [clientX, clientY];
 			const target = getTarget(event) as Element | null;
 			const isLeave = event.type === "mouseleave";
-			const isOverFloatingEl = contains(context.floating, target);
-			const isOverReferenceEl = contains(context.domReference, target);
-			const refRect = context.domReference.getBoundingClientRect();
-			const rect = context.floating.getBoundingClientRect();
+			const isOverFloatingEl = contains(context.elements.floating, target);
+			const isOverReferenceEl = contains(context.elements.domReference, target);
+			const refRect = context.elements.domReference.getBoundingClientRect();
+			const rect = context.elements.floating.getBoundingClientRect();
 			const side = context.placement.split("-")[0] as Side;
 			const cursorLeaveFromRight = context.x > rect.right - rect.width / 2;
 			const cursorLeaveFromBottom = context.y > rect.bottom - rect.height / 2;
@@ -148,7 +148,7 @@ function safePolygon(options: SafePolygonOptions = {}) {
 			if (
 				isLeave &&
 				isElement(event.relatedTarget) &&
-				contains(context.floating, event.relatedTarget)
+				contains(context.elements.floating, event.relatedTarget)
 			) {
 				return;
 			}

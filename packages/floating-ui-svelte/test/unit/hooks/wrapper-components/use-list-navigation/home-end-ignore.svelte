@@ -25,9 +25,15 @@
 </script>
 
 <!-- svelte-ignore a11y_role_has_required_aria_props -->
-<input role="combobox" bind:this={f.reference} {...ints.getReferenceProps()} />
+<input
+	role="combobox"
+	bind:this={f.elements.reference}
+	{...ints.getReferenceProps()} />
 {#if open}
-	<div role="menu" bind:this={f.floating} {...ints.getFloatingProps()}>
+	<div
+		role="menu"
+		bind:this={f.elements.floating}
+		{...ints.getFloatingProps()}>
 		<ul>
 			{#each ["one", "two", "three"] as string, index}
 				<!-- svelte-ignore a11y_role_supports_aria_props_implicit -->

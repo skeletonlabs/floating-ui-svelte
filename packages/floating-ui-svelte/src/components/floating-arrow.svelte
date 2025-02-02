@@ -1,12 +1,11 @@
 <script lang="ts" module>
 	import type { SVGAttributes } from "svelte/elements";
-	import type { FloatingContext } from "../hooks/use-floating.svelte.js";
 
 	interface FloatingArrowProps extends SVGAttributes<SVGElement> {
 		/** The bound HTML element reference. */
 		ref: Element | null;
 		/** The floating context. */
-		context: FloatingContext;
+		context: FloatingContextData;
 		/**
 		 * Width of the arrow.
 		 * @default 14
@@ -54,6 +53,7 @@
 		styleObjectToString,
 		styleStringToObject,
 	} from "../internal/style-object-to-string.js";
+	import type { FloatingContextData } from "../hooks/use-floating-context.svelte.js";
 
 	let {
 		ref = $bindable(null),
@@ -81,8 +81,8 @@
 	// https://github.com/floating-ui/floating-ui/issues/2932
 
 	$effect(() => {
-		if (!context.floating) return;
-		if (getComputedStyle(context.floating).direction === "rtl") {
+		if (!context.elements.floating) return;
+		if (getComputedStyle(context.elements.floating).direction === "rtl") {
 			isRTL = true;
 		}
 	});
@@ -148,7 +148,7 @@
 	});
 </script>
 
-{#if context.floating}
+{#if context.elements.floating}
 	<svg
 		bind:this={ref}
 		{...rest}

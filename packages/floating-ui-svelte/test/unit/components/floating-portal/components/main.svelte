@@ -16,10 +16,10 @@
 
 <button
 	data-testid="reference"
-	bind:this={f.reference}
+	bind:this={f.elements.reference}
 	onclick={() => (open = !open)}>open</button>
 <FloatingPortal {...props}>
 	{#if open}
-		<div bind:this={f.floating} data-testid="floating"></div>
+		<div bind:this={f.elements.floating} data-testid="floating"></div>
 	{/if}
 </FloatingPortal>

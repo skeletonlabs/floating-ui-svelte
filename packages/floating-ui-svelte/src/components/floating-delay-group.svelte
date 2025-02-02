@@ -10,8 +10,8 @@
 	import type { MaybeGetter } from "../types.js";
 	import { extract } from "../internal/extract.js";
 	import { getDelay } from "../hooks/use-hover.svelte.js";
-	import type { FloatingContext } from "../hooks/use-floating.svelte.js";
 	import type { FloatingRootContext } from "../hooks/use-floating-root-context.svelte.js";
+	import type { FloatingContextData } from "../hooks/use-floating-context.svelte.js";
 
 	type Delay = number | Partial<{ open: number; close: number }>;
 
@@ -83,7 +83,7 @@
 	 * @see https://floating-ui-svelte.vercel.app/docs/FloatingDelayGroup
 	 */
 	function useDelayGroup(
-		context: FloatingContext | FloatingRootContext,
+		context: FloatingContextData | FloatingRootContext,
 		options: UseDelayGroupOptions = {}
 	): DelayGroupState {
 		const enabled = $derived.by(() => extract(options.enabled, true));

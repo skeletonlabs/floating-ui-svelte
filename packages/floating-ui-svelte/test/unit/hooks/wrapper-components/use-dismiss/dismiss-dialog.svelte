@@ -31,12 +31,12 @@
 <FloatingNode id={nodeId}>
 	<button
 		{...ints.getReferenceProps()}
-		bind:this={f.reference}
+		bind:this={f.elements.reference}
 		onclick={() => (open = !open)}>Open</button>
 	{#if open}
 		<FloatingFocusManager context={f.context}>
 			<div
-				bind:this={f.floating}
+				bind:this={f.elements.floating}
 				{...ints.getFloatingProps()}
 				data-testid={testId}>
 				this is my content here for {testId}

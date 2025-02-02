@@ -8,68 +8,10 @@ import {
 } from "@floating-ui/dom";
 import { getDPR, roundByDPR } from "../internal/dpr.js";
 import { styleObjectToString } from "../internal/style-object-to-string.js";
-import type { Boxed, ReferenceType, WhileElementsMounted } from "../types.js";
-import type { FloatingOptions } from "./use-floating.svelte.js";
-import type { FloatingRootContext } from "./use-floating-root-context.svelte.js";
+import type { Boxed, ReferenceType } from "../types.js";
 import type { PropertiesHyphen } from "csstype";
-import { PositionContext } from "../internal/position-context.js";
-
-interface PositionElements<RT extends ReferenceType = ReferenceType> {
-	/**
-	 * The reference element.
-	 */
-	reference?: RT | null;
-
-	/**
-	 * The floating element.
-	 */
-	floating?: HTMLElement | null;
-}
-
-interface UsePositionOptions<RT extends ReferenceType = ReferenceType> {
-	/**
-	 * Represents the open/close state of the floating element.
-	 * @default true
-	 */
-	open?: boolean;
-
-	/**
-	 * Where to place the floating element relative to its reference element.
-	 * @default 'bottom'
-	 */
-	placement?: Placement;
-
-	/**
-	 * The type of CSS position property to use.
-	 * @default 'absolute'
-	 */
-	strategy?: Strategy;
-
-	/**
-	 * These are plain objects that modify the positioning coordinates in some fashion, or provide useful data for the consumer to use.
-	 * @default []
-	 */
-	middleware?: Array<Middleware | undefined | null | false>;
-
-	/**
-	 * Whether to use `transform` instead of `top` and `left` styles to
-	 * position the floating element (`floatingStyles`).
-	 * @default true
-	 */
-	transform?: boolean;
-
-	/**
-	 * Object containing the floating and reference elements.
-	 * @default {}
-	 */
-	elements?: PositionElements<RT>;
-
-	/**
-	 * Callback to handle mounting/unmounting of the elements.
-	 * @default undefined
-	 */
-	whileElementsMounted?: WhileElementsMounted<RT>;
-}
+import type { FloatingRootContext } from "./use-floating-root-context.svelte.js";
+import type { FloatingOptions } from "./use-floating-options.svelte.js";
 
 interface UsePositionData {
 	/**
@@ -103,37 +45,43 @@ interface UsePositionData {
 	isPositioned: boolean;
 }
 
+export interface PositionState<RT extends ReferenceType = ReferenceType>
+	extends ReturnType<typeof usePosition<RT>> {}
+
 /**
  * Manages the positioning of floating elements.
  */
-class PositionState<RT extends ReferenceType = ReferenceType> {
-	referenceEl = $derived.by(
-		() => this.getPositionReference() || this.options.reference.current || null,
+export function usePosition<RT extends ReferenceType = ReferenceType>(
+	opts: FloatingOptions<RT>,
+	rootContext: FloatingRootContext<RT>,
+	getPositionReference: () => RT | null,
+) {
+	const referenceEl = $derived(
+		getPositionReference() || opts.reference.current || null,
 	);
-	data: UsePositionData = $state({
+	const data: UsePositionData = $state({
 		x: 0,
 		y: 0,
-		strategy: "absolute",
-		placement: "bottom",
+		strategy: opts.strategy.current,
+		placement: opts.placement.current,
 		middlewareData: {},
 		isPositioned: false,
 	});
-	floatingPointerEventsDeps = $state(0);
 
-	floatingPointerEvents = $state.raw<
+	let floatingPointerEvents = $state.raw<
 		Boxed<PropertiesHyphen["pointer-events"] | undefined>
 	>({ current: undefined });
 
-	setFloatingPointerEvents(
+	function setFloatingPointerEvents(
 		pointerEvents: PropertiesHyphen["pointer-events"] | undefined,
 	) {
-		this.floatingPointerEvents = { current: pointerEvents };
+		floatingPointerEvents = { current: pointerEvents };
 	}
 
-	floatingStyles = $derived.by(() => {
-		const pointerEvents = $state.snapshot(this.floatingPointerEvents);
+	const floatingStyles = $derived.by(() => {
+		const pointerEvents = $state.snapshot(floatingPointerEvents);
 		const initialStyles: PropertiesHyphen = {
-			position: this.options.strategy.current,
+			position: opts.strategy.current,
 			left: "0px",
 			top: "0px",
 			...(pointerEvents.current && {
@@ -141,25 +89,25 @@ class PositionState<RT extends ReferenceType = ReferenceType> {
 			}),
 		};
 
-		if (!this.options.floating.current) {
+		if (!opts.floating.current) {
 			return styleObjectToString(initialStyles);
 		}
 
-		const x = roundByDPR(this.options.floating.current, this.data.x);
-		const y = roundByDPR(this.options.floating.current, this.data.y);
+		const x = roundByDPR(opts.floating.current, data.x);
+		const y = roundByDPR(opts.floating.current, data.y);
 
-		if (this.options.transform.current) {
+		if (opts.transform.current) {
 			return styleObjectToString({
 				...initialStyles,
 				transform: `translate(${x}px, ${y}px)`,
-				...(getDPR(this.options.floating.current) >= 1.5 && {
+				...(getDPR(opts.floating.current) >= 1.5 && {
 					willChange: "transform",
 				}),
 			});
 		}
 
 		return styleObjectToString({
-			position: this.options.strategy.current,
+			position: opts.strategy.current,
 			left: `${x}px`,
 			top: `${y}px`,
 			...(pointerEvents.current && {
@@ -168,62 +116,59 @@ class PositionState<RT extends ReferenceType = ReferenceType> {
 		});
 	});
 
-	constructor(
-		private readonly options: FloatingOptions<RT>,
-		private readonly rootContext: FloatingRootContext<RT>,
-		// We use a getter to prevent having to expose the internal only
-		// `#positionReference` property in `FloatingState` to the public API.
-		private readonly getPositionReference: () => ReferenceType | null,
-	) {
-		this.data.strategy = this.options.strategy.current;
-		this.data.placement = this.options.placement.current;
-		this.update = this.update.bind(this);
-
-		$effect.pre(() => {
-			if (this.rootContext.open || !this.data.isPositioned) return;
-			this.data.isPositioned = false;
-		});
-
-		$effect.pre(() => {
-			if (this.referenceEl && this.options.floating.current) {
-				if (this.options?.whileElementsMounted) {
-					return this.options.whileElementsMounted(
-						this.referenceEl,
-						this.options.floating.current,
-						this.update,
-					);
-				}
-
-				this.update();
-			}
-		});
-
-		PositionContext.set(this);
-	}
-
-	async update() {
-		if (!this.referenceEl || !this.options.floating.current) return;
+	async function update() {
+		if (!referenceEl || !opts.floating.current) return;
 
 		const config: ComputePositionConfig = {
-			placement: this.options.placement.current,
-			strategy: this.options.strategy.current,
-			middleware: this.options.middleware.current,
+			placement: opts.placement.current,
+			strategy: opts.strategy.current,
+			middleware: opts.middleware.current,
 		};
 
 		const position = await computePosition(
-			this.referenceEl,
-			this.options.floating.current,
+			referenceEl,
+			opts.floating.current,
 			config,
 		);
 
-		this.data.x = position.x;
-		this.data.y = position.y;
-		this.data.placement = position.placement;
-		this.data.strategy = position.strategy;
-		this.data.middlewareData = position.middlewareData;
-		this.data.isPositioned = this.rootContext.open !== false;
+		data.x = position.x;
+		data.y = position.y;
+		data.placement = position.placement;
+		data.strategy = position.strategy;
+		data.middlewareData = position.middlewareData;
+		data.isPositioned = rootContext.open !== false;
 	}
+
+	$effect.pre(() => {
+		if (rootContext.open || !data.isPositioned) return;
+		data.isPositioned = false;
+	});
+
+	$effect.pre(() => {
+		if (referenceEl && opts.floating.current) {
+			if (opts?.whileElementsMounted) {
+				return opts.whileElementsMounted(
+					referenceEl,
+					opts.floating.current,
+					update,
+				);
+			}
+
+			update();
+		}
+	});
+
+	return {
+		get referenceEl() {
+			return referenceEl;
+		},
+		data,
+		setFloatingPointerEvents,
+		get floatingStyles() {
+			return floatingStyles;
+		},
+		update,
+	};
 }
 
-export type { UsePositionOptions, UsePositionData };
-export { PositionState };
+export type { UsePositionData };

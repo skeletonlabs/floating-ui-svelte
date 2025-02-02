@@ -9,14 +9,16 @@
 </script>
 
 <div
-	bind:this={impl.floating.reference}
+	bind:this={impl.floating.elements.reference}
 	{...impl.getReferenceProps({
 		onclick: () => input.focus(),
 	})}>
 	<input bind:this={input} readOnly={true} />
 </div>
 {#if impl.open}
-	<div bind:this={impl.floating.floating} {...impl.getFloatingProps()}>
+	<div
+		bind:this={impl.floating.elements.floating}
+		{...impl.getFloatingProps()}>
 		{#each props.list as value, i (value)}
 			<div
 				role="option"

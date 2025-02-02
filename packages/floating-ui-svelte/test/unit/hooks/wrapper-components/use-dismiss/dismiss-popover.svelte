@@ -29,13 +29,14 @@
 	<div
 		role="dialog"
 		data-testid={id}
-		bind:this={f.floating}
+		bind:this={f.elements.floating}
 		{...ints.getFloatingProps()}>
 		{@render children?.()}
 	</div>
 {/snippet}
 
-<button bind:this={f.reference} {...ints.getReferenceProps()}>open</button>
+<button bind:this={f.elements.reference} {...ints.getReferenceProps()}
+	>open</button>
 {#if open}
 	{#if modal == null}
 		{@render Dialog()}

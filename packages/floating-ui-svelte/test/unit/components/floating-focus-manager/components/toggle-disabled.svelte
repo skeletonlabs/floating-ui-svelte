@@ -23,7 +23,7 @@
 
 <button
 	data-testid="reference"
-	bind:this={f.reference}
+	bind:this={f.elements.reference}
 	{...ints.getReferenceProps()}>
 	ref
 </button>
@@ -34,7 +34,7 @@
 {#if open}
 	<FloatingFocusManager context={f.context} {disabled}>
 		<div
-			bind:this={f.floating}
+			bind:this={f.elements.floating}
 			data-testid="floating"
 			{...ints.getFloatingProps()}>
 		</div>

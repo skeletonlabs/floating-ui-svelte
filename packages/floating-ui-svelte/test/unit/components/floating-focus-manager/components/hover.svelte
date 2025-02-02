@@ -19,13 +19,13 @@
 </script>
 
 <button
-	bind:this={f.reference}
+	bind:this={f.elements.reference}
 	{...ints.getReferenceProps()}
 	data-testid="reference">btn</button>
 {#if open}
 	<FloatingFocusManager context={f.context}>
 		<div
-			bind:this={f.floating}
+			bind:this={f.elements.floating}
 			{...ints.getFloatingProps()}
 			data-testid="floating">
 		</div>

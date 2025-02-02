@@ -33,13 +33,13 @@
 
 <svelte:element
 	this={element}
-	bind:this={floating.reference}
+	bind:this={floating.elements.reference}
 	data-testid="reference"
 	{...interactions.getReferenceProps()}></svelte:element>
 {#if open}
 	<div
 		data-testid="floating"
-		bind:this={floating.floating}
+		bind:this={floating.elements.floating}
 		style={floating.floatingStyles}
 		{...interactions.getFloatingProps()}>
 	</div>

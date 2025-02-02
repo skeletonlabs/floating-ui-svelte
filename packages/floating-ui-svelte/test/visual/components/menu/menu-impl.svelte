@@ -179,7 +179,7 @@
 		() => ref,
 		(v) => {
 			ref = v;
-			f.reference = v;
+			f.elements.reference = v;
 			item.ref = v;
 		}
 	);
@@ -262,7 +262,7 @@
 						initialFocus={isNested ? -1 : 0}
 						returnFocus={!isNested}>
 						<div
-							bind:this={f.floating}
+							bind:this={f.elements.floating}
 							class="flex flex-col rounded bg-white shadow-lg outline-none p-1 border border-slate-900/10 bg-clip-padding"
 							style={mergeStyles(f.floatingStyles, {
 								visibility: !forceMount

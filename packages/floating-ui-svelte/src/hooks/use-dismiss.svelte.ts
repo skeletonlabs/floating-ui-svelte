@@ -14,7 +14,6 @@ import {
 	isEventTargetWithin,
 	isRootElement,
 } from "../internal/dom.js";
-import type { FloatingContext } from "./use-floating.svelte.js";
 import type { MaybeGetter } from "../types.js";
 import { useFloatingTree } from "../components/floating-tree/hooks.svelte.js";
 import { getChildren } from "../internal/get-children.js";
@@ -22,6 +21,7 @@ import { on } from "svelte/events";
 import { extract } from "../internal/extract.js";
 import type { ElementProps } from "./use-interactions.svelte.js";
 import { FLOATING_ID_ATTRIBUTE } from "../internal/attributes.js";
+import type { FloatingContextData } from "./use-floating-context.svelte.js";
 
 const bubbleHandlerKeys = {
 	pointerdown: "onpointerdown",
@@ -121,7 +121,7 @@ interface UseDismissOptions {
 }
 
 function useDismiss(
-	context: FloatingContext,
+	context: FloatingContextData,
 	opts: UseDismissOptions = {},
 ): ElementProps {
 	const enabled = $derived(extract(opts.enabled, true));
@@ -214,7 +214,7 @@ function useDismiss(
 
 		const target = getTarget(event);
 		const inertSelector = `[${createAttribute("inert")}]`;
-		const markers = getDocument(context.floating).querySelectorAll(
+		const markers = getDocument(context.elements.floating).querySelectorAll(
 			inertSelector,
 		);
 
@@ -234,7 +234,7 @@ function useDismiss(
 			isElement(target) &&
 			!isRootElement(target) &&
 			// Clicked on a direct ancestor (e.g. FloatingOverlay).
-			!contains(target, context.floating) &&
+			!contains(target, context.elements.floating) &&
 			// If the target root element contains none of the markers, then the
 			// element was injected after the floating element rendered.
 			Array.from(markers).every(
@@ -245,7 +245,7 @@ function useDismiss(
 		}
 
 		// Check if the click occurred on the scrollbar
-		if (isHTMLElement(target) && context.floating) {
+		if (isHTMLElement(target) && context.elements.floating) {
 			const lastTraversableNode = isLastTraversableNode(target);
 			const style = getComputedStyle(target);
 			const scrollRe = /auto|scroll/;
@@ -289,12 +289,12 @@ function useDismiss(
 		const targetIsInsideChildren =
 			tree &&
 			getChildren(tree?.nodes, nodeId).some((node) =>
-				isEventTargetWithin(event, node.context?.floating),
+				isEventTargetWithin(event, node.context?.elements.floating),
 			);
 
 		if (
-			isEventTargetWithin(event, context.floating) ||
-			isEventTargetWithin(event, context.domReference) ||
+			isEventTargetWithin(event, context.elements.floating) ||
+			isEventTargetWithin(event, context.elements.domReference) ||
 			targetIsInsideChildren
 		) {
 			return;
@@ -368,7 +368,7 @@ function useDismiss(
 		context.data.__escapeKeyBubbles = bubbleOptions.escapeKey;
 		context.data.__outsidePressBubbles = bubbleOptions.outsidePress;
 
-		const doc = getDocument(context.floating);
+		const doc = getDocument(context.elements.floating);
 		const listenersToRemove: Array<() => void> = [];
 
 		if (escapeKey) {
@@ -402,21 +402,23 @@ function useDismiss(
 		let ancestors: (Element | Window | VisualViewport)[] = [];
 
 		if (ancestorScroll) {
-			if (isElement(context.domReference)) {
-				ancestors = getOverflowAncestors(context.domReference);
+			if (isElement(context.elements.domReference)) {
+				ancestors = getOverflowAncestors(context.elements.domReference);
 			}
 
-			if (isElement(context.floating)) {
-				ancestors = ancestors.concat(getOverflowAncestors(context.floating));
+			if (isElement(context.elements.floating)) {
+				ancestors = ancestors.concat(
+					getOverflowAncestors(context.elements.floating),
+				);
 			}
 
 			if (
-				!isElement(context.reference) &&
-				context.reference &&
-				context.reference.contextElement
+				!isElement(context.elements.reference) &&
+				context.elements.reference &&
+				context.elements.reference.contextElement
 			) {
 				ancestors = ancestors.concat(
-					getOverflowAncestors(context.reference.contextElement),
+					getOverflowAncestors(context.elements.reference.contextElement),
 				);
 			}
 		}

@@ -57,7 +57,7 @@
 	<li>
 		<a
 			{href}
-			bind:this={f.reference}
+			bind:this={f.elements.reference}
 			class="w-48 bg-slate-100 p-2 rounded my-1 flex justify-between items-center"
 			{...ints.getReferenceProps(restProps)}>
 			{label}
@@ -83,7 +83,7 @@
 				initialFocus={-1}>
 				<div
 					data-testid="subnavigation"
-					bind:this={f.floating}
+					bind:this={f.elements.floating}
 					class="flex flex-col bg-slate-100 overflow-y-auto rounded outline-none px-4 py-2 backdrop-blur-sm"
 					style={f.floatingStyles}
 					{...ints.getFloatingProps()}>

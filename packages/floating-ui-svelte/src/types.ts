@@ -1,6 +1,5 @@
 import type { Axis, Length, Side, VirtualElement } from "@floating-ui/dom";
-import type { FloatingContext } from "./hooks/use-floating.svelte.js";
-import type { PositionState } from "./hooks/use-position.svelte.js";
+import type { FloatingContextData } from "./hooks/use-floating-context.svelte.js";
 
 type OpenChangeReason =
 	| "outside-press"
@@ -43,7 +42,7 @@ interface ContextData<RT extends ReferenceType = ReferenceType> {
 	 */
 	openEvent?: Event;
 
-	floatingContext?: FloatingContext<RT>;
+	floatingContext?: FloatingContextData<RT>;
 
 	/** @deprecated use `onTypingChange` prop in `useTypeahead` */
 	typing?: boolean;
@@ -74,7 +73,7 @@ interface FloatingNodeType<RT extends ReferenceType = ReferenceType> {
 	/**
 	 * An optional context object that can be used to pass data between hooks.
 	 */
-	context?: FloatingContext<RT>;
+	context?: FloatingContextData<RT>;
 }
 
 interface FloatingTreeType<RT extends ReferenceType = ReferenceType> {

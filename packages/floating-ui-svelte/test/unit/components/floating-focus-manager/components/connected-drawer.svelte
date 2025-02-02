@@ -20,7 +20,7 @@
 </script>
 
 <FloatingFocusManager context={f.context}>
-	<div bind:this={f.floating} {...ints.getFloatingProps()}>
+	<div bind:this={f.elements.floating} {...ints.getFloatingProps()}>
 		<button data-testid="child-reference"> child reference </button>
 	</div>
 </FloatingFocusManager>

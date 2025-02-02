@@ -1,7 +1,6 @@
 <script lang="ts" module>
 	import { type Snippet } from "svelte";
 	import type { FloatingRootContext } from "../../hooks/use-floating-root-context.svelte.js";
-	import type { FloatingContext } from "../../hooks/use-floating.svelte.js";
 	import { getNodeName, isHTMLElement } from "@floating-ui/utils/dom";
 	import {
 		getNextTabbable,
@@ -71,7 +70,7 @@
 		/**
 		 * The floating context returned from `useFloatingRootContext`.
 		 */
-		context: FloatingRootContext | FloatingContext;
+		context: FloatingRootContext | FloatingContextData;
 		/**
 		 * Whether or not the focus manager should be disabled. Useful to delay focus
 		 * management until after a transition completes or some other conditional
@@ -157,6 +156,7 @@
 	import { reactiveActiveElement } from "../../internal/active-element.svelte.js";
 	import { handleGuardFocus } from "../../internal/handle-guard-focus.js";
 	import { afterSleep } from "../../internal/after-sleep.js";
+	import type { FloatingContextData } from "../../hooks/use-floating-context.svelte.js";
 
 	let {
 		context,
@@ -184,7 +184,7 @@
 	// hidden dismiss button should only appear at the end of the list, not the
 	// start.
 	const isUntrappedTypeableCombobox = $derived(
-		isTypeableCombobox(context.domReference) && ignoreInitialFocus
+		isTypeableCombobox(context.elements.domReference) && ignoreInitialFocus
 	);
 
 	const inertSupported = supportsInert();
@@ -214,7 +214,7 @@
 	});
 
 	const floatingFocusElement = $derived(
-		getFloatingFocusElement(context.floating)
+		getFloatingFocusElement(context.elements.floating)
 	);
 
 	function getTabbableContent(
@@ -227,8 +227,8 @@
 		const content = getTabbableContent(container);
 		const ordered = order
 			.map((type) => {
-				if (context.domReference && type === "reference") {
-					return context.domReference;
+				if (context.elements.domReference && type === "reference") {
+					return context.elements.domReference;
 				}
 
 				if (floatingFocusElement && type === "floating") {
@@ -260,7 +260,10 @@
 		const els = getTabbableElements();
 		const target = getTarget(event);
 
-		if (order[0] === "reference" && target === context.domReference) {
+		if (
+			order[0] === "reference" &&
+			target === context.elements.domReference
+		) {
 			stopEvent(event);
 			if (event.shiftKey) {
 				enqueueFocus(els[els.length - 1]);
@@ -295,8 +298,8 @@
 	}
 
 	$effect(() => {
-		if (disabled || !context.floating) return;
-		return on(context.floating, "focusin", handleFocusIn);
+		if (disabled || !context.elements.floating) return;
+		return on(context.elements.floating, "focusin", handleFocusIn);
 	});
 	// In Safari, buttons lose focus when pressing them.
 	function handlePointerDown() {
@@ -311,26 +314,33 @@
 
 		queueMicrotask(() => {
 			const movedToUnrelatedNode = !(
-				contains(context.domReference, relatedTarget) ||
-				contains(context.floating, relatedTarget) ||
-				contains(relatedTarget, context.floating) ||
+				contains(context.elements.domReference, relatedTarget) ||
+				contains(context.elements.floating, relatedTarget) ||
+				contains(relatedTarget, context.elements.floating) ||
 				contains(portalContext?.portalNode, relatedTarget) ||
 				relatedTarget?.hasAttribute(createAttribute("focus-guard")) ||
 				(tree &&
 					(getChildren(tree.nodes, nodeId).find(
 						(node) =>
-							contains(node.context?.floating, relatedTarget) ||
-							contains(node.context?.domReference, relatedTarget)
+							contains(
+								node.context?.elements.floating,
+								relatedTarget
+							) ||
+							contains(
+								node.context?.elements.domReference,
+								relatedTarget
+							)
 					) ||
 						getAncestors(tree.nodes, nodeId).find(
 							(node) =>
 								[
-									node.context?.floating,
+									node.context?.elements.floating,
 									getFloatingFocusElement(
-										node.context?.floating
+										node.context?.elements.floating
 									),
 								].includes(relatedTarget) ||
-								node.context?.domReference === relatedTarget
+								node.context?.elements.domReference ===
+									relatedTarget
 						)))
 			);
 
@@ -379,11 +389,22 @@
 	$effect(() => {
 		if (disabled || !closeOnFocusOut) return;
 
-		if (context.floating && isHTMLElement(context.domReference)) {
+		if (
+			context.elements.floating &&
+			isHTMLElement(context.elements.domReference)
+		) {
 			return executeCallbacks(
-				on(context.domReference, "focusout", handleFocusOutside),
-				on(context.domReference, "pointerdown", handlePointerDown),
-				on(context.floating, "focusout", handleFocusOutside)
+				on(
+					context.elements.domReference,
+					"focusout",
+					handleFocusOutside
+				),
+				on(
+					context.elements.domReference,
+					"pointerdown",
+					handlePointerDown
+				),
+				on(context.elements.floating, "focusout", handleFocusOutside)
 			);
 		}
 	});
@@ -398,7 +419,7 @@
 	});
 
 	$effect(() => {
-		if (disabled || !context.floating) return;
+		if (disabled || !context.elements.floating) return;
 
 		// Don't hide portals nested within the parent portal.
 		const portalNodes = Array.from(
@@ -410,12 +431,12 @@
 		const ancestorFloatingNodes =
 			tree && !modal
 				? getAncestors(tree?.nodes, nodeId).map(
-						(node) => node.context?.floating
+						(node) => node.context?.elements.floating
 					)
 				: [];
 
 		const insideElements = [
-			context.floating,
+			context.elements.floating,
 			...portalNodes,
 			...ancestorFloatingNodes,
 			startDismissButtonRef.current,
@@ -425,7 +446,7 @@
 			portalContext?.beforeOutsideGuard,
 			portalContext?.afterOutsideGuard,
 			order.includes("reference") || isUntrappedTypeableCombobox
-				? context.domReference
+				? context.elements.domReference
 				: null,
 		].filter((x): x is Element => x != null);
 
@@ -498,8 +519,8 @@
 				openEvent = event;
 			}
 
-			if (reason === "escape-key" && context.domReference) {
-				addPreviouslyFocusedElement(context.domReference);
+			if (reason === "escape-key" && context.elements.domReference) {
+				addPreviouslyFocusedElement(context.elements.domReference);
 			}
 
 			if (
@@ -529,8 +550,11 @@
 		fallbackEl.setAttribute("aria-hidden", "true");
 		fallbackEl.setAttribute("style", HIDDEN_STYLES_STRING);
 
-		if (isInsidePortal && context.domReference) {
-			context.domReference.insertAdjacentElement("afterend", fallbackEl);
+		if (isInsidePortal && context.elements.domReference) {
+			context.elements.domReference.insertAdjacentElement(
+				"afterend",
+				fallbackEl
+			);
 		}
 
 		function getReturnElement() {
@@ -545,17 +569,20 @@
 			context.events.off("openchange", onOpenChange);
 
 			const isFocusInsideFloatingTree =
-				contains(context.floating, prevActiveElement) ||
+				contains(context.elements.floating, prevActiveElement) ||
 				(tree &&
 					getChildren(tree.nodes, nodeId).some((node) =>
-						contains(node.context?.floating, prevActiveElement)
+						contains(
+							node.context?.elements.floating,
+							prevActiveElement
+						)
 					));
 			const shouldFocusReference =
 				isFocusInsideFloatingTree ||
 				(openEvent && ["click", "mousedown"].includes(openEvent.type));
 
-			if (shouldFocusReference && context.domReference) {
-				addPreviouslyFocusedElement(context.domReference);
+			if (shouldFocusReference && context.elements.domReference) {
+				addPreviouslyFocusedElement(context.elements.domReference);
 			}
 
 			const returnElement = getReturnElement();
@@ -607,7 +634,7 @@
 			open: context.open,
 			closeOnFocusOut,
 			onOpenChange: context.onOpenChange,
-			domReference: context.domReference,
+			domReference: context.elements.domReference,
 		});
 
 		return () => {
@@ -625,7 +652,9 @@
 			const tabIndex = floatingFocusElement.getAttribute("tabindex");
 			const tabbableContent =
 				getTabbableContent() as Array<Element | null>;
-			const activeEl = activeElement(getDocument(context.floating));
+			const activeEl = activeElement(
+				getDocument(context.elements.floating)
+			);
 			const _tabbableIndex = tabbableContent.indexOf(activeEl);
 
 			if (_tabbableIndex !== -1) {
@@ -634,7 +663,7 @@
 
 			if (
 				order.includes("floating") ||
-				(activeEl !== context.domReference &&
+				(activeEl !== context.elements.domReference &&
 					tabbableContent.length === 0)
 			) {
 				if (tabIndex !== "0") {
@@ -699,7 +728,7 @@
 				if (isOutsideEvent(event, portalContext.portalNode)) {
 					afterSleep(0, () => {
 						const nextTabbable =
-							getNextTabbable() || context.domReference;
+							getNextTabbable() || context.elements.domReference;
 						nextTabbable?.focus();
 					});
 				} else {
@@ -737,7 +766,8 @@ will have a dismiss button.
 				if (isOutsideEvent(event, portalContext.portalNode)) {
 					afterSleep(0, () => {
 						const prevTabbable =
-							getPreviousTabbable() || context.domReference;
+							getPreviousTabbable() ||
+							context.elements.domReference;
 
 						prevTabbable?.focus();
 					});

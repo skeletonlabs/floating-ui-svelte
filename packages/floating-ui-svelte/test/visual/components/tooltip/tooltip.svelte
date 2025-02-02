@@ -38,7 +38,9 @@
 	const reference = box<Element | null>(null);
 
 	const f = useFloating({
-		reference: () => reference.current,
+		elements: {
+			reference: () => reference.current,
+		},
 		onReferenceChange: (v) => {
 			reference.current = v;
 		},
@@ -103,7 +105,7 @@
 	<FloatingPortal>
 		<div
 			role="presentation"
-			bind:this={f.floating}
+			bind:this={f.elements.floating}
 			style={f.floatingStyles}>
 			<div
 				class="bg-black text-white p-1 px-2 rounded"
