@@ -31,9 +31,9 @@ import SsrRaw from "./ExampleSsr.svelte?raw";
 			lang="bash"
 			code={`
 npm install @skeletonlabs/floating-ui-svelte
-# pnpm install @skeletonlabs/floating-ui-svelte
-# yarn install @skeletonlabs/floating-ui-svelte
-# bun install @skeletonlabs/floating-ui-svelte
+# pnpm add @skeletonlabs/floating-ui-svelte
+# yarn add @skeletonlabs/floating-ui-svelte
+# bun add @skeletonlabs/floating-ui-svelte
 		`}
 		/>
 	</section>
