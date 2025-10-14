@@ -1,4 +1,5 @@
 import { getWindow, isElement, isHTMLElement } from "@floating-ui/utils/dom";
+import type { HTMLAttributes } from "svelte/elements";
 import {
 	activeElement,
 	contains,
@@ -25,6 +26,12 @@ interface UseFocusOptions {
 	 * @default true
 	 */
 	visibleOnly?: boolean;
+	/**
+	 * Whether the open state should change when focusing within the trigger element.
+	 *
+	 * @default false
+	 */
+	focusWithin?: boolean;
 }
 
 function useFocus(context: FloatingContext, options: UseFocusOptions = {}) {
@@ -35,7 +42,11 @@ function useFocus(context: FloatingContext, options: UseFocusOptions = {}) {
 		elements: { reference, floating },
 	} = $derived(context);
 
-	const { enabled = true, visibleOnly = true } = $derived(options);
+	const {
+		enabled = true,
+		visibleOnly = true,
+		focusWithin = false,
+	} = $derived(options);
 
 	let blockFocus = false;
 	let timeout = -1;
@@ -101,7 +112,7 @@ function useFocus(context: FloatingContext, options: UseFocusOptions = {}) {
 			if (!enabled) {
 				return {};
 			}
-			return {
+			const handlers: HTMLAttributes<HTMLElement> = {
 				onpointerdown: (event: PointerEvent) => {
 					if (isVirtualPointerEvent(event)) return;
 					keyboardModality = false;
@@ -174,6 +185,13 @@ function useFocus(context: FloatingContext, options: UseFocusOptions = {}) {
 					});
 				},
 			};
+
+			if (focusWithin) {
+				handlers.onfocusin = handlers.onfocus;
+				handlers.onfocusout = handlers.onblur;
+			}
+
+			return handlers;
 		},
 	};
 }

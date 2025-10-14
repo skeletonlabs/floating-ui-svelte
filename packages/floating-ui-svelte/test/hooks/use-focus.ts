@@ -1,6 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/svelte";
 import { userEvent } from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import { useFloating, useFocus, useId } from "../../src/index.js";
+import { withRunes } from "../internal/with-runes.svelte.js";
 import App from "./wrapper-components/use-focus.svelte";
 
 /**
@@ -101,4 +103,44 @@ describe.skip("useFocus", () => {
 			expect(screen.queryByTestId("floating")).toBeInTheDocument();
 		});
 	});
+});
+
+describe("focusWithin", () => {
+	function createElements(): { reference: HTMLElement; floating: HTMLElement } {
+		const reference = document.createElement("div");
+		const floating = document.createElement("div");
+		reference.id = useId();
+		floating.id = useId();
+		return { reference, floating };
+	}
+
+	it(
+		"Should not output onfocusin or onfocusout event handlers",
+		withRunes(() => {
+			expect.assertions(2);
+
+			const elements = createElements();
+			const floating = useFloating({ elements });
+			const focus = useFocus(floating.context);
+			const handlers = focus.reference;
+
+			expect(handlers).not.toHaveProperty("onfocusin");
+			expect(handlers).not.toHaveProperty("onfocusout");
+		}),
+	);
+
+	it(
+		"Should output onfocusin or onfocusout event handlers",
+		withRunes(() => {
+			expect.assertions(2);
+
+			const elements = createElements();
+			const floating = useFloating({ elements });
+			const focus = useFocus(floating.context, { focusWithin: true });
+			const handlers = focus.reference;
+
+			expect(handlers).toHaveProperty("onfocusin");
+			expect(handlers).toHaveProperty("onfocusout");
+		}),
+	);
 });
