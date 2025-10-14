@@ -1,5 +1,9 @@
 ![github-banner](https://github.com/skeletonlabs/floating-ui-svelte/assets/1509726/46b00221-9088-4986-86c8-60a480d9213f)
 
+> [!WARNING]  
+> **Deprecation Notice:** This project is no longer actively maintained.  
+> Please see [this GitHub Discussion](https://github.com/skeletonlabs/floating-ui-svelte/discussions/169) for details about why it was deprecated and where to go next.
+
 # Floating UI Svelte
 
 Svelte bindings for [Floating UI](https://github.com/floating-ui/floating-ui). Based on [Floating UI React](https://floating-ui.com/docs/react).
